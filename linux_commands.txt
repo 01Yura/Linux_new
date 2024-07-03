@@ -1,0 +1,3697 @@
+curl icanhazip.com - посмотреть свой белый ip
+
+                 
+                 Лицензирование
+https://upload.wikimedia.org/wikipedia/commons/1/1b/Linux_Distribution_Timeline.svg
+https://ru.wikipedia.org/wiki/Linux_From_Scratch
+https://ru.wikipedia.org/wiki/Unix-%D0%BF%D0%BE%D0%B4%D0%BE%D0%B1%D0%BD%D0%B0%D1%8F_%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0
+
+hostnamectl - версия ос, имя хоста, ядро, архитектура
+
+                        NANO
+Копирование в nano ctrl+shift+6, выделяем блок, alt+6(копируем), ctrl+U(вставляем)
+ESC+3 - убрать или поставить # в текущей строке
+
+
+Заменить дурацкий vi на нано при редактировании :
+open your ~/.bashrc file:
+nano ~/.bashrc
+
+Add the following line:
+export EDITOR=nano
+
+Save and close
+relogin
+
+
+
+Linux - GPLv2
+
+GNU General Public License v2
+Цель GNU GPL — предоставить пользователю права копировать, модифицировать и распространять (в том числе на коммерческой основе) программы, а также гарантировать, что и пользователи всех производных программ получат вышеперечисленные права
+Лицензируя работу на условиях GNU GPL, автор сохраняет за собой авторство
+GNU GPL не позволяет включать программу в проприетарное ПО. Если данная программа является библиотекой, вероятно, лучшим будет разрешить проприетарному ПО линковаться с ней
+
+GNU Lesser General Public License (LGPL)
+Эта лицензия менее «свободна» и в основном используется для программных библиотек. LGPL не гарантирует конечному пользователю полную свободу использования программного обеспечения. Только свободу модификации для компонентов, лицензированных по LGPL, но не для каких-либо проприетарных компонентов.
+Коммерческое ПО может линковаться с библиотекой, выпущенной под LGPL, и при этом оно не будет «заражено» GPL и может оставаться закрытым.
+Это позволяет использовать свободные библиотеки в закрытом ПО, все преимущества свободной библиотеки сохраняются. Например, если компания сделает свое изменение в этой библиотеке, она будет обязана его опубликовать. Таким образом библиотека продолжает развиваться большими коммерческими компаниями, которые в то же время могут использовать ее в закрытых продуктах
+
+
+
+
+
+                                ПЕРЕМЕННЫЕ (VARIABLES)
+
+env - посмотреть только (environment) глобальные переменные 
+env, declare -x, typeset -x или export -p - показывает глобальные переменные 
+set - локальные и  глобальные, а так же функции
+название_переменной=значение
+например name=yura
+Локальные переменные (local or shell) пишутся с маленькой буквы
+Глобальные переменные (enviromental or global) - с большой
+export НП - сделать переменную глобальной
+unset НП - удалить переменную
+echo ${PATH} то же самое что и echo $PATH, просто скобки {} используются для визуального выделения и улучшения восприятия
+
+Используя следующий синтаксис, команду env также можно использовать для временного задания переменной:
+    env VARIABLE_NAME=TEMP_VALUE command
+    env TZ=EST date
+
+$PS1 - это переменная приглашения ввода (yura@yuraserver:~$)
+Её можно переназначить.
+
+PS1='\u@\h \w \$ ' - показывает имя пользователя, хоста, рабочий каталог и символ пиглашения $
+
+После изменения файла bash.bashrc и тому подобных надо его перечитать командой source или просто "." 
+Эта команда запускает скрипт прямо в текущем шелле, а не создает новый. Поэтому все команды и переменные, назначенные скриптом будут сразу активны в данном шелле. 
+Если вывода не будет, значит все норм. Если вывод есть, значит ошибка где-то.
+
+
+
+
+type НК - показывает что за команда(встроенная в оболочку, алиас, или хранящаяся в одной из папок переменной $PATH программа). Кроме того показывает есть ли такая команда в системе вообще или нет.
+type -a НК - показывает еще и путь до нее
+which НК - показывает путь до программы (ищет в $PATH)
+w - кто в системе 
+
+            `` или ()
+
+echo `date` или echo $(date) - одно и то же, команда в команде
+touch file.$(date +%F).sh - создать файл с датой в имени
+
+alias НА=комманда (если команда из нескольких слов, то в одинарных кавычках)
+unalias НА - удалить псевдоним
+\ls - знак \ перед командой выполнит данную команду, а не ее алиас   !
+или 
+"ls"
+или
+command ls
+
+ls -l /etc    и    ls /etc -l    равнозначны  !
+
+Функции (типа скрипта)
+root@291417:~# my_report () {
+> ls /home/yura/
+> date
+> echo "This is END"
+> }
+ Сначала прямо в коммандной строке пишешь любое название функции, ставишь в скобки (), затем ставишь фигурную скобку { и нажимаешь ENTER
+ Появляется приглашение для ввода команд
+ После ввода снова ставишь скобку }.
+ Вызываешь функцию по ее названию
+
+ report () { cd $1; echo "Document directory usage report" ; > /home/yura/report; date >> /home/yura/report; pwd >> /home/yura/report; du -sh . >> /home/yura/report;cd ~; }
+ В данной функции при ее вызове можно указать путь к папке.
+
+ lS() { ls -lrS $@; } - $@ это ссылка на любые аргументы, которые могут быть добавлены в функцию
+
+ declare -f - показать все существующие функции
+ unset НФ - удаляет функцию
+ test -e $HOME/bin || mkdir $HOME/bin - проверить если существует директория , то тогда команда выполняется
+
+  Например, следующий гибридный список И/ИЛИ может быть использован в сценарии, чтобы убедиться, что переменная search либо установлена в первый аргумент, передаваемый скрипту, либо в текущий рабочий каталог:
+
+test $# -eq 0 && search=`pwd` || search=$1
+
+#function showlog
+function showlog() {
+date > ./$1.txt;
+last | grep $1 | tail -n $2 >> $1.txt;
+}
+Эта функция показает попытки входа (кол-во указывается в $2) для пользоватедя $1 с помощью команды last (ТОЛЬКО В CENTOS)
+
+read –p "Please enter your name: " name - аргумент  -p позволяет выдать подсказку
+
+
+Существует два типа файлов инициализации: global файлы инициализации, которые влияют на всех пользователей в системе, и local файлы инициализации, относящиеся к отдельному пользователю.
+
+LOGIN SHELL (вход в систему сидя напротив монитора, или удаленно, используя ssh)
+/etc/profile (в нем есть строка - если есть папка /etc/profile.d/, то выполнить все скрипты что там есть ---> ~/.bash_profile или ~/.bash_login или  ~/.profile ---> ~/.bashrc ---> /etc/bashrc
+   После /etc/profile и /etc/profile.d стартует один из этих файлов (ищет по порядку):
+    3.1- ~/.bash_profile
+    3.2- ~/.bash_login
+    3.3- ~/.profile
+
+И затем уже стартует ~/.bashrc
+
+NON-LOGIN SHELL (запускаешь терминал уже находясь в системе, н-р используя GUI, или открывая новый сеанс pty, применяя команду bash или tmux)
+~/.bashrc ---> /etc/bashrc (не всегда)
+
+INTERACTIVE SHELL (ты можешь вводить команды, команда выводит результат и ты можешь вводить команды далее)
+
+NON-LOGIN INTERACTIVE SHELL
+Сначала выполняется /etc/bash.bashrc (или /etc/bashrc в некоторых системах)
+Затем уже ~/.bashrc
+
+
+NON-INTERACTIVE SHELL (ты запускаешь скрипт, он всегда создает новый shell, и выполняется без твоего участия, а после выполения закрывает этот shell и выходит в твой shell)
+
+BASH_ENV - можно задать эту переменную и она будет активна при non-interactive shell, по умолчанию она пустая
+
+shopt -q login_shell && echo 'Login shell' || echo 'Not login shell'
+узнать логин или нон логин шелл
+или так
+echo $0 - если выведет -bash, то это логин шелл, а если просто bash без минуса, то это нон-логин шелл
+
+
+/etc/profile 	Этот файл может быть изменен только администратором и будет выполнен каждым пользователем, который войдет в систему. Администраторы используют этот файл для создания ключевых переменных среды, отображения сообщений пользователям при входе в систему и установки ключевых системных значений.
+Он ищет в папке /etc файл bash.bashr или, если его нет, то bashc. И выполняет скрипты из папки profile.d
+
+Which of the following files is for all bash shell users and executed only at login?
+      /etc/profile 
+
+~/.bash_profile 	У каждого пользователя есть свой .bash_profile файл в домашнем каталоге. Назначение этого файла такое же, как и у файла //etc/profile, но наличие этого файла позволяет пользователю настроить оболочку по своему вкусу. Этот файл обычно используется для создания настраиваемых переменных среды. В CENTOS тут хранится $PATH.
+В UBUNTU $PATH хранится в /etc/environment
+
+Which of the following files is specific to each user and executed only during login?
+      ~/.bash_profile 
+
+
+
+~/.bashrc 	У каждого пользователя есть свой .bashrc в его домашнем каталоге. Целью этого файла является генерация элементов, которые должны быть созданы для каждой оболочки, таких как локальные переменные и псевдонимы.
+
+Which of the following files is specific to each user and executed every time a bash shell is opened?
+      ~/.bashrc 
+
+/etc/bashrc 	Этот файл может повлиять на каждого пользователя системы. Только администратор может изменить этот файл. Как и в случае с .bashrc, этот файл предназначен для создания элементов, которые должны быть созданы для каждой оболочки, таких как локальные переменные и псевдонимы.
+
+Which of the following files is for all bash shell users and executed every time a bash shell is opened?
+        /etc/bashrc 
+
+
+~/.bash_logout - выполняется при выходе пользователя из системы. Обычно просто очищается экран.
+
+/etc/skel - тут хранятся все инициализауионные файлы, которые копируются в домашнюю директорию пользователя при его создании. 
+
+В файлах оканчивающихся на RC хранятся псевдонимы и функции
+
+В убунту переменная PATH хранится в /etc/environment
+В центос PATH хранится в ~/.profile
+
+
+HISTFILE=/root/.bash_history - эта переменная говрит где хранить историю
+
+HISTFILESIZE=1000
+HISTSIZE=1000
+HISTIGNORE='ls*:cd*:history*:exit'
+HISTCONTROL может быть присвоена любая из следующих функций:
+
+    ignoredups: Это предотвратит дублирование команд, которые выполняются последовательно.
+
+    ignorespace: Здесь не будут сохранены команды, начинающиеся с пробела. Это предоставляет пользователю простой способ выполнить команду, которая не попадет в список журнала.
+
+    ignoreboth: Здесь не будут храниться последовательные дубликаты или любая команда, начинающаяся с пробела.
+
+    erasedups: При этом не будет сохранена команда, идентичная другой команде в вашей истории (на самом деле, предыдущая запись команды будет удалена из списка истории).
+
+    ignorespace:erasedups: Это будет включать в себя преимущество erasedups с преимуществом ignorespace.
+
+
+Пакет bash-completion - чтобы команды дополнялись опциями. Надо устанавливать отдельно.
+Проверит можно введя команду tar или man.
+Для Centos пакет именно bash-completion-extras.noarch
+
+              ПОИСК
+
+man НК - открыть мануал по команде
+в [] квадратных скобках в пункте Синопсис (примеры использования) указаны не обязательные аргументы
+/ - символ для начала поиска, затем поисковое слово и Энтер
+n and N - следующее совпадение и предыдущее совпадение
+
+ По умолчанию справочные страницы состоят из девяти разделов:
+
+   1 Общие командования                                                     
+   2 Системные вызовы 
+   3 Библиотечные вызовы
+   4 Специальные файлы
+   5 Форматы файлов и соглашения
+   6 Игры
+   7 Смешанный
+   8 Команды системного администрирования
+   9 Подпрограммы ядра
+
+man -f passwd  -  позволяет найти в каких разделах есть инфа
+sysadmin@localhost:~$ man -f passwd                            
+passwd (5)           - the password file                              
+passwd (1)           - change user password                           
+passwd (1ssl)        - compute password hashes  
+
+man 5 passwd - указать какой конкретно man вывести, в данном случае man именно по файлу passwd, а не по команде (1) passwd
+
+man -k password - поиск по ключевому слову в описании
+
+man -f passwd - показывает все man страницы указанного слова 
+whatis НК- делает то же самое, выводит название команды и номер для поиска в man
+
+cat /etc/os-release - узнать какой дист используется
+
+arch - к какому семейству принадлнжит проц
+lscpu - тоже о ЦП
+free -m - о памяти в Мбайтах
+free -s 10 - обновлять значения каждые 10 сек
+cat /proc/meminfo - инфа о памяти
+
+lspci - компоненты , подключенные к компу (показывает шины pci)
+lspci -v -s 00:07.0 - после -s идет код устройства в системе
+lspci -v -d 1d6b:0001 - полсе -d идет ID номер поставщика или продукта
+
+Данные команды это как фронтенд для директорий /proc and /sys.
+/proc/cpuinfo - Lists detailed information about the CPU(s) found by the operating system.
+/proc/interrupts - A list of numbers of the interrupts per IO device for each CPU.
+/proc/ioports - Lists currently registered Input/Output port regions in use.
+/proc/dma - Lists the registered DMA (direct memory access) channels in use.
+
+Removable devices are handled by the udev subsystem, which creates the corresponding devices in /dev. The Linux kernel captures the hardware detection event and passes it to the udev process, which then identifies the device and dynamically creates corresponding files in /dev, using pre-defined rules.
+Udev relies on SysFS, the pseudo filesystem for hardware related information mounted in /sys.
+As new devices are detected, udev searches for a matching rule in the pre-defined rules stored in the directory /etc/udev/rules.d/. The most important rules are provided by the distribution, but new ones can be added for specific cases.
+
+lsusb - все usb устройства
+usb-devices - то же 
+lsusb -v - более подробный вывод
+lsusb -v -d 0624:0248 (это идентификатор поставщика или устройства) - отображает инфу только об этом устройстве
+lsusb -t - в виде дерева
+
+fdisk -l - инфа о дисках
+ 
+/proc - содержит сведения о процессах
+/proc/cpuinfo - инфа о процессоре
+pstree - дерево родит и дочерн связей
+ps --forest - строит дерево
+ps -u имя_пользователя - показыват только процессы 
+ps aux или ps -ef - все процессы
+a   Show processes that are attached to a tty or terminal.
+u   Display user-oriented format.
+x   Show processes that are not attached to a tty or terminal.
+
+ps -ef | less -S - ключ -S для less запрещвет перенос на новую строку, так как при переносе не удобно смотреть вывод
+
+
+top - процессы в онлайне
+    K - kill
+    R - renice
+ps -o pid,tty,time,%mem,cmd --sort %mem - выводит только определенные колонки и сортирует по памяти
+tail /var/log/auth.log - попытки авторизации
+
+cat /proc/sys/kernel/pid_max - посмотреть сколько возможно всего запустить процессов
+ulimit -u - посмотреть свои ограничения по процессам
+
+ps aux | grep sshd
+то же самое
+pgrep -i sshd - сразу ищет в выводе команды ps (-i означает case insensitive)
+pgrep -u root -l - найти все процессы принаджлежащие user root и показать не только PID но и название (-l)
+
+Unit 	Abbreviation 	Value (Bytes)
+kibibyte 	KiB 	1024
+mebibyte 	MiB 	1024^2 = 1,048,576
+gibibyte 	GiB 	1024^3 = 1,073,741,824
+tebibyte 	TiB 	1024^4 = 1,099,511,627,776
+exbibyte 	EiB 	1024^6 = 1,152,921,504,606,846,976
+
+Существует довольно много интерфейсов запоминающих устройств, которые используются и сегодня:
+
+    Интерфейс SCSI (Small Computer System Interface) является одним из старейших и требует наличия SCSI-контроллера в системе для управления одним или несколькими дисками, которые к нему подключаются.
+
+    Интерфейс типа Integrated Drive Electronics (IDE) или Parallel Advanced Technology Attachment (PATA) включает в себя контроллер непосредственно на каждом диске и был очень популярен для жестких дисков в 1990-х годах. Этот тип до сих пор используется для некоторых оптических приводов.
+
+    Наиболее распространенным интерфейсом, используемым в настоящее время для внутренних запоминающих устройств, является интерфейс типа Serial Advanced Technology Attachment (SATA). Каждый диск SATA подключается непосредственно к системной плате с помощью кабеля. Чтобы настроить основной диск SATA, подключите его кабелем к разъему системной платы, который назначен в качестве основного порта.
+
+    Для внешних накопителей наиболее распространенным является интерфейс универсальной последовательной шины (USB), но существуют и другие стандарты, такие как FireWire и Thunderbolt.
+
+Заметка
+
+В устройствах хранения данных используются serial или parallel интерфейсы. Буквы S в SCSI, в S ATA и USB означают слово serial. Вот почему они появляются как //dev/sda1, что означает Device Sserial Drive A partition 1.
+
+Drives that start with hd are PATA (Parallel ATA), also known as IDE (Integrated Drive Electronics) drives. 	/dev/hd*
+
+Команда df -h может быть использована для определения типа диска, используемого в компьютере под управлением Linux.
+
+Not only are more resources available today, but they are also automatically allocated and managed by the operating system instead of manually by the administrator.
+
+There are four types of hardware resources that devices use to communicate with the system. As some of these resources refer to input and output, part of their name may be abbreviated as IO. The four resources are: IO ports, IO memory, interrupt requests (IRQ), and direct memory access (DMA) channels:
+    cat /proc/ioports
+    cat /proc/iomem
+    /proc/irq - директория (только IRQ могут использоваться одновременно несколькими девайсами)
+    cat /proc/dma
+
+
+Трио инструментов управления устройствами начинается с udev, подсистемы управления устройствами, которая управляет каталогом /dev и автоматически создает и уничтожает точки узла (ссылки на устройство) для устройств, которые подключены к системе или впоследствии удалены.
+
+Второй частью трио управления устройствами является подсистема sysfs, которая представляет собой еще одну файловую систему в памяти, состоящую из каталогов и текстовых файлов, содержащих значения о работе и конфигурации ядра.
+Подсистема sysfs обычно монтируется как подкаталог /sys. Каталог /sys и /sys существуют потому, что существует необходимость предоставлять информацию о ядре, его атрибутах и содержимом пользователям с помощью таких программ, как ps, top и других программ, которые предоставляют информацию обычному пользователю через вывод из командной строки.
+
+Наконец, последним из троицы инструментов управления устройствами является демон Hardware Abstraction Layer (HAL) (он же hald). Когда ядро обнаруживает устройство, оно помещает информацию об устройстве в соответствующие файлы в каталоге /sys. hald отвечает за обнаружение и поддержание списка подключенных устройств и их атрибутов путем мониторинга файлов в каталоге /sys. Когда состояние аппаратного устройства изменяется, hald использует D-Bus для отправки уведомлений тем программам, которые были зарегистрированы для этого типа аппаратного события.
+Чтобы просмотреть список устройств и их атрибутов, сохраненных в hald, выполните команду lshal (он устарел, так как используется systemd)
+
+                                СЕТИ
+
+Класс A начинается с 01111111. Это сети с 1 до 127. Н-р: 65.32.53.134, но 127.х.х.х - используется для localhost
+Класс B начинается с 10000000. Это сети с 128 по 191. Н-р: 165.23.4.34
+Класс C начинается с 11000000. Это сети с 192 по 223. Н-р: 192.23.4.34
+Класс D используется для спец целей, н-р для аудио-видео стриминга
+Класс E не используется и зарезервирован на будущее
+
+Private:
+    10.0.0.0/8
+    172.16.0.0/12
+    192.168.0.0/16
+
+IPv4 -32bits 4 октета по 8 бит, итого 2^32 возможных адресов, пишется в десятичном (decimal) с точками между октетами - 192.168.0.1
+IPv6 - 128bits, 8 сегментов по 16бит, 2^128 возможных адресов, пишется в 16тиричном формате (hex) с двоеточиями (:) между сегментами - 
+4AAE:F200:0342:AA00:0135:4680:7901:ABCD
+::1 - loopback for IPv6
+
+
+Каждый сетевой девайс имеет таблицу маршрутизации, к которой он обращается когда хочет отослать сообщение другому компу. По маске он определяет находится ли данный комп в той же сети, и шлет пакет используя ARP-таблицу, по которой смотри соответствие ip адреса с MAC адресом. Если получатель в другой сети, то по своей таблице маршрутизации отправитель смотрит default gateway и отправляет сообщение на неге по MAC-адресу.
+
+А вот как происходит определение маршрута с участием протокола ARP.
+
+Пусть отправитель A и получатель B имеют свои адреса с указанием маски подсети.
+
+    Если адреса находятся в одной подсети, то вызывается протокол ARP и определяется физический адрес получателя, после чего IP-пакет инкапсулируется в кадр канального уровня и отправляется по указанному физическому адресу, соответствующему IP-адресу назначения.
+    Если нет – начинается просмотр таблицы маршрутизации в поисках прямого маршрута.
+    Если маршрут найден, то вызывается протокол ARP и определяется физический адрес соответствующего маршрутизатора, после чего пакет инкапсулируется в кадр канального уровня и отправляется по указанному физическому адресу.
+    В противном случае, вызывается протокол ARP и определяется физический адрес маршрутизатора по умолчанию, после чего пакет инкапсулируется в кадр канального уровня и отправляется по указанному физическому адресу.
+
+/etc/services - файл содержащий номера портов и названия служб их использующих
+
+Порты с 0 по 1023 - standart
+
+Технология APIPA - это присвоение ip адреса самому себе при отсутствии в сети DHCP сервера, для того чтобы компы могли общаться. Устройство выбирает IP-адрес в диапазоне от 169.254.1.0 до 169.254.254.255. Для маски подсети автоматически устанавливается значение 255.255.0.0, а для адреса шлюза — 0.0.0.0.
+
+
+            СЕТИ 2
+
+curl icanhazip.com - посмотреть свой белый ip
+
+
+ip a - вывести ip адрес интерфейсов
+ip r - показать шлюз
+/etc/resolv.conf - адреса DNS серверов
+    # Generated by NetworkManager
+    search vds.as210546.net
+    nameserver 8.8.8.8
+    nameserver 1.1.1.1
+ss -tnlp - какие порты доступны на нашем сервере (-t) TCP (-n) видеть все по номерам а не по днс имени (-l) listen (-p) какая служба
+
+CENTOS
+/etc/sysconfig/network-scripts/ifcfg-eth0 - конфиг сетевого интерфейсах
+или
+/etc/network/interfaces - в ubuntu
+
+Настройки файла /etc/sysconfig/network-scripts/ifcfg-eth0 для получения IP по DHCP:
+    DEVICE=eth0
+    BOOTPROTO=dhcp
+    ONBOOT=yes
+    TYPE=Ethernet
+    USERCTL=yes
+    PEERDNS=yes
+    DHCPV6C=yes
+    DHCPV6C_OPTIONS=-nw
+    PERSISTENT_DHCLIENT=yes
+    RES_OPTIONS="timeout:2 attempts:5"
+
+Можно ip сделать статическим, без получения его по DHCP:
+    DEVICE=eth0
+    BOOTPROTO=none
+    IPADDR=192.168.0.222
+    NETMASK=255.255.255.0
+    GATEWAY=192.168.0.1
+    DNS1=192.168.0.1    
+    ONBOOT=yes
+    TYPE=Ethernet
+    USERCTL=yes
+    PEERDNS=yes
+    DHCPV6C=yes
+    DHCPV6C_OPTIONS=-nw
+    PERSISTENT_DHCLIENT=yes
+    RES_OPTIONS="timeout:2 attempts:5"
+
+systemctl restart network - после изменений надо перезапустить юнит
+
+Для Centos на базе SysV:
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+    DEVICE=eth0
+    BOOTPROTO=static
+    BROADCAST=192.168.0.255
+    IPADDR=192.168.0.101
+    NETMASK=255.255.255.0
+    NETWORK=192.168.0.0
+    ONBOOT=yes
+service NetworkManager restart
+
+iconfig - посмотреть инфу о интерфейсах
+ifconfig -a - покажет инфу даже если у устройства удалено из файла конфигурации
+
+ifconfig eth0 192.168.1.3 - назначить ip адрес
+ifconfig eth0 netmask 255.255.255.0
+ifconfig eth0 broadcast 192.168.1.255
+ifconfig eth0 down/up - вкл/выкл интерфейс
+ifconfig eth0 - конкретно о интерфейсе 
+ЭТИ ИЗМЕНЕНИЯ ВРЕМЕННЫ! ДО ПЕРЕЗАГРУЗКИ!
+
+/etc/hostname - содержит имя хоста, читаеься при загрузке
+hostname - команда чтобы узнать имя
+hostname -s - короткое имя (до первой точки)
+hostname -f - FQDN (полное)
+hostname ИМЯ - сменить имя на нужное
+ДО ПЕРЕЗАГРУЗКИ!
+
+
+hostnamectl - альтернатива команде hostname используемая в системах systemd
+hostnamectl set-hostname ИМЯ - сменить имя хоста
+
+route add -net 192.56.78.0 netmask 255.255.255.0 gw 192.168.1.1 dev eth0 - добавить маршрут
+route add default gw 192.168.1.1 - добавить маршрут по умолчанию
+route -Cn - посмотреть кэш 
+route add host 192.168.1.62 reject - заблочить запросы к конкретному хосту
+route del .... - чтобы удалить маршрут
+
+lshw - посмотреть инфу об устройствах, в тч драйверах
+lshw -c network - показать инфу о определенном классе устройств
+
+lsmod - посмотреть загруженные модули ядра (драйвера)
+Пользователь также может загрузить любой модуль с помощью команды insmod (без зависимостей) или modprobe (с зависимостями) ИМ или получить информацию о нем с помощью команды modinfo. Сами файлы модулей обычно расположены в директории /lib/modules/<версия ядра>. Что касается списка загруженных модулей, то он экспортируется ядром посредством виртуального файла /proc/modules, а утилита lsmod просто форматирует содержимое этого файла и не выполняет каких-либо сложных манипуляций. 
+modprobe ext4 - добавить данный модуль с зависимостями
+modprobe -r ext4 - выгрузить модуль
+
+modprobe -l - список всех доступных молулей
+modinfo snd  - доп инфа о каком-либо модуле
+modeinfo -p nouveau - параметры запуска модуля (Nouveau Project (нуво) - alternative to the proprietary drivers for NVIDIA GPU cards)
+
+Customized parameters for a module can be made persistent by including them in the file /etc/modprobe.conf or in individual files with the extension .conf in the directory /etc/modprobe.d/
+
+Option modeset, for example, allows to control whether display resolution and depth will be set in the kernel space rather than user space. Adding options nouveau modeset=0 to the file /etc/modprobe.d/nouveau.conf will disable the modeset kernel feature.
+
+If a module is causing problems, the file /etc/modprobe.d/blacklist.conf can be used to block the loading of the module. For example, to prevent the automatic loading of the module nouveau, the line blacklist nouveau must be added to the file /etc/modprobe.d/blacklist.conf. This action is required when the proprietary module nvidia is installed and the default module nouveau should be set aside.
+
+https://devicehunt.com - сайт для поиска оборудования из файда /lim/modules/mmodules.alias
+
+dmesg -wH - смотреть онлайн лог ядра, например всавляешь флешку и сморишь увидело ли ее ядро
+
+Для старых убунту файл конфигурации сети хранится:
+/etc/network/interfaces 
+
+Для статического IP:
+
+    iface eth0 inet static 
+    address 192.168.0.1 
+    netmask 255.255.255.0 
+    gateway 192.168.0.254
+    dns-nameservers 192.168.0.254 8.8.8.8
+auto eth0 
+
+Пример конфигурации для динамического IP:
+
+    iface eth0 inet dhcp
+    auto eth0 
+
+
+
+
+
+/etc/sysconfig/network-scripts/ifcfg-<interface-name> - скрипт конфигурации интерфейса для RedHat
+
+Пример файла //etc/sysconfig/network-scripts/ifcfg-eth0 для устройства eth0, где интерфейс настраивается автоматически через DHCP, будет выглядеть следующим образом:
+
+DEVICE="eth0"        # name of the device
+NM_CONTROLLED="no"    # device is not NetworkManager managed
+ONBOOT=yes        # activate interface automatically
+TYPE=Ethernet        # type of interface
+BOOTPROTO=dhcp        # use a DHCP to configure interface
+
+
+В системе, производной от Red Hat, статическая конфигурация файла /etc/sysconfig/network-scripts/ifcfg-eth0 будет выглядеть следующим образом:
+
+DEVICE="eth0"        # name of the device
+NM_CONTROLLED="no"    # device is not NetworkManager managed
+ONBOOT=yes        # activate interface automatically
+TYPE=Ethernet        # type of interface
+⁠⁠ 
+BOOTPROTO=none        # use static configuration 
+IPADDR=192.168.0.3    # set the IP address
+NETMASK=255.255.255.0    # set the subnet mask
+GATEWAY=192.168.0.1    # set the default router
+DNS1=192.168.0.254    # set the primary DNS server
+
+
+
+
+
+
+/etc/network/netplan - тут хранятся файлы, используемые для конфигурации интерфейсов для современных Ubuntu
+
+    # This file describes the network interfaces available on your system
+    # For more information, see netplan(5).
+    network:
+        version: 2
+        renderer: networkd
+        ethernets:
+            ens3:
+                dhcp4: yes
+
+    A sample interfaces file for using static addresses would look like the following:
+
+    network:
+        version: 2
+        renderer: networkd
+        ethernets:
+            eth0:
+                addresses:
+                    - 10.10.10.2/24
+            gateway4: 10.10.10.1
+            nameservers:
+                search: [mydomain, otherdomain]
+                addresses: [10.10.10.1, 1.1.1.1]
+
+            ИЛИ
+
+    network:
+        version: 2
+        rendere: networkd
+        ethernets:
+            ens3: 
+                addresses: [10.10.10.2/24]
+                gateway4: 10.10.10.1
+
+netplan apply - перегрузить интерфейс
+
+
+Network Manager - нету по умолчанию в серверах. Есть в десктопе.
+Первоначально разработанный Red Hat, NetworkManager обеспечивает автоматическое обнаружение и настройку сетевых интерфейсов в системе Linux
+NetworkManager использует network management command line interface (nmcli) сетевыми подключениями и отображения информации об устройствах в сети. 
+
+nmcli - позволяет настроить сеть
+nmcli d - посмотреть все интерфеысы
+nmcli -p con show ens3 - посмотреть подробную инфу по интрфейсу
+nmcli radio wifi on - включить wifi (по дефолту включено)
+wifi list - отобразить все сети wifi
+nmcli d wifi connect Barboss password 123456 - подключится
+
+systemd-networkd - демон отвечающий за настройку сети в systemd
+
+/usr/lib/systemd/network/
+/run/systemd/network
+/etc/systemd/network - это всё файлы конфига сети
+
+systemd-resolved - упарвляет получением имен (DNS?)
+Он работает в 4х режимах:
+    
+    Using a systemd DNS stub file located at /run/systemd/resolve/stub-resolv.conf.
+
+    Preserving the legacy resolv.conf file we learned about earlier in this chapter.
+
+    Automatic configuration with a network manager.
+
+    Manual, or local DNS stub mode where alternate DNS servers are provided in the resolved.conf file.
+
+resolvectl query netdevgroup.com - найти соответсвие имени и адреса
+
+
+ip link set ens3 down -выключить интерфейс
+
+
+
+
+
+
+
+/etc/hostname - тут хранится имя нашего хоста
+/etc/resolv.conf - содержит записи кто является dns сервером (настраивается автоматически скриптом инициализации)
+/etc/hosts - содеожит прямое сопоставление ip - имя_сайта или хоста
+Вообще функциональность этого файла была передана DNS
+
+/etc/nsswitch.conf - тут прописон порядок поиска имени хоста (например сначала в файле, потом в LDAP и тдт)
+
+
+ip link set ens33 down/up - выкл или вкл интерфейс
+
+ip route show
+или
+ip ro sh
+    default via 192.168.0.1 dev ens33 proto static metric 100
+    192.168.0.0/24 dev ens33 proto kernel scope link src 192.168.0.163 metric 100
+
+traceroute 1.1.1.1
+
+nslookup ya.ru
+    Server:         192.168.0.1  - адрес днс сервера
+    Address:        192.168.0.1#53
+
+    Non-authoritative answer:
+    Name:   ya.ru
+    Address: 77.88.55.242
+    Name:   ya.ru
+    Address: 5.255.255.242
+    Name:   ya.ru
+    Address: 2a02:6b8::2:242
+
+nmtui - команда чтоб запустить псевдографический интерфейс для настройки СЕТИ
+
+
+service network restart / service networking restart - перезапустить всю службу
+или
+ifdown eth0
+ifup eth0
+
+
+ubuntu
+cd /etc/netplan/ - в этой папке yaml файл со всей инфой
+systemctl restart systemd-networkd.service
+
+
+
+/etc/nsswitch.conf - в этом файле инфа в каком порядке искать соответствие имя-ip фдресс
+    hosts:          files dns = снаяала в файле hosts потом в DNS
+/etc/hosts
+    Файл, содержащий таблицу имен хостов для IP-адресов.
+/etc/resolv.conf
+    Файл, содержащий IP-адреса серверов имен (DNS), к которому система должна обращаться при любых попытках разрешить имена в IP-адреса. 
+ifconfig
+ip addr   - показывают инфу о сетевых интерфейсах
+route - показывает маршруты
+ip route - тоже
+ip route change default via 192.168.1.1 dev eth0 - сменить default gateway
+ping -c 5 ip_address - пинг 5шт
+ping -l - выбрать интерфейс с которого пинговать
+ping -a - аудио сопровождение
+ping -i - установить интервал между пингами
+
+
+netstat -r - маршруты
+netstat -rn - показать таблицу без обращения к DNS для резолвинга имен
+netstat -i - инфа о сетевом трафике
+netstat -tln - все открытые порты tcp
+netstat -s - статистика
+netstat -l - все listen порты
+netstat -i - инфа о интерфейсах
+netstat -ic - показывает с интерфалом в 1 сек
+
+ss
+ss -l - только listen порты
+ss -s - отобразить сокеты
+
+ip - замена команде ifconfig
+ip address - показать интерфейсы
+ip -s address - показать статистику
+
+traceroute - трассировака по ICMP
+tracepath - трассировка по ICMP и UDP (если запрещен ICMP траффик)
+ethtool -i ens3 - для получения инфы о драйверах сетевой карты 
+ip neighbor show - показать ARP таблицу
+ip link - типа ifconfig и ip addr
+ip link show ens3 - показать инфу по ens3
+
+netcat -z -v 192.168.1.1 20-25 - просканировать порты с 20-25
+
+sudo netcat -l 23 - слушать 23 порт на первом компе
+netcat 18.221.36.31 23 - подключится к первому компу со второго
+Можно печатать 
+
+lspci - для вывода информации о PCI-шинах и подключенных к ним устройствах. Она поддерживает все разновидности PCI-шин: классическую шину PCI (Peripheral Component Interconnect), ее серверный вариант PCI-X и ее современный вариант PCIe (PCI-Express). Обычно к данной шине подключаются такие устройства, как графические, звуковые и сетевые карты, Wi-Fi и Bluetooth-адаптеры, SSD-накопители, а также множество других устройств
+Позволяет понять определяется ли девайс, если нетопределяется значит нет драйверов или не работает.
+lsusb - если девайс подключен по USB
+lsmod - см выше
+
+iwconfig - проги для отображения инфы о wifi соединениях
+iwlist 
+
+dhclient enp4s0 -v - запросить ip адрес на интерфейс,             как в Виндовс команда ipconfig /renew
+ip route get to 169.254.0.0/16 from 192.168.141.187
+
+ifdown имя_интерфейса - положить и поднять интерфейс
+ifup имя_интерфейса
+ip link set имя_интерфейса up/down - тоже но через команду ip
+ifdown eth1; ifup eth1 - чтобы отключить и включить интерфейс
+
+/etc/init.d/network restart - перезапуск службы на RedHat
+
+
+dig google.com - запрос к гугл ком чтоб узнать работает ли днс
+host -a it-primyshev.site - узнать тнфу о хостеat
+dig example.com @192.168.2.5 - запрос инфы от конкретного DNS
+ 
+host -t ns netdevgroup.com - узнать ДНС серверы
+dig +trace example.com - трассировка всех ДНС серверов на пути 
+
+last и lastb - команды для просмотра логов в дыоичном виде
+dpkg -L packagename - получить список расположения файлов
+rpm -ql packagename - тоже для redhat
+
+
+
+
+root@291417:~# - Если в начале строки символ #, это значит что мы работаем из под root
+yura@291417:~$ - значок $ значит из под обычного пользователя
+type команда - показывает что это: встроенная системная команда , алиас или бинарный файл
+whereis команда - показывают абсолютный путь до команды исполнителя и до страницы Man
+which НК - путь только до команды
+
+file название_файла - показыает тип файла, сравнивая его с так называемым magic file
+
+stat название_файла - выводит инфу о файле в тч временные метки
+locate нф - ищет все файлы которые содержат название указаного файла. Ищет в БД, предварительно созданной. Если файл создан недавно, то его не найдет. Надо обновить БД. 
+locate -i нф - ищет в case insensetive manner
+updatedb - обновляет БЛ команды locate
+find где_искать -iname НФ - ищет файл по точному имени без учета регистра
+less - листать кнопками w, z
+     - / что искать 
+     - n, N - листать среди найденного
+cat
+cat файл1 файл2 - выводит обьединенные файлы
+cat -n НФ - нумерует все строки файла
+
+split
+split НФ - делит файл на нескольео файлов по 1000 строк каждый. Названия дает с префиксом - x. (file.aa, file.ab, file.ac)
+split НФ префикс - любой префикс вместо x
+split -d НФ file. - вместо aa, ab и тд называет файлы числами - 01, 02 и тд (file.01 file.02 в данном примере, так как префикс - file.)
+
+nl
+nl НФ - нумерует строки (не пустые)
+nl -ba НФ - нумерует все строки
+
+head
+по умолчанию выводит ппрвые 10 строк
+head -5 или head -n 5 или head -n5 - выводят 5 строк
+head -n -5 выводит все строки кропе 5ти последних 
+
+tail
+показывает 10 строк в конце файла 
+tail -n +20 - показывает все строки кроме первых 19ти (начинает показывать с 20й)
+tail -f - для просмотра логов в режиме онлайн
+
+paste
+paste НФ1 НФ2 - обьединяет файлы построчно разделяя TABом
+paste -d , НФ1 НФ2 - разделяет запятой
+
+join
+обьединяет 2 файла, но обязательно имеющих общие поля
+
+cut
+вырезает инфу из файла 
+head -1 etc/passwd | cut -d: -f1,5,6,7 - сначала с помощью команды head отделчем только первую строку из файла, перенаправлчем ее на ввод клманды cut и опуией -d усианавливаем сепаратор для ориентира, а опуией -f кстанавлмваем какие столбики вырезать
+если надо вырезать столбики(по кол-ву символов), то используем:
+| cut -c 1-15
+
+sort
+сортирует по ASCII
+sort -u убирает дубликаты
+sort -t: -n -k3 mypasswd - разделитель :, сортировка по числовому значению, 3я колонка (по умолчанию колонки определяются разделителем, он по умолчанию пробел или ТАБ, но если он другой, то нужно указать опцию -t)
+
+
+
+
+uniq
+uniq -u - отоьразить только уникальные строки
+uniq -c - показывет количество дубликатов
+cut -f7 -d: /etc/passwd | sort | uniq -c
+    3 /bin/bash
+    1 /bin/sync                                                    
+    23 /usr/sbin/nologin
+
+od - команда показывает данные файла в разных форматах
+
+tr - меняет одни симврлы на другие (читает данные из STDIN)
+cat file1 | tr '1-3' 'a-c' - изменит цифры 1,2,3 в файле1 на символы a,b,c
+Так же может убирать повторы с помощью аргумента -s
+sysadmin@localhost:~/Documents$ echo 'aaaaaappleeeeee' | tr -s 'ae'
+apple
+Может удалить символы:
+sysadmin@localhost:~/Documents$ cat alpha-first.txt | tr -d 'AEIOUaeiou'
+ s fr nml  
+
+sed - stream editor
+меняет данные на ленту по шаблону s/PATTERN/REPLACEMENT/
+sysadmin@localhost:~/Documents$ sed 's/Animal/Apple/' alpha-first.txt
+A is for Apple
+B is for Bear
+C is for Cat
+/PATTERN/d - удалить паттерн
+
+s/PATTERN/REPLACEMENT/g - чтобы заменить все найденные паттерны (без опции g, то есть по умолчанию, заменяет только первый)
+
+
+Редактор VI ( vi )
+Command mode
+insert mode
+Ex/last-line word
+
+Motion 	Result
+h 	Left one character
+j 	Down one line
+k 	Up one line
+l 	Right one character
+w 	One word forward
+b 	One word back
+^ 	Beginning of the line
+$ 	End of the line
+
+цифра и G - переместится на данную строчку
+1G или gg - на первую строчку
+5G - на 5ю строчку
+G - на последнюю строчку
+
+Standard 	Vi 	Meaning
+cut 	d 	delete
+copy 	y 	yank (places content into the buffer without deleting it)
+paste 	P | p 	put
+
+vimtutor - команда для обучения
+
+/ - искать после курсора
+? - искать перед курсором
+Action 	Result
+/term 	Search forwards for term
+?term 	Search backward for term
+
+
+Input 	Purpose
+a 	Enter insert mode right after the cursor
+A 	Enter insert mode at the end of the line
+i 	Enter insert mode right before the cursor
+I 	Enter insert mode at the beginning of the line
+o 	Enter insert mode on a blank line after the cursor
+O 	Enter insert mode on a blank line before the cursor
+
+/usr/bin/editor - запустит редактор по умолчанию
+update-alternatives --config editor - изменить редактор по умолчанию в Убунту
+или отредактровать в домашней директории .bashrc, добавив EDITOR=vi и VISUAL=vi
+
+
+
+xargs
+Команла принимает поток вывода другой команды на свой поток ввода и использкет его как аргумент другой команлы 
+echo 'НФ1 НФ2' | xargs touch
+Создаст НФ1 и НФ2
+
+
+
+
+
+
+
+Как запускается команда. Сначала система ищет встроена ли она в оболочку (cd), если не находит, то ищет в алиасах (ls), если и там нет, то по порядку ищет в окружении (переменная $PATH, она хранится в памяти)
+    yura@291417:~$ type cd
+    cd is a shell builtin
+    yura@291417:~$ type ls
+    ls is aliased to `ls --color=auto'
+    yura@291417:~$ type mkdir
+    mkdir is /usr/bin/mkdir
+    yura@291417:~$ echo $PATH
+    /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    Порядок директорий в $PATH задан в файле home/пользователь/.profile
+
+    alias ll="ls -lai --color=auto"
+    alias grep="grep --color=always"
+
+
+    Хэширование команд
+    yura@291417:~$ hash
+hits    command
+   2    /usr/bin/whereis
+   2    /usr/bin/nano
+   1    /usr/bin/rm
+   2    /usr/bin/ls
+    Баш один раз смотрит где файл и потом им пользуется
+    hash -r - для очистки хэша 
+
+
+
+cd директория - переместиться в директорию
+    cd .. - вернуться в предыдущую директорию (выше по дереву)
+    cd ~ - перейти в домашний каталог (можно просто cd без всего)
+    cd - - перейти в директортю в которой были до этого и вышли
+    ls -la - отобразить содержимое директории с правами (-l) и скрытыми файлами (-a) 
+    ls -li - отобразить номера inode (файловый дескриптор=inode)
+    ls -l директория - укажет инфу содержимого директории
+    ls -ld директория - укажет инфу именно о директории как файле 
+    ls -lh Нф - укажет размер в human-read формате
+    ls -R каталог - показыает все файлы в папках и вложеных папках
+    ls -r - не по алфавиту (не по порядку номеров), короче инвертирует любой вывод
+    ls -ls - по размеру
+    ls -t - по времени 
+    ls -t --full-time - по времени более точно
+    ls -lrt - обратная сортировка по времени опцией -r, не путать с -R
+    ls -- - говорит что команда используется без опций или опции закончены
+    ls -S - по размеру!! (не ls -s)
+В BSD опции прописываются без дефиса (осиалось пара команд которые поддерживают запись опций без дефиса - ps и tar)
+
+
+
+alias ll="ls --color=auto -a -i -l" - алиас для ls -lai
+cat файл - отобразить содержимое файла
+touch файл - создать файл (по факту сменить время)
+less файл - просмотреть файл с возможностью листать
+mkdir директория - создать директорию
+mkdir -p dir1/dir2/dir3 - создать одну в другой и в той еще одну !!!
+rmdir - удалить пустую директорию
+rm -r директория - удалить даже не пустую директорию
+rm -R директория - то же
+rm -i файл - запросит подтверждение перед удалением
+УДАЛЕНИЕ определяется правом на каталог в котором находится файл, а не правами на файл. Если у вас есть права на запись на каталог, то вы можете удалить все файлы, которые в нем (удалить инфу об айнодах если точнее)
+tput reset ^M - чтобы закрыть слsучайно открытый бинарник в терминале.
+cp -r (-R) какую_директорию куда - скорировать диреторию со всем содержимым -(не важно какую) Без опции -r при копировании директории с содержимым выдаст ошибку, а вот mv такую директорию можно и так.
+
+yura@291417:~$ who - кто сейчас нп сераеое, с каеого ip
+yura     pts/0        2023-05-01 01:50 (88.241.51.147)
+cp -a если копирует рут, то влалельцем файла остается пользователь, создавший файл и сохраняются все временные метки, а если не рут, то влалельцем становится скопировавший и сохраняется временная метка как у файла источника. Использование этой опции подразумевает рекурсивное выполенние команды, поэтому cp -a можно использовать для копирования директории с содержимым. (maintain timestamps)
+сp -R
+cp -r - обе копируют диреторию с содержимым. Без опции -r при копировании директории с содержимым выдаст ошибку, а вот mv такую директорию можно и так.
+
+
+
+uname -a - инфа о системе
+uname -s - kernel name
+uname -r - kernel release
+uname -v- kernel version
+
+apt dist-upgrade - обновляет системные файлы, докачивая или удаляя, если без dist, то обновятся      только установленные пакеты
+apt remove название_программы - удаляет программу без конфигов
+apt purge название_программы - удаляет и программу и конфиги
+apt search ключевое_слово - ищет программу в репозиториях по слову
+apt autoremove - удаляет зависимости уже удаленных программ
+apt autoclean - удалить старые архиыные файлы
+apt install -f - если сломались зависимости например при обновлении
+apt edit-sources - редактировать файл sources.list
+neofetch - утилита информации о системе красивая
+curl -o /etc/yum.repos.d/konimex-neofetch-epel-7.repo https://copr.fedorainfracloud.org/coprs/konimex/neofetch/repo/epel-7/konimex-neofetch-epel-7.repo
+
+systemctl status процесс - показать статус процесса
+    systemctl stop/start процесс- запустить/остановить процесс
+systemctl enable/disable программа - вкл или выкл из автозагрузки
+systemctl reload программа - перезагрущить программу 
+systemctl list-units --type=service - показать сервисы
+systemctl list-timers --all - показать все таймеры
+systemctl enable name.timer
+systemctl disable name.timer
+systemctl list-unit-files - показать список всех юнитов и их состояние
+systemctl isolate rescue.target - запустить инит 1
+
+
+apropos слово - ищет описание по ключевому слову 
+    apropos -s 1 passwd - найти утилиту смены пароля
+    Обратите внимание на число в скобках после имени команды. Это глава или раздел справочного руководства man, в которых может встречаться описание утилиты. Разделов много, приведем самые полезные: 
+●	1 — команды пользователя, 
+●	2 — системные вызовы ядра (используется программистами), 
+●	5 — форматы файлов, 
+●	8 — команды администрирования.
+whatis команда - выводит инфу о команде
+man команда - справка о команде
+    /слово - поиск конкретного слова в справке (следующее - n, предыдущее - N)
+find ./ -name "название файла" - иcкать в корневой директоррии файл case sensitive (-iname для case insensitive)
+grep -rin --include="*.py" "фраза" . - ищем фразу "фраза" рекурсивно (r) внутри всех файлов .py в текущей директории без учета регистра (i) и с указанием номера строки (n)
+ripgrep (rg) -i "фраза" - по умолчанию раьотает в рекурсивном режиме
+
+
+                        FIND 
+
+https://habr.com/ru/companies/alexhost/articles/525394/
+
+find directory-to-search criteria action
+find . -iname "s.txt" - искать файл в текущей директории без учета регистра
+find /home -name "*.jpg" 2>/dev/null - перенаправлять сообщения об ошибках
+find /home -empty - искать пустые файлы
+
+Критерий -type позволяет искать файлы по типу, которые бывают следующих видов:
+
+    f – простые файлы;
+    d – каталоги;
+    l – символические ссылки;
+    b – блочные устройства (dev);
+    c – символьные устройства (dev);
+    p – именованные каналы;
+    s – сокеты;
+
+Example 	                Meaning
+-iname LOSTFILE 	Case insensitive search by name.
+-mtime -3 	        Files modified less than three days ago.
+-mmin -10 	        Files modified less than ten minutes ago.
+-size +1M 	        Files larger than one megabyte.
+-user joe 	        Files owned by the user joe.
+-nouser 	        Files not owned by any user.
+-empty          	Files that are empty.
+-type d 	        Files that are directory files.
+-maxdepth 1     	Do not use recursion to enter subdirectories; only search the primary directory.
+
+find . -user sysadmin -o -name Downloads - найти файлы которые принадлежат пользователю Сисадмин ИЛИ называются Довнлоад
+find . -ls -iname нф - отображает не только название но и доп инфу
+find -name 'Documents' -exec ls -l {} \; - чтобы сделать вывод точно как у команды ls -L. В предыдущем примере команда find должна выполнить команду ls -l для каждого найденного файла. Пара фигурных скобок {} является заполнителем для имени каждого найденного файла; Обратите внимание, что между ними нет пробела. \; — это экранированная точка с запятой, которая добавляется между каждой командой, чтобы несколько команд могли выполняться последовательно. (не спрашивает юзера)
+или так
+find . -mmin -2 -ok rm {} \; - подтвердить rm для каждого найденного файла? (спрашивает юзера). Для того, чтобы команда find подтвердила выполнение команды для каждого найденного файла и не спрашивала, используйте опцию действия -exec вместо --ok
+
+
+
+/etc/passwd - здесь хранится инфа о пользователях (тут можно сменить домашний каталог)
+/etc/group - инфа о группах
+/etc/shadow - инфа о паролях
+
+
+    Пользователи
+
+
+id имя_пользоватля - инфа о uid, gid
+groups - в какие группы входишь
+whoami - под каким пользоватеоем раблтаю
+newgrp НГ- сменить группу под которой раьотаешь в данныц момент
+chgrp НГ НФ - сменить группу у сцществ файла
+
+
+аутентификация - проверка существования пользователя и пароля
+авторизация - проверка ваших прав на какие-либо действия
+adduser имя - добавть юзера
+adduser существующий_юзер группа - добавить юзера в группу
+sha256 - secure hash algoritm это хэш функция
+
+             Права доступа (PERMISSIONS)
+
+Читать (r)
+
+Первый символ каждой группы представляет разрешение на read. Есть символ r, если у группы есть разрешение на чтение, --, если у группы его нет.
+
+    В file это позволяет процессам считывать содержимое файла, что означает, что содержимое может быть просмотрено и скопировано.
+    В каталоге могут быть перечислены имена файлов в directory, но другие сведения недоступны.
+
+Писать (w)
+
+Второй символ каждой группы представляет разрешение на write. Существует символ w, если у группы есть разрешение на запись, или символ --, если у группы его нет.
+
+    Процесс может записывать в файл, поэтому изменения file файле могут быть сохранены. Обратите внимание, что разрешение w на самом деле требует r на файл для корректной работы.
+    В directory файлы могут быть добавлены в каталог или удалены из него. Обратите внимание, что для корректной работы w требуется x на каталог.
+
+Исполнять (x)
+
+Третий символ каждой группы представляет разрешение execute. Существует символ x, если у группы есть разрешение на выполнение, или символ --, если у группы его нет.
+
+    file может быть выполнен или запущен как процесс.
+    В каталоге пользователь может использовать команду cd, чтобы «войти» в каталог и использовать каталог в качестве пути для доступа к файлам и, возможно, к подкаталогам в этом directory.
+
+
+Разрешение 		        Влияние файла 	            Влияние на каталог
+читать 	r 	    Позволяет процессам считывать содержимое файла, что означает, что содержимое может быть просмотрено и скопировано. 	    Имена файлов в каталоге могут быть перечислены, но другие сведения недоступны.
+писать 	w 	    Позволяет процессу записывать содержимое, чтобы изменения в файле можно было сохранить. Обратите внимание, что разрешение w на самом деле требует разрешения r на файл для правильной работы. 	    Файлы можно добавлять в каталог или удалять из него. Обратите внимание, что для корректной работы w требуется x на каталог.
+исполнять 	x 	    Позволяет выполнить файл или запустить его как процесс. 	    Позволяет пользователю использовать команду cd для "входа" в каталог и использовать каталог в пути для доступа к файлам и, возможно, к подкаталогам в этом каталоге.
+
+SUID setuid - u+s (вместо x), 4000 - позволчет запускать файл, как будто его запустил собственник (смена пароля через passwd)
+SGID setgid для файла - g+s , 2000 - позволяет запускать файл от имени группы владельца
+SGID setgid для директории - g+s, 2000 - все файлы создаваемые в этой папке будут принадлежать владельцу директории. 
+sticky bit o+t, 1000 - на папке, тогла файлы в этой папке может удалить только влпделец папки
+umask - узнать маску разрешений (обратная маска, 777 для папок, 666 для файлов)
+umask -S
+    777 - umask = Permission
+    777 - 026 = 751 (rwxr-x--x)
+
+                    ACL 
+
+ll file1
+    -rw-r--r-- 1 root root 4 Feb 19 02:31 file1
+
+getfacl file1     - показать все права ACL
+    # file: file1
+    # owner: root
+    # group: root
+    user::rw-
+    group::r--
+    other::r--
+
+setfacl -m u:yura:rwx file1 - модифицировать (-m) юзеру (u) yura права rwx на file1
+
+ll file1
+    -rw-rwxr--+ 1 root root 4 Feb 19 02:31 file1* - знак + указывает на наличие ACL прав
+
+getfacl file1
+    # file: file1
+    # owner: root
+    # group: root
+    user::rw-
+    user:yura:rwx - вот появились права для yura
+    group::r--
+    mask::rwx
+    other::r--
+
+setfacl -m g:children:r myfile.odt - назначает группе children права на чтение. 
+setfacl -m m:rx myfile.odt - устанавливает фактические максимальные права на чтение и выполнение.
+setfacl -m o: myfile.odt - убирает все права (отсутствие прав)
+
+setfacl -b file1 - удалить все доп права ACL
+
+
+
+find / -type f -perm -4000 2>/dev/null | less - найти все файлы с SUID 
+find / -type f -perm -2000 2>/dev/null | less - тоже но с SGID
+find / -perm -4000 -o -perm -2000 -ls 2>/dev/null | less - детальный вывод с опциями -o(или) и -ls
+
+find / -perm -4000 -o -perm -2000 -ls 2>/dev/null > ~/special.perm - направить вывод в спец файл в своей директории, чтобы в дальнейшем сравнивать его с тем что есть сейчас
+find / -perm -4000 -o -perm -2000 -ls 2>/dev/null > ~/current.perm; diff ~/special.perm ~/current.perm - сравнение
+
+find / -user root -perm -u+x - найти все файлы имеющие SUID рута
+
+
+visudo - спец редактор для редактирования etc/sudoers, который проверяет правильность синтаксиса в файле
+visudo - просто введя висудо, попадаем в режим редактирования /etc/sudoers
+    # User privilege specification                                                  
+    root    ALL=(ALL:ALL) ALL
+    первое ALL - на каком компе (например можно указать хостнейм)
+    второе ALL - от какого пользователя
+    третье ALL - группа (можно указать только пользователя (user) или только группу (:groupe))
+    четвертое ALL - команда, чтобы запретить надо использовать !/bin/ls
+    
+    test    ALL=(ALL:ALL) /etc/init.d/ssh - так можно добавить пользователя, чтобы он мог выполнять определенную команду импользуя sudo
+    yura ANY=NOPASSWD: /bin/kill, /bin/id, PASSWD: /sbin/fdisk
+
+sudo -K - сбрасывает пароль введенный ранее, попросит снова при вводе команды sudo
+
+vipw - редактирование /etc/passwd
+vigr - редактирование /etc/group
+vipw -s - ред /etc/shadow
+vigr -s - ред /etc/gshadow
+
+https://wiki.archlinux.org/title/Sudo_(%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
+
+https://www.8host.com/blog/redaktirovanie-fajla-sudoers-v-ubuntu-i-centos/
+
+
+
+su - - Start the new user’s login shell and execute the initialization (.rc) files providing an environment (i.e., variables, aliases, home directory, etc.) similar to what the user would expect had the user logged in directly.
+su -l - тоже
+su - root - тоже
+
+su joe - переключится на пользователя, но не считывать инициализациооные файлы
+su - root -c "cat /etc/passwd" - опция -с выполняет команду
+
+passwd testuser1 - сменить пароль юзеру
+chage -d 0 testuser1 - принудительно сбросить срок действия пароля в 0
+    или так
+sudo passwd -e testuser1 - так же сбросит срок действия и при следующем входе в систему ему буднт предложено сменить пароль
+
+
+passwd -l ИМЯ- заблочить юзера
+    или так
+usermod -L testuser1
+
+passwd -u ИМЯ - разлочить юзера
+    или так
+usermod -U testuser1
+
+/etc/login.defs
+/etc/default/useradd - оба эти файла содержат инфу о сроках действия пароля для новых юзеров
+
+
+Читать:
+    В file это позволяет процессам считывать содержимое файла, что означает, что содержимое может быть просмотрено и скопировано.
+
+    В каталоге могут быть перечислены имена файлов в directory, но другие сведения недоступны.
+
+    sysadmin@localhost:~$ ls -l test/                                               
+    ls: cannot access 'test/file': Permission denied                                
+    total 0                                                                         
+    -????????? ? ? ? ?            ? file   
+
+Писать:
+    file может быть записан процессом, поэтому изменения в файле могут быть сохранены. Обратите внимание, что для корректной работы с большинством приложений разрешение на write обычно требует разрешения на read файла.
+
+    В directory файлы могут быть добавлены в каталог или удалены из него. Обратите внимание, что для корректной работы разрешения на write требуется разрешение execute каталога.
+
+Исполнять:
+    file может быть выполнен или запущен как процесс.
+
+    В каталоге пользователь может использовать команду cd, чтобы «войти» в каталог и использовать каталог в качестве пути для доступа к файлам и, возможно, подкаталогам в этом directory.
+
+suid бит нужен чтоюы мы могли внести изменения в файл, к которому у нас нет доступа. Например изменить свой пароль (если вы не рут) в файле /etc/shadow
+-rwsr-xr-x 1 root root 63736 Jul 27  2018 /usr/bin/passwd - этот бинарный файл является командой для смены пароля пользователя, который хранится в /etc/shadow
+Если будет запущен этот файл /usr/bin/passwd, то владелец процесса будет равен владельцу этого файла. Те файл запускается от имени своего владельца, а не от имени того кто его запустил. Это благодаря suid биту.
+Установить SUID можно с помощью команды:
+chmod u+s myfile
+chown - смена владельца файла 
+
+chmod u/g/o-/+r/w/x файл - изменить права user group or other + or - read write executable, например 
+    chmod o+x файл, если не указать никого то права изменятся у пользователя и у группы
+    chmod -R 750 каталог - задать данные права на все все файлы в каталоге и каталог
+    Надичие t-бита у каталога означает, что только владелец может удалять и переименовывать файлы (+t)
+Права доступа для директорий
+    Атрибут x даёт доступ к inode и на чтение, и на запись. Если атрибут x снят, файл невозможно ни изменить, ни прочитать из-за невозможности получить доступ к атрибутам.
+Если у директории нет права на чтение, вы не сможете посмотреть ее оглавление. Но если знаете имя файла, сможете его посмотреть, явным образом указав его по имени.
+
+newgrp group_name - сменить группу по умолчанию (чтобы при создании файла владельцем был указана другая группа)
+Эта команда меняет оболочку и чтобы переключится на дефолтную группу надо нажать exit
+usermod -g groupname username - постоянное изменении основной группы
+chgrp group_name file1.txt - изменение группы сущ файла
+Только владелец файла и пользователь root могут изменить владельца группы файлов.
+
+chgrp -R development test_dir - изменить владельца группы всех вложенных файлов и папок
+
+chown user /path/to/file - изменить владельца файла
+может быть выполнена только рутом 
+
+chown user:group /path/to/file - изменить и польз и группу
+chown user.group /path/to/file
+
+chown :group /path/to/file - изменить только группу, если вы владелец файла или рут
+chown .group /path/to/file
+
+chown -R user2 dir - сменить владельца во всех файлах в директории и во всех поддиректориях (-R)
+
+разрешение -x для директории разрешает пользователю команду cd, если у каталога нет разрешения -x, 
+то в папку не войти, нельзя посмотреть что внутри, и нельзя производить никакие действия с фыайлами внутри. Если попытаться открыть файл текстовым редвктором, то он откроется но ничего не покажет.
+
+Перевод 8 – 2
+Перенос восьмеричного числа в двоичный формат – это самый простой способ перевода чисел. Каждой восьмеричной цифре ставится в соответствие группа двоичных цифр в количестве трех. Эта группа называется триадой.
+И, наоборот, при переводе двоичного числа в восьмеричный формат производится замена трех двоичных цифр одной восьмеричной. Разбивка целого двоичного числа на трехзначные звенья производится справа налево. Когда крайняя триада получается неполной, то ее дополняют нулями.
+
+Подробнее: https://obrazovaka.ru/informatika/vosmerichnaya-sistema-schisleniya-kak-perevodit.html
+
+vipw - команда для редактирования важных системных файлов
+
+
+ulimit -a - посмотреть свои ограничения
+    core file size          (blocks, -c) 0                                          
+    data seg size           (kbytes, -d) unlimited                                  
+    scheduling priority             (-e) 0                                          
+    file size               (blocks, -f) unlimited                                  
+    pending signals                 (-i) 515165                                     
+    max locked memory       (kbytes, -l) 64                                         
+    max memory size         (kbytes, -m) unlimited                                  
+    open files                      (-n) 1024                                       
+    pipe size            (512 bytes, -p) 8                                          
+    POSIX message queues     (bytes, -q) 819200                                     
+    real-time priority              (-r) 0                                          
+    stack size              (kbytes, -s) 8192                                       
+    cpu time               (seconds, -t) unlimited                                  
+    max user processes              (-u) 1048576                                  
+    virtual memory          (kbytes, -v) unlimited                                  
+    file locks                      (-x) unlimited
+
+/etc/security/limits.conf - файл содержащий эти ограничения
+/etc/security/limits.d - сюда можно поместить файл *.conf
+<domain> <type> <item> <value>
+
+who - кто находится в системе
+
+last - показывает историю входа в ситему из файла /var/log/wtmp
+ 
+chsh - сменить оболочку
+
+
+> файл- стандартный поток вывода в файл (работает справа налево)
+2> файл - стандартный поток ошибок файл
+>> файл - перезаписать файл
+&> - записать в файл оба потока
+
+
+ll asdf 1> file 2>&1 - записать в file и STDOUT и STDERR (& - амперсанд это указатель) Сначала поток 1 будет перенаправлен в file, а затем поток 2 будет перенаправлен туда же куда и поток 1
+
+то же самое
+sysadmin@localhost:~$ ls > /tmp/ls.all 2>&1
+sysadmin@localhost:~$ ls &> /tmp/ls.all  
+
+ll asdf 1> STDOUT 2> STDERR - записать в один файл поток ввода, а в другой поток ошибок
+
+ll asdf 2>&1 | grep слово_для_поиска - второй поток мы перенаправляем в первый, а первый в grep. Поэтому grep найдет и ошибки и норм информацию, смотря от запроса
+
+ll asdf 2>&1 1> /dev/null | grep слово_для_поиска - перенаправляем в grep только стандартный поток ошибок
+
+echo $? - показывает код выполнения последней команды (0 или не 0)
+
+ls > /tmp/ls.all 2>&1
+ls &> /tmp/ls.all       - команды равнозначны
+
+
+
+Данные хранятся на диске. Информация о том где именно на диске хранятся эти данные + права + размер + время создания файла (записи информации на диск  и т.д. хранится в айноде. И эта айнода имеет назавание для нашего удобства - имя файла. Таким образом файл это просто именованная область данных на диске. Ядро обращается к информации по номеру айноды.
+Вся информация о файлах в каталоге (директории) хранится в этом же каталоге. В каталоге как в библиотеке. Таким образом каталог это просто файл с информацией. С одной стороны написано имя, а с другой номер айноды. В линукс всё есть файл.
+
+Чтобы разобраться в hard links, полезно немного разобраться в том, как файловая система отслеживает файлы. Для каждого созданного файла существует блок данных в файловой системе, в котором хранятся metadata файла. Метаданные включают в себя сведения о файле, такие как разрешения, владельцы и метки времени. Метаданные не включают имя файла или его содержимое, но включают почти всю остальную информацию о файле.
+
+Эти метаданные называются inode table файла. Таблица inode также содержит указатели на другие блоки файловой системы, называемые data blocks, в которых хранятся данные.
+
+
+hard link - это просто имя файла в данном каталоге
+ln test test_hl - создание хард линка для файла тест (ln что линкую куда линкую)
+ln -s TARGET LINK_NAME
+В каталоге в столбике отображается количество хард-линков на файл:
+    root@291417:~# ls -li
+    total 32
+    12605 -rw-r--r-- 1 root root     1 Aug 19  2019 lsblk_raw
+    3362 -rw-r--r-- 1 root root 18563 Apr 23 19:31 test-docker.sh
+    5258 -rw-r--r-- 2 root root   523 Apr 24 23:16 test_hl  - вот хард линк, айнода 5258 и как у оригинала
+    5258 -rw-r--r-- 2 root root   523 Apr 24 23:16 test.txt
+
+stat имя_файла - отображает инфу из айноды
+
+ln -s test.txt test_sl - создать софт линк
+    root@291417:~# ls -li
+    total 36
+    5264 -rw-r--r-- 1 root root   523 Apr 24 23:50 copy_text.txt
+    12605 -rw-r--r-- 1 root root     1 Aug 19  2019 lsblk_raw
+    3362 -rw-r--r-- 1 root root 18563 Apr 23 19:31 test-docker.sh
+    5258 -rw-r--r-- 2 root root   523 Apr 24 23:16 test_hl
+    10556 lrwxrwxrwx 1 root root     8 Apr 24 23:57 test_sl -> test.txt - вот это софт линк
+    5258 -rw-r--r-- 2 root root   523 Apr 24 23:16 test.txt
+
+НАЙТИ ВСЕ INODE
+
+sysadmin@localhost:~$ ls -i file.original 
+278772 file.original
+sysadmin@localhost:~$ find / -inum 278772 2> /dev/null - 
+/home/sysadmin/file.hard.1
+/home/sysadmin/file.original
+
+
+ps aux - отображает процессы пользовательского пространства и потоки ядра (отображаются в квадратных скобках)
+    ps -T -p 4242 - xтобы посмотреть потоки, используйте ключ -T, если хотите посмотреть потоки конкретного процесса, используйте ключ -p
+top и htop - утилиты мониторинга процессов
+
+kill -15 PID_процесса
+kill -9 PID_процесса - завершить процесс. 
+    ●	9 (SIGKILL) — безусловное завершение программы. Сигнал не может быть перехвачен программой, потому позволяет её остановить в любом случае (но не позволит снять процесс-зомби). 
+    15 (SIGTERM) — вежливая просьба программе завершить работу. Программа может сохранить данные и т.д.
+nice -n 10 название процусса - понизить приоритет процесса
+ps aux - отобразить все процессы с колонкой юзеры
+pstree - дерево процессов
+
+
+               Ахивирование
+
+gzip и gunzip (Lempel-Ziv data compression algorithm) (gunzip - это просто скрипт, который вызывает gzip с другими параметрами.)
+gzip НФ - создает архив с расш .gz и удаляет оригинал файла 
+gunzip НА - распаковывает и удаляет архив (аналог gzip -d)
+gunzip -l numbers.txt.gz  - оценить степень сжатия архива
+gzip -c НФ > НФ.gz(хотя может быть любое) - опция -с и такое перенаправление позволяет сохранить оригинальный файл
+
+zcat НА - показать сожержимое архива без распаклвки
+
+gzip -r Название_директории_с_файлами - сжимает только файлы внутри директории (саму директорию не трогает)
+gunzip -r НД - декомпресс файлов внутри директории
+
+bzip2 и bunzip2 (Burrows-Wheeler block sorting)
+сжимает лучше gzip, так как использует доугой алгоритм сжатия, но больше нагрушка на проц
+Синтаксис так же как и gzip and gunzip
+bzip2 HФ - сжимает файл с расш .bz2 или .bz и удаляет оригинал
+
+bzcat НА - выводит содержимое архива
+
+bzip2 не поддерживает -r (компрессию вложенных папок)
+
+
+xz и unxz
+xz НФ - компрессит файл
+или
+xz -z НФ 
+xz -d НФ - декомпресс файл
+unxz НА - декомпрессти файл
+
+xzcat - посмотреть без распаковки
+
+
+tar
+Это Архиватор, не Компрессор
+tar -cf НФ.tar ЦФ - архивирует Целевой файл в файл с названием НФ.tar, опция -c create , -f имя файла
+tar -tf НА - опция -t показывает содержимое архива
+tar -tvf НФ - опция -v verbose 
+tar -xf НА - -x extract распаковать архив
+tar -xvf НА.tar -C НП - извлечь в папку, а не в текущкю директорию
+
+примеры:
+tar --totals -cvf archive.tar file1 file2 file3 - создание архива
+tar -tf archive.tar - вывести содержимое архива без распаковки
+tar -xvf archive.tar - разархивировать архив
+tar -xvf archive.tar -C /home/yura - разархтвировать архив в другой каталог
+tar -cjvf archive.tar.bz2 file1 file2 file3 - сделать архив и сжать с помощью bzip2
+tar -czvf archive.tar.gz file1 file2 file3 - сделать архив и сжать его с помощью gzip
+    -z 	Filter the archive through the gzip command.
+    -j 	Filter the archive through the bzip2 command.
+    -J 	Filter the archive through the xz command.
+tar -C "Test" -xjvf arhive.tar.bz2 - декомпресс bunzip2'ом и разврхивировать архив в папку Test
+tar -xzvf archive.tar.gz - декомпресс gunzip'ом и разархивировать в текущую папку
+
+
+
+xzcat НА - выводит содердимое архива
+
+zip и unzip
+Может и сжимать и архивировать
+zip -r НФ НД - чтобы компресс и арх Директорию со всеми поддиректориями и файлами в Файл, используем опцию -r
+unzip -l НА - показать файлы в архтве без распаковки
+unzip HA - распаковать 
+
+cpio
+устаревшая
+раьотает в 2х режимах in и out, через перенаправоение 
+
+ls НД | cpio -ov > НФ.cpio - выводтт содердимое директории и перенаправояет в cpio в режиме out (-o) и записыает в архив 
+cat НФ.cpio | cpio -iud - разархивирует
+
+dd
+if= входной фацл
+of=выходной файл
+bs=размер блока в байтах (можно в К, М, G)
+count=сколько блоков копировать
+
+
+
+
+
+
+Если вам попался пакет rpm (для систем типа Fedora, Mandriva, SUSE и т.д.), его можно сконвертировать в deb с помощью утилиты alien (устанавливается отдельно). Однако делать это рекомендуется лишь в исключительных случаях, когда пакетов deb в доступе нет (например драйверы принтеров Canon на официальном сайте выложены исключительно в rpm).
+
+tar -xvzf архив.tar.gz -C папка_в_которую_надо_разархивировать
+    x — дозволяет вам извлекать файлы из архива.
+    v — делает вывод tar подробным. Это означает, что на экран будут выведены все выисканные в архиве файлы. Если эта опция опущена, информация, выводимая в процессе обработки, станет ограничена.
+    f — является обязательной опцией. Без неё tar пытается использовать магнитную ленту вместо файла картотеки.
+    z — позволяет вам обрабатывать архив, сжатый gzip’ом (с расширением .gz). Если вы забудете указать эту функцию, tar выдаст ошибку. И наоборот, эта опция не должна использоваться для несжатых архивов.
+ 
+ unzip архив.zip - разархивировать архив .zip
+
+ Установка программ с собственным инсталлятором
+    INSTALL.sh. Если этот файл не захочет запускаться, вероятно, ему не даны права на запуск. Иногда дистрибутив программы распространяется в виде самораспаковывающегося архива. В таком случае это будет просто один-единственный файл .sh, который нужно запустить.
+Установка программ из исходных текстов
+    Основное, что понадобится — средства для компиляции, для этого сначала нужно установить пакет build­-essential. Дальше нужно распаковать архив с кодами программы во временную папку. Потом нужно найти файл README или INSTALL, прочитать его и выполнить то, что там написано. Чаще установка программ таким способом ограничивается последовательным выполнениям следующих команд:
+    ./configure 
+    make
+    sudo make install
+Файл .deb
+    dpkg -i имя_пакета.deb
+Snap
+    snap install название_программы
+
+
+
+ Системный список репозиториев содержится в файле /etc/apt/sources.list. Чтобы добавить репозиторий,­     отредактируйте файл так:
+    sudo nano /etc/apt/sources.list
+
+    Добавьте туда APT-строку. Чем «выше» (ближе к началу файла) стоит строка, тем больший приоритет получит добавленный репозиторий.
+    Далее следует обновить список пакетов. Для этого выполните:
+    sudo apt­-get update
+
+    sudo apt­-key add ключ_репозитория.key - добавление ключа репозитория
+
+Для хранения логов предусмотрена директория /var/log
+Общесистемные логи, как правило, хранятся в файле /var/log/syslog (или в /var/log/messages, например в Centos)
+Сообщения ядра хранятся в /var/log/dmesg
+dmesg - для просмотра логов загрузки
+dmesg --clear - очистить kernel ring buffer
+dmesg -H or dmesg --human - will enable the pager by default.
+
+journalctl -e - смотреть логи (-e просит показать сразу поледнюю страницу пейджера)
+journalctl -eu sshd - показать лог определенного юнита
+
+
+
+tail -f /var/log/syslog - показывает последние строки по мере их появления
+tail файл - выводит последние 10 строк
+    - n кол-во_строк - показать количество строк
+head файл - выводит первые 10 строк
+
+Для запуска системных утилит и других программ служит командный интерпретатор или, как его еще называют, оболочка (shell), основной инструмент системного администратора Linux. Интерпретатор — своего рода язык программирования, позволяющий создавать сложные сценарии (скрипты), также он используется интерактивно для последовательного ввода команд.
+
+cat файл1 файл2 - считывает данные из файлов и выводит их содержимое файлов в единый поток
+wc - считает еоличество строк, символов и т.д.
+
+cat -n файл - выводит содержимое файла и нумерует строки
+
+SELinux — система с принудительным контролем доступа. Сложна в настройке, но позволяет с ювелирной точностью настроить те системы, которым критична безопасность
+
+id имя_пользоватля - показывает инфу о пользователе
+usermod -aG sudo имя_пользователя - добавить пользователя в группу судо, сли убрать ключ -а, то пользователь выйдет из всех остальных групп
+
+oga@uho:~$ ls -lL /dev/cdrom 
+    brw-rw----+ 1 root cdrom 11, 0 июня   1 13:33 /dev/cdrom                                
+    Видно, что права на чтение и запись имеют пользователи, которые входят в группу cdrom.
+    Обратите внимание на признак блочного устройства в первой позиции атрибутов. 
+    Плюс в конце строчки прав означает, что используются ACL, можно их посмотреть командой getfacl. 
+
+                              Создание пользователей и групп
+
+useradd - надо запускать с параметрами, иначе не будет домашнего каталога
+switch 	meaning
+-d 	    home directory (-d /home/user) чтобы указать другую дректорию чем дефолтная
+-m 	    create home directory (если не указать, то дом директории не будет создано)
+-s 	    specify shell
+-G 	    add to additional groups
+-c 	    comment. most of the time, users actual name. Use quotes if comments has spaces   or special characters in them
+
+groupadd НГ - создать группу
+groupmod -n новая старая - смена названия группы (но не GUID)
+groupmod -g - смена GUID группы
+find / -nogroup - поис файлов, которые принадлежат только GUID и не имеют названия группы
+groupdel - удаление группы
+
+useradd -D - значения по умолчанию при создании пользователя, хранятся в файле   /etc/default/useradd
+useradd -g - создать пользователя, но использовать не дефолтную группу а другую
+
+mkhomedir_helper ИМЯ - создает дом папку для пользователя, если ее нет
+
+/etc/login.defs - инфа о насройках при создании юзера
+
+passwd - для смены пароля
+
+getent passwd/shadow/group - можно смотреть файлы
+
+
+
+Создадим группу developer:
+# groupadd developer
+
+Создадим двух пользователей — ivanov и petrov:
+# useradd -m -G developer -s /bin/bash ivanov
+# useradd -m -G developer -s /bin/bash petrov
+
+Мы использовали опции: 
+-m — также создать домашний каталог. По умолчанию каталог создаётся в /home с именем учётной записи, например, /home/ivanov. Если надо создать нестандартный каталог, можно указать его, используя параметр параметра -d. 
+-G — список групп, к которым принадлежит создаваемый пользователь. По умолчанию также создается персональная группа пользователя с именем учётной записи. Она является первичной и по умолчанию все файлы пользователя создаются с этой группой в качестве группы-владельца. 
+-s — задает оболочку пользователя. Для обычных пользователей обычно это /bin/bash. Для ftp/sftp-пользователей и системных псевдопользователей на этом месте указывается псевдооболочка, например, /usr/sbin/nologin или /bin/false. 
+Иногда бывает полезным указать номер пользовательского ID явным образом с помощью параметра -u : например, -u 1001. Это бывает полезным, если у вас несколько систем с одинаковыми учетными записями и вы хотите, чтобы при переносе файлов на флешке между ними, у файлов был один владелец. Для этого надо следить, чтобы на системах одинаковые пользователи имели один UID. То же самое для групп: у groupadd есть параметр -g для указания GID. 
+По умолчанию для новых учетных записей без пароля заблокирован вход в систему, поэтому установим пароль для пользователей с помощью passwd, например:
+# passwd petrov
+
+Есть альтернативный способ создания пользователя.
+# adduser yura
+
+Предложит несколько вопросов, ответив на которые, мы полностью сконфигурируем будущего пользователя, в том числе и его пароль.
+Если нам понадобится изменить параметры для уже созданного пользователя, поможет утилита usermod. Параметры аналогичны утилите useradd. Также её можно использовать для блокировки/разблокировки пользователей. Опция -L позволит заблокировать учётную запись. Операция блокировки добавляет символ «!» в начало пароля в файле /etc/shadow. Параметр -U снимает блокировку. Для удаления учётной записи предназначена утилита userdel. Полезный ключ -r удаляет из системы домашний каталог пользователя. 
+Двойной ! (!!) сигнализирует, что пароль никогда не был установлен. (спорно???)
+
+usermod
+switch 	meaning
+-L 	    lock this account
+-U 	    Unlock the account
+-aG 	append to more groups (say usermod -aG wheel jadi)
+
+usermod -a -G sudo yura - добавить (-а) пользователя Юра в группу (-G) sudo
+deluser yura sudo - удалить пользователя Юра из группы sudo
+
+chfn - с помощью даной команды юзеры могут модифицтровать инфу о себе
+finger имя_пользователя - аналогичная команда, но чтобы узнать инфу о других пользователях
+
+gpasswd -A test_user1 test_user1 - сделать данного пользователя адмнистратором своей группы, что даст ему возможность добавлять в нее дркгих пользоватлей командой:
+    gpasswd -a sysadmin test_user2
+
+passwd -S sysadmin - посмотреть инфу по паролю                                        
+sysadmin P 04/24/2019  0 99999 7 -1
+
+passwd -e sysadmin  - при выполнении от рута, пароль юзера истекает и он вынужден его сменить при следующем логине
+
+chage -l [USERNAME] - инфа о устаревании  пароля, а так же можно изменить нужные параметры
+
+passwd -d sysadmin - удалить пароль (вход в систему возможен без пароля)
+passwd -l/-u имя_пользователя - заблокировать/восстановить юзера (перед паролем появится/исчезнет знак - !)
+Двойной ! (!!) сигнализирует, что пароль никогда не был установлен. 
+
+
+
+newgrp Название_группы - позволяет пользователю запустить новую шелл сессию с другой primary group
+
+
+
+                
+
+              КАВЫЧКИ
+Двойные кавычки позволяют сделать запрет интерпретации спец символов (glob characters (wildcards)), кроме символов $, `, \, ! Эти символы называются wild card 
+Одинарные кавычки запрещают все символы, лучше использовать их всегда.
+\ - символ экранирования символа после черты
+Обратные кавычки `` - позволяют написать команду в команде 
+например:
+sysadmin@localhost:~$ echo Today is `date`                         
+Today is Mon Nov 4 03:40:04 UTC 2018
+; - точка с запятой (semicolon), отделяет команды, которые выполняются последовательно вне зависимости от успешности предыдущей
+&& - двойной амперсанд - действует как логическое И, команда выполняется только после успешного завершения предыдущей
+& - команды выполняются в ФОНЕ, а не по порядку!
+sleep 1000&
+|| - лгическое ИЛИ, вторая команда запускается, если первая несработала
+
+
+                    GLOBBING (glob cyaracters, wildcards)
+Глобальные символы — это специальные символы, которые можно использовать для сопоставления имен файлов или путей.
+man 7 glob - справка
+
+? - означет один символ 
+    ls ??.txt
+    qw.txt  rt.txt   1r.txt
+
+* - любое количество любых символов, все файлы в папке
+    echo D*
+    Desktop Documents Downloads
+
+[abc] - один символ из представленных
+[a-g] - один символ из диапазона (согласно таблице ASCII)
+Посмотреть таблицу ASCII можно командой - ascii
+[!abc] - начинается с любого кроме этого одного символа
+[^abc] - тоже кроме этих символов
+
+                        Регулярные выражения (regexp и GREP)
+
+    . - любой один символ
+    * - предыдущий символ 0 или более раз
+    ^ - начало строки
+    $ - конец строки
+    [] - диапазон
+    grep -i - игнорирование регистра 
+    grep -r что где - иакать рекурсивно, те внутри папок 
+    grep -r "12345" . - найти файл содержащий строку 12345, поиск внутри всех директорий и поддиректорий текущей папки
+    grep -c что где - сколько совпадений
+    grep -n - отобразит номкра строк, где есть совпадение
+    grep -v - инвертирует поиск, отображая вс строки где нет совпадений
+    grep -w - ищет только цулые слова, а не совпадения
+    Выражение "^$" соответствует пустой строке.
+    
+
+    Option  	Meaning
+    -i 	Case insensitive
+    -v 	Invert search results (logically negates criteria) - returns all lines that don't contain the specified pattern
+    -l 	List the file name of content in file matches
+    -r 	Perform a recursive search including subdirectories
+    -w 	Match whole word only
+    -q 	Quietly operate without producing output
+
+                    Extended Regular Expressions
+
+grep  -E -v "(^#|^$)" - убрать комментарии и пустые строки
+
+    Extended Regex 	Operators 	Meaning
+Grouping operator 	( ) 	Groups characters together to form a subpattern.
+Asterisk operator 	* 	Previous character (or subpattern) is present zero or more times.
+Plus operator 	+ 	Previous character (or subpattern) is present at least one or more times.
+Question mark operator 	? 	Previous character (or subpattern) is present zero or one time (but not more).
+Curly brace operator 	{,} 	Specify minimum, maximum, or exact matches of the previous character (or subpattern).
+Alternation operator 	| 	Logical OR of choices. For example, abc|def|xyz matches abc or def or xyz.
+
+По дефолту grep понимает только базовые регулярные выражения и интерпретирует знаки расширеных регулярных выражений как обычные символы +, ?, {, |, (, and )
+Надо использовать grep -E (или egrep)
+
+
+Pattern 	Meaning
+a{0,} 	Zero or more a characters
+a{1,} 	One or more a characters
+a{0,1} 	Zero or one a characters
+a{5} 	Five a characters
+a{,5} 	Five or fewer a characters
+a{3,5} 	From three to five a characters
+
+fgrep - используется чтобы не экранировать ничего
+    cat newhome.txt | fgrep '**'
+
+ip a | grep -P '([0-9a-f]{2}:){5}[0-9a-f]{2}' - для поиска мак-адреса
+    ip address | grep --colour=always -P "((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})" - для ip адреса
+    ip address | grep -P "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" - или такое
+
+    BASH 
+    echo $? - показывает код возврата последней команды (0 или не 0). Эта переменная хранит последний код возврата. Названия переменных начинаются со знака $.
+    В BASH правда (true) это - 0
+                    false - не 0
+    команда1 && команда2 - если команда1 завершилась корректно (код возврата 0), то начать выпонять команду2. Это логическое И.
+    команда1 || команда2 - логическое ИЛИ. Если команда1 отработает корректно, то 2 не будет стартовать, а если не отработает корректно, то будет.
+    команда1 ; команда 2 - выполнять все команды вне зависимости от того как они выполнились. Это логическое НЕ ИМЕЕТ ЗНАЧЕНИЯ
+    
+    for year in {2015..2020}; do echo $year; for month in {01..12}; do echo $month; done; done
+
+                                КРОН (CRON)
+    select-editor - выбрать редактор по умолчанию
+    /etc/crontab - общий КРОН
+
+     # Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name command to be executed
+17 *    * * *   root    cd / && run-parts --report /etc/cron.hourly
+25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+
+*/2 - каждые 2 минуты
+* 2 * * * * - каждую минуту как стукнет 2 часа ночи (потому что крон запускается раз в минуту)
+1 2 * * * * - вот правильный вариант
+01 02 * * * - или так тоже правильно
+
+crontab -e - редактировать свой локальный кронтаб_файл 
+crontab -l - посмотреть расписание крона
+crontab -r - удалить свой кронтаб_файл
+crontab –u user_name - для редактирования файлов какого-либо юзера рутом
+crontab –u user-name -r - для удаления кронтаба юзера админом 
+ы
+
+var/spool/cron/ или
+var/spool/cron/crontabs/имя_пользователя - тут хранится расписания для пользователя, которое он создал
+
+/etc/crontab - здесь хранится расписание общее
+/etc/cron.d/ФАЙЛ - тут можно создать файл с синтасисом как в crontab для выполнения. Тут обычно создаются такие файлы какими либо программами, которые вновь установлены.
+
+/etc/cron.deny - указанные здесь пользователям запрещено пользоваться кроном
+/etc/cron.allow - если данный файл существует, то только те кто указан тут могут пользоваться кроном
+
+                            AT
+
+Позволяет выполнять команды в определенное время один раз, но не по расписанию.
+
+Keyword/Date Format 	        Significance
+midnight 	                    12:00 a.m. 2nd Mar 2025
+noon 	                        12:00 p.m .1st Mar 2025
+tomorrow                       	8:00 a.m. 2nd Mar 2025
+next week 	                    8:00 a.m. 8th Mar 2025
+1630 	                        4:30 p.m. 1st Mar 2025
+4:30 PM Mar 20                 	4:30 p.m. 20th Mar 2025
+now + 2 hours 	                10:00 a.m .1st Mar 2025
+now + 7 days 	                8:00 a.m .8th Mar 2025
+
+sysadmin@localhost:~$ at now - вводишь когда
+at>                          - вводишь команду
+Далее появляется запрос еще одной команды, если надо выйти нажимаешь CTRL+d
+
+sysadmin@localhost:~$ at 1000                                               
+warning:  commands will be executed using /bin/sh
+at> echo “Planning meeting in 30-minutes” > /dev/pts/0
+at>  <EOT>
+job 2 at Mon Feb  10  09:26:00  2025
+
+Выполняет скрипт из файла и отсылает результат на почту юзера
+sysadmin@localhost:~$ at -m -f backup_script.txt  10 pm  Mar 22                                               
+warning:  commands will be executed using /bin/sh
+job 5 at Mon Feb  10  09:33:00  2025
+
+atq - помотреть список jobs (очередь)
+atrm 2 - удалить job под номером 2
+                                BATCH
+
+Команда будет выполнена сразу как нагрузка на проц (load average) упадет до 80% (0.8)
+
+atd -l - сменить значение нагрузки
+
+sysadmin@localhost:~$ batch
+at> sort  ~/marketing_data
+at> <EOT>
+job 5 at Mon Feb  3  09:26:00  2025
+
+                        SYSTEMD timers
+
+sudo systemd-run --on-active="1m" /bin/touch /home/sysadmin/newfile - создать таймер создающий файл через минуту
+systemctl list-timers - посмотреть список активных таймеров
+systemctl list-units - все актиные юниты
+
+Systemd использует два разных типа таймеров; monotonic и realtime. При использовании монотонных таймеров таймер systemd позволяет выполнить задание после того, как произошло событие. Этот тип можно использовать для запуска задания, когда система загружается (опция OnBootSec) или активен модуль systemd (опция OnActiveSec). Приведенный ниже пример файла greeting.timer представляет собой монотонный таймер, который использует опцию OnBootSec для запуска таймера через десять секунд после загрузки системы:                        
+
+    [Unit]
+    Description=Displays greeting after boot
+    
+    [Timer]
+    OnBootSec=10sec
+    Unit=greeting.service
+    
+    [Install]
+    WantedBy=multi-user.target
+
+    Секция 	Описание
+
+[Unit]	
+Общая информация о файле systemd. Description создает удобочитаемое имя для модуля systemd.
+
+[Timer]
+Содержит параметры, определяющие, когда будет запускаться таймер и какую службу выполнять.
+
+[Install]	
+Содержит информацию о том, как будет установлено устройство. Параметр WantedBy= создает символьную ссылку на целевом уровне, которая «хочет», чтобы эта служба работала.
+
+Таймеры реального времени работают как cron и выполняют задание, когда наступило указанное время. Чтобы создать таймер реального времени, следует использовать опцию OnCalendar в разделе [Timer] файла ..timer Формат записи времени OnCalendar:
+
+    DayofWeek Year-Month-Day Hour:Minute:Second
+
+Ниже приведен пример блока таймера, который выполняется каждый день в 9:00 утра:
+
+    OnCalendar=*-*-* 9:00:00
+
+                Cоздание systemd timer
+
+https://bogachev.biz/2016/06/15/zapusk-zadach-po-raspisaniyu-cherez-systemd-timer/
+
+Сначала надо создать Systemd Unit
+vi /etc/systemd/system/script_service.service
+
+Содержимое:
+
+    [Unit]
+    Description=Запуск скрипта
+
+    [Service]
+    Type=simple
+    ExecStart=/root/testscript.sh
+
+    [Install]
+    WantedBy=multi-user.target
+
+Затем создаем таймер
+vi /etc/systemd/system/script_service.timer
+
+    [Unit]
+    Description=Запуск скрипта по расписанию
+    
+    [Timer]
+    OnCalendar=*-*-* *:00:00
+    Unit=script_service.service
+    
+    [Install]
+    WantedBy=multi-user.target
+
+Активируем загрузку и запустим сервис:
+    systemctl enable script_service.timer
+Появляется сообщение:
+Created symlink /etc/systemd/system/timers.target.wants/script_service.timer → /etc/systemd/system/script_service.timer.
+    systemctl start script_service.timer
+
+Для проверки запуска таймера: 
+    systemctl is-active script_service.timer
+
+Если необходимо, сервис можно запустить вручную в любое время:
+    systemctl start script_service
+
+Если были внесены какие-то изменение в таймер, например время выполнения, то необходимо произвести обновление сервиса:
+    systemctl daemon-reload
+
+
+
+
+
+                        LOCALE
+
+language[_territory][.codeset][@modifiers] - соглашение об именовании
+Например:  en_US.utf8 или ru_RU.utf8
+
+locale -a - вывести список всех доступных локалей в системе
+locale - посмотреть какая локаль применена (текущий языковой стандарт)
+   Показанные переменные, значения которых заключены в кавычки, не задаются явно; они наследуют свои значения от LANG или LC_ALL. Значения без кавычек заданы явно.
+   Можно поменять те которые с кавыками, напрмер:
+    LC_TIME="en_US.UTF-8"
+    export LC_TIME
+   Или сменить все
+    LC_ALL="ru_RU.UTF-8"
+    export LC_ALL
+    unset LC_ALL - вернуть как было 
+
+Изменение настроек языкового стандарта системы по умолчанию для всех пользователей
+1. Отредактируйте файл глобальных настроек локали:
+
+    /etc/default/locale (системы, основанные на Debian)
+    /etc/sysconfig/i18n (системы на базе Red Hat)
+
+2. Измените переменную LANG (language) внутри файла на нужное значение (из списка доступных локалей):
+
+    LANG="en_AU.UTF-8"
+
+Если нужная локаль не доступна, то ее можно установить и даже сразу применить командой:
+sudo dpkg-reconfigure locales
+
+3. Перезагрузиться, или перезайти в систему или выполнить:
+    source /etc/default/locale
+
+Можно просто выполнить команду:
+    sudo update-locale LANG=ru_RU.UTF-8
+
+Чтобы прописать язык для каждого пользователя, то надо прописать строку в .bashrc:
+    export LANG=en_US.UTF-8
+
+Чтобы запутить команду используя определенную локаль, пример:
+LANG=C apt update - запустит команду apt update с выводом на английском
+
+iconv -l выдает список поддерживаемых кодировок
+iconv –f old-encoding [-t new-encoding] file.txt > newfile.txt - синтаксис команды
+
+
+
+
+            CENT OS RPM (пакетный менеджер)
+
+пример пакета: x3270-x11 -3.3.6       -10.5.el6.            i686.rpm
+               имя       номер версии идентификатор выпуска архитектура
+Код 	Архитектура
+noarch 	Пакеты, не содержащие двоичного кода, например, те, которые могут содержать только файлы скриптов (без привязки к архитектуре).
+.src 	Пакеты, которые не были скомпилированы (исходники)
+i686 	Пакеты, скомпилированные для работы в 32-разрядном режиме на процессоре Pentium 4 или более поздней версии
+x86_64 	Пакеты, скомпилированные для работы в 64-разрядном режиме на 64-разрядном процессоре AMD или 64-разрядном процессоре Intel EM64T.
+
+
+rpm -qi - инфа об установленном пакете
+rpm -qp - инфа о неустановленном файле (но который есть в системе и уже скачан!!! и хранится где то в директори, или лежит на сервере (не в репе!!!))
+Всегда помните, что RPM-запросы требуют использования -q для установленных пакетов и -qp для неустановленных файлов пакетов
+
+rpm -qa - инфа о всех установленныых пакетах 
+rpm -q название_пакета - установлен пакет или нет
+
+Выбор 	Цель  (это все с опцией -q)
+-a 	Список всех пакетов, установленных в настоящее время в системе
+-c НП	Отображение списка конфигурационных файлов, принадлежащих пакету
+-d НП	Список файлов документации, принадлежащих пакету
+-i НП	Отображение подробной информации о пакете
+-f НФ - к какому пакету принадлежит файл (при условии что пакет установлен)
+-K НП	Проверьте целостность пакета (/etc/pki/rpm-gpg - тут по умолчанию хранятся публичные ключи дистрибутива. Администратор может импортировать эти ключи в базу данных RPM с помощью команды:
+    rpm --import /etc/pki/rpm-gpg/*
+После чего можно проверять целостность
+    rpm -qpK x3270-x11-3.3.6-10.5.el6.i686.rpm
+-l 	Список всех файлов в пакете
+--provides 	Перечислите зависимости, предоставляемые этим пакетом
+-R 	Перечислите зависимости, необходимые для этого пакета
+--scripts 	Перечислите сценарии, которые используются до и после установки пакета
+-s 	Отображение состояния каждого файла пакета как обычного, не установленного и не замененного
+
+rpm -qa *python* - установален пакет в системе или нет, если не помнишь точного назавания
+Чтобы получить алфавитный список всех установленных пакетов, выполните команду rpm -qa | sort. Чтобы получить хронологический список всех пакетов, выполните команду rpm -qa --last
+rpm -qa - отобразить все установленные пакеты
+rpm -qa название_файла - найти пакет по имени файла
+yum remove пакет - удаление (без зависимостей)
+rpm -e пакет - то же
+yum provides название_файла - искать файл внутри пакета в репозитории 
+rpm -ql название_пакета - смотреть файлы содеожащиеся в пакете 
+rpm -qs  название_пакета - смотреть список файлов в установленном пакете
+rpm -qi название_пакета - отобразить инфу о пакете
+rpm -U НП- обновить, или установить если не установлен
+rpm -F НП - обновть, но только если уже установлен (freshening)
+rpm -qp --scripts название_пакета - что выполняется во время установки
+rpm -qp --requires путь до файла .rpm (имя можно указать частично, например apach*) - что надо пакету чтобы работать корректно (библиотеки, программы)
+rpm -i /mnt/local_repo/quota* - установка пакета из локального репозитория
+
+rpm2cpio - извлечт файлы с пакета
+
+- qpR НП- отобразить зависимости нужные для пакета
+- rpm -i НП - установить пакет (если нет зависимостей, то будет неудача)
+
+rpm -i НП - устноить пакет (который уже скачан!!!)
+rpm -e НП - удалить пакет
+rpm --force -i НП - переустановить пакет принудительно, если какой то файл был случайно удален например
+
+
+        Восстановление удаленного файла
+rpm -qas | grep whoami - показывает путь до файла, даже если он был удален
+rpm -qf /usr/bin/whoami - узнать к какому пакету принадлежит файл, если известен полный путь до файла
+или
+yum provides "*/whoami" - можно использовать не путь, а шаблон
+
+yum install --downloadonly --downloaddir=куда название_пакета - скачает пакет
+Перейти в директорию с пакетом и выполнить команду:
+rpm2cpio openssh-7.4p1-23.el7_9.x86_64.rpm > openssh.cpio - сменить формат rpm на cpio
+less openssh.cpio - посмотреть что внутри rpm
+или сразу скачать
+rpm2cpio путь_до_скачанного_пакета | cpio -imud - скачаются все файлы пакета
+Из них скопировать недостающий куда надо
+
+чтобы получить список содержимого файла telnet-server-0.17-47.el6_3.1.i686.rpm выполните следующую команду (-t table of content):
+    rpm2cpio telnet-server-0.17-47.el6_3.1.i686.rpm | cpio -t
+Чтобы скопировать эти файлы из файла .rpm, используйте следующую команду, чтобы извлечь эти файлы в текущий каталог:
+    rpm2cpio telnet-server-0.17-47.el6_3.1.i686.rpm | cpio -imud
+    Выбор 	Цель
+    -i 	Экстракт
+    -m 	Сохранение исходного времени модификации файлов
+    -u 	Безоговорочно замените все существующие файлы
+    -d 	Создание родительских каталогов файлов, содержащихся в архиве
+
+Кроме того, команда yum может отображать информацию о пакетах, которых даже нет в системе, получая доступ к этим данным с сервера, называемого репозиторием.
+/etc/yum.conf - тут хранится конфиг
+/etc/yum.repos.d - репы
+
+yum provides НФ - какому пакету принадлежит данный файл, даже если пакет не установлен, так как ищет по репам
+Более того, вам даже не нужно знать каталог, в котором должен существовать файл, потому что можно использовать шаблон glob:
+    yum provides "*/libicuuc.so.42"
+
+yum search название - искать в репе
+yum grouplist - отобразить все существующие группы пакетов
+yum groupinfo имя_группы
+yum groupinstall "Office Suite and Productivity" - установить даннаую группу пакетов
+yum remove/erase название_пакета - удаление (с зависимостями)
+yum list updates - посмотреть какие пакеты в системе требуют обновления
+yum update - обновить пакеты
+yum check-update - только проверить наличие обновлений
+yum whatprovides apr - какокой пакет предоставляет даггую зависимость
+yum info firefox - инфа о пакете
+
+                ДОБАВЛЕНИЕ репозитория
+    https://serveradmin.ru/ustanovka-repozitoriya-epel-rpmforge-v-centos/
+
+Чтобы сделать собственный репозиторий надо создать файл например local.repo в папке /etc/yum.repos.d
+Содержимое:
+
+    [Local]
+    name=Local
+    baseurl=file:///mnt/local_repo
+    gpgcheck=0
+    enabled=1
+
+Параметр baseurl определяет, где хранятся RPM-файлы. Обычно это сетевой адрес, основанный на http или ftp. Параметр gpgcheck установлен в 0, чтобы команда yum не проверяла цифровую подпись пакетов. Для разрешения использовать этот репозиторий enabled=1.
+
+name 	имя, описывающее репозиторий, может быть любым
+baseurl 	ссылка на расположение репозитория, может быть в виде http, ftp или file ссылки
+
+Другие ползные параметры, которые могут быть указаны в repo файле:
+enabled 	принимает значение 1 или 0, 1 - репозиторий подключен, 0 - отключен
+async 	управляет загрузкой пакетов, auto - использует при возможности параллельную загрузку, on - использует только параллельную загрузку, off - параллельная загрузка отключена
+mirrorlist 	вместо ссылки на конкретный адрес репозитория может быть указана ссылка на список адресов, из которых при установке будет выбран наиболее подходящий
+gpgcheck 	принимает значение 1 или 0, 1- осуществлять проверку GPG подписи пакета из репозитория, 0 - не проверять
+gpgkey 	ссылка на GPG ключ репозитория
+
+Минимальное содержание файла .repo следующее:
+
+    [repository]
+    name=repository_name
+    baseurl=repository_url
+
+yum list available - отобразить пакеты доступные для установки (ищет по репам)
+
+To add a repository, use the --add-repo parameter, followed by the URL to a .repo file.
+
+# yum-config-manager --add-repo https://rpms.remirepo.net/enterprise/remi.repo
+
+Yum stores downloaded packages and associated metadata in a cache directory (usually /var/cache/yum). As the system gets upgraded and new packages are installed, this cache can get quite large. To clean the cache and reclaim disk space you can use the yum clean command, followed by what to clean. The most useful parameters are packages (yum clean packages) to delete downloaded packages and metadata (yum clean metadata) to delete associated metadata. See the manual page for yum (type man yum) for more information.
+
+                    DNF
+
+Dandified Yum, или DNF, — это следующая предстоящая версия команды yum
+    
+dnf list --available - список всех доступных пакетов вообще
+dnf install cowsay.noarch
+dnf list --installed - список установленных пакетов
+nf provides FILENAME - Finding out which package provides a specific file
+dnf repoquery -l PACKAGENAME - Listing the contents of a package
+dnf repolist - список репов
+dnf config-manager --add_repo URL
+dnf config-manager --set-enabled REPO_ID
+dnf config-manager --set-disabled REPO_ID    
+
+            DPKG
+
+Пакеты .deb содержат двоичные файлы, скомпилированные для выполнения на определенной компьютерной архитектуре. В системе управления пакетами Debian пакеты с исходным кодом, содержащие исходный код, имеют расширение .dsc            
+
+Если файл был удален, то:
+
+ dpkg -S /usr/bin/whoami - показать какому пакету принадлежит файл
+ dpkg -L coreutils | grep whoami - показать какие файлы находятся внутри УСТАНОВЛЕННОГО пакета
+ apt-file list apache2 - какие файлы в пакете без его скачивания
+ Предварительно надо установить и обновить apt-file
+apt install apt-file
+apt-file update
+
+apt download apache2 - просто скачать пакет
+или
+apt-get install --download-only apache2 - только скачать пакет, без установки в папку /var/cache/apt/archives/
+dpkg -c название_пакета - посмотреть содержимое .deb пакета
+dpkg-deb -xv файл.deb куда - извлечь файлы из скачанного deb-пакета
+или
+dpkg --extract <file.deb> </path/to/extract>
+
+
+dpkg -l - инфа о усиановленных пакеиах (ii) и удаленных, но после которвх что то осталось (rc)
+                    УТИЛИТА APT
+
+apt-get - used to download, install, upgrade or remove packages from the system.
+apt-cache - used to perform operations, like searches, in the package index.
+apt-file - used for searching for files inside packages.
+
+apt-get update - обновляет список пакетов, о которых занет репозиторий на вашем компе
+apt-cache depends - показать все зависимости
+
+dpkg -i название_пакета - установить пакет (без зависимостей)
+dpkg -I НП - показать инфу о пакете
+dpkg -r - remove, но оставить конфиги
+dpkg -P (purge) - удалить всё
+dpkg -l - отобразить все установленые пакеты
+dpkg -L НП - отобразить все файлы содержащиеся в пакете
+dpkg -S /usr/bin/whoami - показать какому пакету принадлежит файл
+
+dpkg -s НП - статус пакета (инфа о пакете)
+apt-cache show НП - тоже
+dpkg-reconfigure название_пакета - изменить параметры пакетва при установке или после
+
+
+Как apt, так и apt-get являются инструментами для управления пакетами в дистрибутивах Linux на основе Debian. Есть и другие инструменты для этой задачи, например aptitude и synaptic.
+
+apt-cache search KEYWORD - искать пакет в репах
+apt-cache depends PACKAGE - посмотреть зависимости
+apr-cache show PACKAGE - статус пакета (инфа)
+
+apt-get install PACKAGE - установка пакета с зависимостями или обновит существующий 
+apt-get --only-upgrade install НП - только обновить один пакет
+You can also use apt search instead of apt-cache search and apt show instead of apt-cache show.
+
+apt-get update - обновляет информацию об актуальных версиях доступных пакетов, а не сами пакеты (update the package index)
+apt-get upgrade - обновить уже именно установленные пакеты (не удаляет сатрые версии в отличие от apt upgrade)
+
+apt-get remove PACKAGE - удаляет без конфигов
+apt-get purge PACKAGE - удаляет с конфигами
+
+/etc/apt/sources.list - файл хранения репозиториев
+/etc/apt/sources.list.d/ - для сторонних репозиториев
+Тут надо создать файл с именем репы.list
+
+sudo apt-add-repository 
+sudo apt-add-repository 'deb http://ftp.ru.debian.org/debian/ testing main non-free contrib' - для добавления офиц репозиториев
+
+Касательно сторонних репозиториев, есть ещё один момент. По умолчанию система не может им доверять, и для того чтобы это исправить нужно импортировать ключ репозитория. Обычно ключи можно найти на сайте, где вы нашли сам репозиторий, для того же Google Chrome ключ можно импортировать командой:
+
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+
+или так
+
+curl -LsSO https://mariadb.org/mariadb_release_signing_key.asc
+    chmod -c 644 mariadb_release_signing_key.asc
+mv -vi mariadb_release_signing_key.asc /etc/apt/trusted.gpg.d/
+
+После apt update
+
+md5sum название_файла > название_файла.md5 - вычислить md5 hash сумму и поместить ее в файл
+
+md5sum -с название_файла.md5 - проверить 
+
+[sysadmin@localhost]$ sha256sum anyfile.txt > anyfile.sha256
+[sysadmin@localhost]$ cat anyfile.sha256
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  anyfile.txt
+
+[sysadmin@localhost]$ sha256sum -c anyfile.sha256
+anyfile.txt: OK
+оригинальный файл и файл с хэш суммой должны быть в одной папке или в самом файле .sha256 должен быть указан путь до файла:;
+cat anyfile.sha256
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /root/dir/anyfile.txt
+
+The Local Cache
+When you install or update a package, the corresponding .deb file is downloaded to a local cache directory before the package is installed. By default, this directory is /var/cache/apt/archives. Partially downloaded files are copied to /var/cache/apt/archives/partial/.
+As you install and upgrade packages, the cache directory can get quite large. To reclaim space, you can empty the cache by using the apt-get clean command. This will remove the contents of the /var/cache/apt/archives and /var/cache/apt/archives/partial/ directories.
+    apt-get clean - очистить папки с пакетами
+            SUSE
+
+Zypp/libzypp - пакетный менеджер SUSE
+zypper - программа типа apt и yam
+Репы:
+- официальные, у кого есть поддержка
+- от 3ей стороны, например packman
+
+zypper help
+zypper se PACKAGE - поиск (search) пакета
+zypper in PACKAGE - install
+zypper lr - запросить (list repository) список реп системы
+zypper ar -f http://packman.inode.at/suse/openSUSE_Leap_15.1/ packman - добавить (add repo) репу
+Обратите внимание, что для работы команды должны присутствовать URI/URL и псевдоним (packman)
+zypper ref - обновить репы после добавления
+zypper list-updates -t PACKAGE - посмотреть что можно обновить в пакете
+zypper update - обновить систему (все пакеты на которые есть обновы)
+
+
+                    Утилита TOP 
+
+s - выставляем интервал обновления (по дефолту 3с)
+load average - кол-во процессов в очереди на ожидание ресурсов (за 1мин, 5мин, 15мин)
+    нормальное значение должно быть меньше или равно кол-ву ядер процуссора, однако бывают и странности когда оно равно 600, так как в мире LINUX в очередь попадают программы которые например ждут данные с устройств ввода-вывода.
+1 - для отображения всех ядер
+
+PR стобик - приоритет, по дефолту 20, чем ниже тем больше приоритет
+
+Строчка 3.
+us - информация о том, сколько процессорных ресурсов было израсходовано в пространстве пользователя
+sy - на работу ядра (в пространстве ядра), например сеть или драйвера
+ni - атавизм, сколько проц ресурсов было потрачено на процессы с поиженным приоритетом. Админ может понять есть ли у него резервные ресурсы, которые он может забрать у пользователей с низким приоритетом.
+id - процесс простоя
+wa - сколько пр времени было потрачено на общение с устройствами ввода-вывода, если будет 5-10% это уже будет ощущаться. Узкое место обысно сеть или диск
+hi - сколько пр ресурсов было потрачено на обработку аппаратных прерываний
+si - программные прерывания или системные вызовы, например торрент клиент при раздаче увеличивает этот параметр
+st - как занята хостовая машина (реальная железка). Так как мы виртуальная машина. Не на всех гипервизорах это работает
+
+По поводу памяти. Обычно значение free очень маленькое, но чтобы понять сколько реально памяти не занято, надо из total вычесит used. А free такое потму, что линукс просто кеширует какие то данные используя свободную память, чтобы быстрее работать и освободит ее сразу, как она понадобится каому-либо процессу
+
+
+ps -efl - показать все процессы, every, full, long, фул и лонг
+Владелец процесса - это владелец каталога в папке /proc имя которого (имя каталога)  равно PIDу процесса
+ps aux - процессы всех пользователей
+
+
+watch
+Позволяет онлайе наблюдать за процессом. Она как бы перезапускает уоманду ps каждые 2 секунлы
+watch ps aux
+watch -d НК - подсвечивает измененные места
+watch -n 5 НК - каждые 5 сек
+& - знак амперсанд после команды позволяет запустить ее фоном
+sleep 3 & - запустит команлу слип на 3 сек фоном
+jobs - показывает процессы запушенные фоном
+jobs -l - больше инфы
+fg номер процесса - вывести в forgraund
+bg номер процесса - запустить процесс в bg если он в данный момент остановлен в bg
+Ими можно доставать процесс из background в foreground и наоборот
+CTRL+z - ставит процесс fg на паузу
+kill -SIGSTOP $PID - пауза (CTRL+Z)
+kill -SIGCONT $PID - продолжить процесс
+kill -l - посмотреть все номера сигналов
+
+killall 
+pkill - обе эти команды в качестве аргумента могут принимать не только PID, но и имя процесса 
+
+kill %1 - завершает процесс с jobs 1 (после знака % ставится номер jobs)
+
+
+Примеры:
+kill 25111 - по умолчанию посылает SIGTERM (15), но он может быть проигнорирован
+kill -9 25111 - посылает сигнал SIGKILL (9)
+или
+kill SIGKILL 25111
+или
+kill -KILL 25111
+
+kill -9 25111 965 27555 - убить несколько процессов
+
+pkill — оболочка для kill. Она позволяет применять регулярные выражений или другие критерии для нахождения процессов. У нее такой же синтаксис, как и у команды kill, но в качестве PID можно передать имя процесса (или часть его имени). Утилита работает следующим образом: она просматривает директорию proc и находит идентификатор первого процесса с подходящим именем. После этого отправляет этому процессу SIGTERM.
+
+pkill ping
+pkill -TERM ping
+pkill -u user
+
+
+killall — команда, которая прерывает процессы с одним и тем же названием. Если у вас будет запущено несколько окон с одинаковыми приложениями (а мы уже знаем, что это будут разные процессы), killall уничтожит все. Еще одно отличие заключается в том, что здесь нет необходимости знать PID (команда ищет все подходящие в папке /proc).
+
+killall -s 1 gcalctool
+
+
+CTRL+c - завершает процесс , передает сигнал SIGINT (2)
+
+nohup команда & - позволяет запущенной команде не реагировать на сигнал SIGHUP , разлогиниться, а процесс будет продолжать работать фоном
+З.Ы. Сигнал SIGHUP подается всем командам когда юзер выходит из системы
+
+nohup ping localhost > /path/to/your/file & - отправить пинг в фон и ноухап, а вывод послать в файл
+tail -f /path/to/your/file - посмотреть вывод
+
+
+ Priority 
+-20 наибольший
+0 по умолчанию
+19 наименьший 
+nice -9 ls - задать приоритет новой команде
+renice -n 0 -p 25111 - меняет приоритет уже запущенной команды 
+Повышать приоритет может делать только Рут. 
+
+top
+Смотреть процессы в real-time
+h help
+r renice
+k kill
+q выход
+
+uptime 
+показывает время, скока раьотает система , колво пользоватеоей и загрузку процесмора (последнюю 1 минуту, 5 мин, 15 мин)
+Цифры, сообщаемые для средней нагрузки, основаны на количестве доступных ядер ЦП. Думайте о том, что каждый процессор имеет 100% доступных ресурсов (процессорного времени). Один процессор = 100%, четыре процессора = 400%. Команда uptime сообщает об объеме использованных ресурсов, но делится на 100. Таким образом, 1.00 - это фактически 100% используемого процессорного времени, 2.00 - 200% и так далее.
+
+Если система имеет только одно ядро ЦП, то значение 1,00 указывает на то, что система была полностью загружена задачами. Если система имеет два ядра процессора, то значение 1,00 будет указывать на 50% загрузку (1,00/2,00). Показатель uptime 1,00 (или 100%) на 4-ядерном процессоре будет означать, что используется 1,00/4,00 (1/4 или 25%) от общего объема вычислительных ресурсов процессора.
+
+screen - создать сеанс 
+screen -list - посмортеть сеансы
+
+CTRL+a ? - показать список действий, доступных после нажатия CTRL+a
+CTRL+a d - отсоединиться от текущей сессии
+screen -r 91(это номер сессии) - подъсоединиться к сессии заново
+
+screen -S nano_edit -d -m nano - создать сессию с именем nano_edit, запустить там команду nano и сразу осоединиться от этой сессии
+exit - terminate session
+
+tmux - создать сеанс
+tmux ls - показать список сессий
+tmux list-sessions - то же самое
+tmux attach -t номер_сессии - запустить сессию (вернуться в сессию)
+CTRL-B - режим ввода команд
+CTRL-B+d - detach сессию
+CTRL-B+% - новая сессия по вертикали
+CTRL-B+" - новая сессия по горизонтали
+
+tmux new-session 'less /etc/passwd' - создать сессию и запустить там команду
+tmux kill-session -t 1 - завершить конкретную сессию
+
+
+https://habr.com/ru/articles/327630/
+
+
+
+
+
+
+/etc/init.d/ - скрипты sysV системы инициализации.
+    [root@291417 ~]# ls -l /etc/init.d/
+    total 40
+    -rw-r--r--. 1 root root 18281 May 22  2020 functions
+    -rwxr-xr-x. 1 root root  4569 May 22  2020 netconsole
+    -rwxr-xr-x. 1 root root  7928 May 22  2020 network
+    -rw-r--r--. 1 root root  1160 Sep  1  2022 README
+
+для upstart нет скрипта системы инициализации, так как Upstart обратно совмещен с sysV
+    [root@291417 ~]# ls -l /etc/rc
+rc0.d/    rc1.d/    rc2.d/    rc3.d/    rc4.d/    rc5.d/    rc6.d/    rc.d/     rc.local
+    тут лежат скрипты для Upstart, но они сылаются на 2 скпипта sysV - netconsole и network
+
+ /lib/systemd/system - каталог служб systemd
+
+chkconfig --list - показать список сервисов в автозагрузке в Centos
+chkconfig --level 345 httpd on - Добавить в автозагрузку
+
+
+    Команда 	                            Описание
+systemctl start name.service 	запуск сервиса
+systemctl stop name.service 	остановка сервиса
+systemctl restart name.service 	перезапуск сервиса
+systemctl try-restart name.service 	перезапуск сервиса только, если он запущен
+systemctl reload name.service 	перезагрузка конфигурации сервиса
+systemctl status name.service 	проверка, запущен ли сервис с детальным выводом состояния сервиса
+systemctl is-active name.service 	проверка, запущен ли сервис с простым ответом: active или inactive
+systemctl list-units –type service –all 	отображение статуса всех сервисов
+systemctl enable name.service 	активирует сервис (позволяет стартовать во время запуска системы)
+systemctl disable name.service 	деактивирует сервис
+systemctl reenable name.service 	деактивирует сервис и сразу активирует его
+systemctl is–enabled name.service 	проверяет, активирован ли сервис
+systemctl list-unit-files –type service 	отображает все сервисы и проверяет, какие из них активированы
+systemctl mask name.service 	заменяет файл сервиса симлинком на /dev/null, делая юнит недоступным для systemd
+systemctl unmask name.service 	возвращает файл сервиса, делая юнит доступным для systemd 
+systemctl daemon-reload - после смены конфига какого либо сервиса
+           
+            Добавление скрипта в автозагрузку с помощью systemd
+
+1. Создаем скрипт с шебангом (#!/usr/bin/bash, для питона .../python3 - это сим-линк на лежащий тут же файл с актуальной версией питона)
+2. chmod +x testscript.py
+3. Создаем файл самого сервиса в папке /etc/systemd/system
+    vi /etc/systemd/system/testservice.service 
+Содержимое:
+
+[Unit]
+Description=Запуск скрипта при включении сервера
+
+[Service]
+Type=oneshot
+ExecStart=/root/testscript.py
+
+[Install]
+WantedBy=multi-user.target
+
+4. Добавляем в автозагрузку
+    systemctl enable testservice
+5. Появляется сообщение
+    Created symlink /etc/systemd/system/multi-user.target.wants/testservice.service → /etc/systemd/system/testservice.service.
+6. Провкряем статус
+    systemctl status testservice
+
+    
+
+                    ВХОД ПО КЛЮЧАМ SSH
+
+    https://habr.com/ru/articles/122445/            
+
+    Папка в дом директории .ssh, а в ней файл authorized_keys
+    В нем прописано ssh-rsa публичный ключ_в_одну_строку
+    Если без ssh-rsa или ключ не в одну строку, то работать не будет
+
+    ssh-copy-id id_rsa.pub yura@hostname - безопасно скопировать свой сгенерированный публичный ключ на сервер, на который будешь подключаться по ключам в папку ~/.ssh/authorized_keys. Автоматически на нем создасться папка authorized_keys и пропишутся все права на нее.
+    При первом подключении появится сообщение типа:
+        The authenticity of host '194.87.199.75 (194.87.199.75)' can't be established.
+        ECDSA key fingerprint is SHA256:uQJL+lAOISxWyCLb6H9LYDIpWTvlAxLVdBeIWfW2yWM.
+        ECDSA key fingerprint is MD5:2a:1f:45:b6:86:32:73:6c:a9:39:09:95:9c:da:88:1e.
+        Are you sure you want to continue connecting (yes/no)?
+    Это указаны фингерпринты публичного ключа сервера. Его можно узнать выаолнив на сервере команду:
+        ssh-keygen -l -E md5 -f ssh_host_rsa_key.pub (нужно не перепутать публичный ключ)
+    или 
+        ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub (это фингерпринт SHA256)
+
+    Можно добавить публичный ключ сервера себе (клиенту) в папку /etc/ssh/ssh_known_host 
+    и при подключении к данному серверу вопрос о фингерпринте (пинять или нет?) задаваться не будет для всех полбзователей.
+
+    ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub  - сгенерить публичгый имея готовый приватный
+
+    ssh root@192.168.1.1 команда - подключиться к серверу, выполнить команду и отключиться, вывод которой отобразиться у тебя на экране
+
+    Есл серверов для подключения много и имена сложные, то можно сделать Алиасы для них сразу со всеми опциями подключения. Это делается в файле /etc/ssh/ssh_config или пользовательском файле (надп создать самостоятельно) ~/.ssh/config 
+        Host Debian
+        Hostname 212.192.31.43
+        User root
+        IdentityFile        можно указать путь до приватного ключа
+        VisualHostKey yes        чтобы показывался фингерпринт хоста
+
+        После этого можно подключаться просто вводя ssh Debian
+    
+    Опции файла /etc/ssh/sshd_config сервера к которому подключаешься - 
+        PermitRootLogin yes/no/(prohibit)without-password - можно ли входить рутом по ssh. да/нет/только без пароля (те по ключу)
+        PasswordAuthentication yes/no - можно ли подключаться к ssh используя пароль
+
+scp authorized_keys root@194.87.199.75:/root/.ssh - скопировать файл например authorized_keys из текущей папки с нашей машины, в директорию на удаленной машине (директоию надо указывать через :)
+
+scp root@194.87.199.75:/home/yura/test.txt /home/ubuntu - скопировать файл с удаленной машины на нашу в папку /home/ubuntu
+
+
+root@Debian:/etc/ssh# ssh-keygen -l -E md5 -f ssh_host_rsa_key.pub 
+3072 MD5:f7:55:20:fe:8f:ed:2f:af:2f:6a:5a:33:7b:51:1f:05 - посмотреть фингерпринт ключа на сервере, который должен высвечиваться намклиенте при первом подключении к серверу 
+или
+ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub - отобразить фингерпринт своего хоста
+ssh-keygen -lf ~/.ssh/id_rsa.pub - или так
+
+ssh-keygen -f ~/.ssh/known_hosts -R IP_адрес_сервера - удалить стороку из known_hosts
+
+
+
+Можно создать файл /etc/ssh/ssh_known_hosts и добавить туда строку из /home/user/.ssh/known_hosts, чтобы на уровне системы не спрашивало подключаться или нет
+
+Если есть парольная фраза, то чтобы не вводить ее каждый раз надо использовать:
+ssh-agent bash - создаем новую bash сессию, родителем которой является ssh-agent
+ssh-add /home/user/.ssh/id-rsa - добавляем приватный ключ и затем вводим парольную фразу
+Теперь спрашивать не будет каждый раз
+
+ssh-keygen –p - зменить парольную фразу
+
+
+
+                ТУННЕЛИ SSH 
+
+ssh first_ssh_server -N -L localport:dest_server:remore_port - 
+если мы, со своего компа не имеем доступ к dest_server (или какому-то порту dest_server), то мы такой командой подключаемся к first_ssh_server (а он уже имеет доступ к dest_server), и уже он прокидывает порт remote_port к нам на наш порт localport. Таким образом подключаясь к самому себе на localhost:localport мы по факту попадаем на dest_sever:remote_port.
+
+ssh -X remote_host - так можно запускать графические приложения удаленной машины у себя на компе
+Далее вводим команду, например firefox, и firefox открывается на нашем компе, но отображает инфу как будто мы открыли его на удаленном компе
+
+ssh devuser@dev.netdevgroup1.com -R 8000:localhost:80 - выполняем на сdоем компе, чтоюы дать возможность подключится на порт 80 к нашеиу хосту тем devuser пользователям, кто находится на сервере dev.netdevgroup1.com. То есть пользоватеди с сервера devuser@dev.netdevgroup1.com могут ввести у себя в браузере localhost:8000 и они попадут на мой комп на порт 80.
+
+            ШИФРОВАНИЕ GPG
+
+gpg --gen-key - генерируем ключи
+Генерация идет очень долго
+Ключи появляются в папке .gnupg
+gpg --list-key - выводит инфу о ключах
+export название_ключа >> gpg.pub - экспортируем свой паблик ключ в файл (он там в двоичном виде) для дальнейшей передачи своему другу, который будет им шифровать файлы, отправлямые тебе
+scp gpg.pub admin@10.10.10.1:/home/admin - копируем ключ со своего компа на удаленный комп друга в папку /home/admin
+
+gpg --import gpg.pub - друг на своем компе импортирует присланный ему ключ себе
+gpg --encrypt --recipient имя_ключа file.txt - друг шифрует файл file.txt ключом и по умолчанию создается файл file.txt.gpg
+
+Далее я копирую этот файл с машины друга:
+scp admin@10.10.10.1:/home/admin/file.txt.gpg /home/my_folder
+gpg --decrypt file.txt.gpg
+или просто
+gpg file.txt.gpg - расшифровываем файл, полученный от друга (по умолчанию команда gpg без опций подразумевает gpg --decrypt)
+
+gpg-agent --daemon - прога чтобы не вводить пасфразу, запускается фоном в виде демона и запоминает фразу, конфиг лежит в ~/.gnupg/gpg-agent.conf
+
+
+getend passwd - отобразить файл passwd без входа в рут
+getent group - посмотреть группы
+
+Чтобы добавить пользователя в группу надо в файле /etc/group  в нужной группе после : написать имя пользователя
+
+last - история входов в систему
+Команда who считывает данные из файла /var/log/utmp, который регистрирует текущих пользователей, а last команда считывает данные из файла //var/log/wtmp, в котором хранится история всех входов пользователей./var/log/utmp
+
+
+                    PARTITIONING
+
+Процесс создания и использования разделов состоит из трех этапов:
+
+    Разделите жесткий диск на разделы.
+    Создание и форматирование файловых систем внутри разделов.
+    Смонтируйте файловую систему в дерево каталогов.
+
+
+fdisk
+Два режима работы:
+- interactive (для изменения секций) and non-interactive (для перечисления секций)
+По умолчанию вывод fdisk отображается в цилиндрах, а в ubuntu - в секторах. Чтобы отобразить вывод в цилиндрах есть опция -u=cylinders
+fdisk -l - отобразить все разделы
+fdisk -u -l  - везде кроме убунту отображает начальные и конечные местоположения для каждого раздела в секторах, а не в цилиндрах. В убунту и без этой опции отображает по дефолту в секторах.
+fdisk -c - уже устарело, но ранее бкз этой опции вылезала ошибка о несовместимости с DOS.
+
+Заметка
+Таблица разделов, описанная выше, постоянно хранится в MBR. При загрузке системы в памяти создается копия. Эта копия используется ядром для различных системных задач. Ядро не может напрямую взглянуть на файловую систему, чтобы определить, к какому типу она относится. Таким образом, таблица разделов хранит эту информацию на благо ядра.
+fdisk -l /dev/sda > mydisklayout.txt - перед разбиением на разделы лучше сохранить вывод команды в файл, чтобы потом откатить при необходимости
+
+fdisk /dev/sda - интерактивное моде
+n - создать новую партицию
+d - удалить партицию
+t - изменить файловую систему (83 - Linux по дефолту, 5 - для расширенного, 83 - для swap)
+w- записать изменения
+q - выйти без изменений
+
+Если после сохранения разделов вылезает ошибка, то можно выполнить команду partprobe или kpartx, если эти команды установлены в системе. Если нет, то систему необходимо перезагрузить, прежде чем можно будет использовать новые разделы.
+
+sfdisk
+Для автоматизации секционирования и сохранения резервной копии и восстановления таблица разделов
+sfdisk -s - отобразить информацию о дисках в системе
+sfdisk -d /dev/sda > sda.disk - сохранить резервную копию таблицы разделов  в файл
+sfdisk -f /dev/sda < sda.disk - восстановить из файла
+
+
+gdisk
+Для работы с GPT разделами
+gdisk /dev/sdb1 - надо указывать диск
+
+parted
+parted DEVICE опция - синтаксис команды
+parted /dev/sdb print - посмотреть инфу о девайсе
+Чтобы сделать диск разметным, необходимо создать disklabel (таблицу разделов). Это делается с помощью следующей команды:
+parted /dev/sdb mklabel msdos
+Теперь, когда таблица разделов записана на диск, на диске можно создавать разделы. Чтобы создать основной раздел, занимающий первые 50% диска, используйте следующую команду:
+parted /dev/sdb mkpart primary 0% 50%
+
+В интерактивном режиме:
+parted DEVICE
+h - справка
+
+
+mkfs
+Для создания файловой системы
+При создании файловой системы происходит запись в раздел, поэтому ранее хранившиеся на нем данные будут потеряны. Поэтому будьте очень внимательны при выполнении команды mkfs
+К счастью, команда mkfs не будет работать, если раздел в данный момент используется, то есть он смонтирован.
+
+mkfs -t ext4 /dev/sdb1
+или
+mkfs.ext4 /dev/sda1
+Вся инфа будет стерта. НО команда не работает если раздел используется (смонтирован)
+
+Раздел подкачки
+fdisk с идентификатором 82
+mkswap ИМЯ_РАЗДЕЛА - преобразовать раздел а раздел подкачки (initialize)
+или
+mkswap -L myswap /dev/sdb6
+
+swapon ИМЯ_РАЗДЕЛА - включить (activate)
+Работает до перезагрузки, иначе можно лучше примонтировать в fstab для автоматического монтирования
+
+swapon -a - эта команда перечитывает файл fstab (-a, --all    enable all swaps from /etc/fstab)
+
+swapon -s - отобразить все разделы подкачки
+
+Можно создать файл подкачки
+dd if=/dev/zero of=/var/swapfile bs=1M count=100
+Затем mkswap /var/swapfile
+swapon /var/swapfile
+
+
+
+
+далее отредактировать файл fstab
+LABEL=myswap    nono    swap    sw  0   0
+
+
+
+        Установка ОС с нуля
+
+Сначала монтируем /boot на 512 MB или до 1GB и ставим пометку Загрузочный
+Затем /
+Затем swap раздел (он должен быть ближе к началу диска, где наиболее быстрые сектора)
+Затем остальное
+
+LVM
+
+Допустим есть 3 новых hdd диска :
+/dev/sdd    /dev/sdb    /dev/sdc
+
+Создаем на них phisical volume:
+root@localhost:~# pvcreate /dev/sdb
+root@localhost:~# pvcreate /dev/sdc
+root@localhost:~# pvcreate /dev/sdd
+
+vgcreate vol1 /dev/sdb /dev/sdc /dev/sdd - создаем одну группу томов vol1 куда помещаем все эти 3 phisical volume. Она как бы обьединяет все 3 диска в один большой
+
+Кроме того, если в систему будет добавлен еще один физический том, добавьте новый жесткий диск, используйте команду pvcreate, а затем команду vgextend
+
+Создаем logical volume:
+lvcreate -L 200M -n logical_vol1 vol1
+
+Можно увелчивать размер разделов на лету, без выключения компа. Если уменьшать раздел, то надо выключать машину, загружаться с загрузочной флешки и уменьшать.
+- Выбираем все место на диске и создаем там один загрузочный раздел
+Надо выбрать Использовать как: физический том для LVM 
+Далее выбираем LVM
+Создаем группу томов
+Выбираем диски (или 1 диск) для этой группы
+Далее создаем логические тома
+Сохраняем, выходим в обычное меню и устанавливаем файловую систему и монтируем.
+
+pvs - посмотреть есть ли на компе физичекие тома (phisical volume)
+vgs - посмотреть Volume group
+lvs - logical volume
+
+df -h - посмотреть какие диски примонтированы (disk free )
+
+pvcreate /dev/sda1 - создать физичекий том размером с партцию sda1 (можно создать и без партиции, просто подставив /dev/sda)
+
+vgcreate vg_00 /dev/sda1 - создать volum groupe и добавить в нее наш физичекий том
+
+lvcreate vg_00 -n lv_01 -L 100M - создать логический том в данной группе размером 100MB
+
+mkfs.ext4 /dev/mapper/vg_00-lv_00 - создать файловую систему на этом логическом томе
+
+mount /dev/mapper/vg_00-lv_00 /mnt/01 - примонтировать этот логический том  
+
+после монтирования в точке монтирования появляется каталог lost+found - спутник файловой системы ext4
+
+vgextend vg_00 /dev/sda2 - добавить к логической группе еще 1 диск
+
+lvextend /dev/mapper/vg_00-lv_00 -L +200M - добавить к логическому тому еще 200MB
+НО! Посл этого файдовая система еще не будет знать что появилтсь дополнительные мегабайты, поэтому надо сообщить ей об этом командой для файловой системы ext4
+resize2fs /dev/mapper/vg_00-lv_00
+
+lvextend /dev/mapper/vg_00-lv_00 -L +200M -r - уже с ключом resize!
+
+pvmove /dev/sda1 /dev/sda3 - если надо вынуть диск один, то сначала нужно вставить диск 3, жобавить его в vg_00 и затем данной командой перенести данные с диска1 на диск3
+Можно без указания куда, если это не важно
+
+А теперь можно вывести том из группы
+vgreduce vg_00 /dev/sda1 - какую группу на какой том уменьшаем
+
+pvremove /dev/sda1 - вообще удалить логический том
+
+
+
+
+RAID 
+Надо делвть RAID1 (зеркалирование)
+Выбираем диски и ставим в графе использовать как: физический том для RAID
+Далее - настройки программного рейд массива
+Создать MD устройство
+Далее, далее, и потом уже создаем LVM (создаем группу и туда добавляем dev/md0)
+Если надо зашифровать, то перед созданием LVM надо выбрать устройство RAID и его уже использовать как: физический том для шифрования
+
+                    MOUNTING
+
+МОНТИРОВАНИЕ
+
+mount - без опций покажут все примонтированные устройства
+mount /dev/sda /mnt - примонтировать что и куда
+df -h - выводит информацию о примонтированных устройствах
+umount /mnt - откуда отмонтировать
+umount /dev/sda - что отмонтировать
+mount /dev/sdb2 /opt -o ro - смонтировать в режиме read-only
+mount -t iso9660 /dev/scd0 /mnt - смонтировать с указанием файловой системы
+
+lsblk - вывести инфу о блочных устройствах (что куда примонтировано)
+lsblk -a - обо всех
+lsblk -l - доп столбики
+lsblk -f - показывает инфу о доступных файловых системах
+
+/proc/self/mounts - файл содержащий информацию о точках монтироваия
+/etc/fstab - файл описывающий точки монтирования при старте                    
+
+Монтирование файловой системы в каталог, который уже содержит файлы, сделает эти файлы временно недоступными. При размонтировании они снова появятся.
+
+/mnt и /media - для временного подключения
+mount -t iso9660 /dev/scd0 /mnt - опция -t служит для указания какой либо особой файловой системы
+mount /dev/sdb2 /opt -o ro - опция -o ro показывает что можно будет только читать 
+
+umount ИЛИ /mnt ИЛИ /dev/sdb1 - отмонтировать (указать можно или точку монтирования или само устройство)
+
+ЕСли не получается омонтировать:
+lsof | grep /mnt - посмотреть все открытые файлы в данной файловой системе
+fuser -v /mnt - посмотреть какой юзер использует файловую систему сейчас
+
+Коды доступа, которые могут быть сообщены командой fuser:
+Код доступа 	Значение
+c 	Процесс использует точку монтирования или подкаталог в качестве текущего каталога.
+e 	Процесс представляет собой исполняемый файл, который находится в структуре точек монтирования.
+f 	Процесс имеет открытый файл из структуры точек монтирования.
+F 	Процесс имеет открытый файл из структуры точки монтирования, в которую он записывает.
+r 	Процесс использует точку монтирования в качестве корневого каталога.
+m 	Процесс представляет собой файл mmap или разделяемую библиотеку.
+
+fuser -k /mnt - завершить все процессы в точке монтирования 
+fuser -k -KILL /mnt - убить все процессы 
+fuser -l - показать список сигналов, которые можно посылать командой fuser -k
+umount -f /path/to/device - принудительное размонтирование. Может привести к потере данных
+umount -l /path/to/dev - ленивое размонтирование
+
+lsof - показать все файлы открытые в системе
+lsof -u sysadmin - все файлы открытые юзером
+fuser - команда показывающая какие процессы используют данный файл иди директорию
+fuser /home/username
+fuser -av / - отобразить еще и имя
+
+/etc/fstab - в файле солержится инфа о том что монтируется автоматически при загрузке
+(сделать бэкап перед этим)
+mount -a - (-a, --all               mount all filesystems mentioned in fstab)
+перечитать файл fstab и при выполнение команды df-h должен появится ваш примонтированный диск(партиция). Если не появился, то надо исправлять файл fstab, иначе система не загрузится
+
+
+Вид файла /etc/fstab:
+
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+/dev/vda2       /               ext4    errors=remount-ro 0       1
+/swapfile                                 none            swap    sw          0      0
+
+или
+
+UUID=3db6ba40-67d2-403d-9c0a-9a901697cd8d /      ext4    defaults        1 1
+UUID=09d641d5-bc5a-4065-8d80-8ae797dfa7f3 /boot  ext4    defaults        1 2
+UUID=5ee634a5-c360-4211-a41b-9aa40d78a804 /home  ext4    defaults        1 2
+UUID=34819281-65e3-4c78-ba2d-16952684c9cb swap   swap    defaults        0 0
+
+ Опции монтирования fstab:
+
+Вариант крепления 	Цель 	Противоположный
+rw  	Разрешить чтение и запись 	ro
+suid 	Разрешить выполнение suid 	nosuid
+dev 	Разрешить файлы устройства 	nodev
+exec 	Разрешить исполняемые файлы 	noexec
+auto 	Автоматическое монтирование 	noauto
+nouser 	Запретите обычным пользователям монтировать или размонтировать раздел. Использование user позволяет пользователям без привилегий root монтировать это конкретное устройство, что полезно для съемных носителей. 	user
+async 	Все записи должны быть асинхронными 	sync
+relatime 	Обновлять время доступа к файлу только в том случае, если файл был изменен или его метаданные были изменены с момента последнего доступа 	Н/Д
+
+Использование ключевого слова defaults более понятно и быстро, чем указание каждого отдельного defaults.
+Если предполагается использовать несколько вариантов, то они должны быть разделены запятой и не иметь встроенных пробелов!
+
+Поле ДАМП
+Это поле предназначено для того, чтобы сообщить администратору, для каких файловых систем следует создать резервную копию при использовании команды dump (сейчас эта команда устарела). Администратор выполнит команду dump -w, и результатом будет список файловых систем для резервного копирования. Этот список генерируется файловыми системами, имеющими значение 1 в поле dump файла //etc/fstab. Значение 1 в этом поле используется для локальных реальных файловых систем (файловых систем на разделах, которые находятся на локальных жестких дисках). Любые псевдофайловые системы, удаленные файловые системы или записи пространства подкачки должны иметь значение 0 в этом поле.
+
+Поле проверки файловой системы
+Шестое поле предназначено для определения порядка, в котором файловые системы будут проверяться утилитой fsck (File System ChecK ) во время загрузки системы. Эта утилита предназначена для поиска и устранения проблем с файловой системой.
+Корневая файловая система всегда должна иметь 1 в этом поле, чтобы указать, что она будет проверена программой fsck в первую очередь. Все остальные локальные файловые системы (ext2/ext3/ext4) должны иметь значение 2, указанное для этого поля, поэтому они будут проверяться после корневой файловой системы.
+Если файловые системы находятся на одном диске, они будут проверяться последовательно, но если они находятся на разных дисках, они будут проверяться параллельно, если это возможно.
+Любые псевдофайловые системы, удаленные файловые системы или записи пространства подкачки должны иметь значение 0 в этом поле. Эти файловые системы никогда не должны проверяться утилитой fsck.
+
+ Лучше монтировать по UUID, так как он уникальный
+ blkid - посмотреть UUID
+ e2label ИМЯ_ДИСКА - посмотреть или изменить лэйбл
+ e2label /dev/sda2 mydisk - поставить метку
+
+
+ mount /home -o remount, noatime - переподключить с новой опцией
+ Эта опция полезна для изменения параметров смонтированной файловой системы без размонтирования самой файловой системы.
+
+fsck - проверить файловую систему после сбоя 
+
+mount -o loop cdrom.iso /mnt - позволяет монтировать файлы, снутри которых есть какая то файловая система (img, raw, iso)
+Опция loop для команды mount используется для монтирования специальных файловых систем, которые хранятся в файле. Эти файлы имеют расширение ..img или .iso (для файлов файловой системы ISO 9660), которые содержат полные файловые системы, которые могут быть смонтированы с помощью команды mount с помощью опции loop
+
+df -h - посмотреть что примотинтировано с инфой в human format
+df -T - показать файловую систему
+df -i - показать кол-во inode
+по дефолту показывает размер в блоках по 1 кбайту
+
+
+du -h /ПАПКА - показать размер этой папки и всех подпапок в human readable
+du -s /ПАПКА - только этой папки (summarize)
+
+du /etc |sort -nr | head - показать 10 самых больших папок в данной директории
+
+du -h --max-depth=1 --exclude=/usr/lib/audit
+- ограничивает глубину рекурсии в 1 и исключает из вывода папку
+
+tune2fs -l /dev/sda1 - показывает инфу из суперблока файловой системы данного раздела
+https://linux16.ru/notes/nastrojka-zhestkix-diskov-cherez-tune2fs-v-linux.html
+
+tune2fs -c0 -i0 /dev/sdb1 - По умолчанию, каждая файловая система будет проходить полную проверку системы в процессе загрузки либо каждые 180 дней (interval), либо после 30 монтирований (count), в зависимости от того, что наступит раньше. Эта команда отключает это. 
+
+Подводя итог, ниже приведена таблица опций, доступных tune2fsдля настройки файловой системы ext2, ext3 или ext4:
+Выбор 	Эффект
+-l 	Перечислите информацию содержащуюсю в суперблоке для файловой системы.
+-c 	Измените максимальное количество раз, которое может быть смонтировано файловой системой, прежде чем потребуется полная проверка файловой системы. Значение по умолчанию обычно составляет 30 раз. Это можно отключить, установив значение 0.
+-i 	Изменение максимального интервала времени между моментами, когда файловая система должна пройти полную проверку файловой системы. Значение по умолчанию — 180, что означает 180 дней. Это можно отключить, установив интервал равным 0.
+-j 	Создайте файл журнала для файловой системы ext2, позволяющий монтировать ее как файловую систему ext3 или ext2.
+-m 	Укажите процент пространства, который должен быть зарезервирован для пользователя root или привилегированных процессов. Значение по умолчанию, равное 5%, часто является неоправданно большим для больших файловых систем.
+-o 	Укажите параметры монтирования по умолчанию. По умолчанию производные дистрибутивы RedHat указывают, что acl и user_xattrдобавляются к файловым системам, созданным во время установки. При применении нескольких вариантов их нужно разделять запятыми.
+
+dumpe2fs /dev/sda1 | head - инфаа о файловой системе
+
+dumpe2fs /dev/sda1 | grep "Free inodes" - инфа о свободных айнодах в файловой системе
+
+После создания партиции на диске ядро не всегда сразу может ее видеть. Надо или перезагрузить или выполнить команду
+partprobe
+или
+kpartx 
+
+
+        ПРОВЕРКА ФАЙЛОВОЙ СИСТЕМЫ
+
+Когда дело доходит до резервного копирования, опоздание может быть лучше, чем никогда. Если файловая система повреждена и не может быть смонтирована, подумайте о том, чтобы сделать ее резервную копию с помощью команды dd прежде чем пытаться исправить ее с помощью команды fsck. Таким образом, если исправление, выполняемое командой fsck, действительно ухудшает ситуацию, чем она была изначально, все равно можно вернуться к состоянию, сохраненному в резервной копии.
+
+Поскольку корневая файловая система не может быть размонтирована во время работы системы, проверить ее может быть сложно. Одним из подходов к проверке корневой файловой системы является загрузка другой операционной системы Linux с другой корневой файловой системой. Распространенный подход заключается в загрузке и использовании Live CD-ROM, DVD или USB, которые являются загрузочными операционными системами Linux, которые помещаются на этих носителях.
+
+touch /forcefsck - после создания этого файла, при следующей загрузке системы будут проверены все диски где стоит не 0 в поле fsck в файле /etc/fstab. После проверки файл автоматически удалится.
+
+Если в разделе есть проблема, попытка смонтировать его может привести к появлению сообщения об ошибке, подобного этому:
+    mount: you must specify the filesystem type
+Как правило, команда mount считывает первый блок файловой системы (суперблок), в котором хранится информация о типе файловой системы. Когда суперблок повреждается, команда mount не может прочитать эту информацию.
+В этом случае используйте команду fsck, чтобы исправить файловую систему. 
+
+Суперблок
+
+Суперблок хранится в первом блоке каждой группы блоков (за исключением группы 1, в которой в первом блоке расположена загрузочная запись). Суперблок является начальной точкой файловой системы. Он имеет размер 1024 байта и всегда располагается по смещению 1024 байта от начала файловой системы. Наличие нескольких копий суперблока объясняется чрезвычайной важностью этого элемента файловой системы. Дубликаты суперблока используются при восстановлении файловой системы после сбоев.
+
+Информация, хранимая в суперблоке, используется для организации доступа к остальным данным на диске. В суперблоке определяется размер файловой системы, максимальное число файлов в разделе, объем свободного пространства и содержится информация о том, где искать незанятые участки. При запуске ОС суперблок считывается в память и все изменения файловой системы вначале находят отображение в копии суперблока, находящейся в ОП, и записываются на диск только периодически. Это позволяет повысить производительность системы, так как многие пользователи и процессы постоянно обновляют файлы. С другой стороны, при выключении системы суперблок обязательно должен быть записан на диск, что не позволяет выключать компьютер простым выключением питания. В противном случае, при следующей загрузке информация, записанная в суперблоке, окажется не соответствующей реальному состоянию файловой системы.
+
+Команда e2fsck - это средство проверки файловой системы, вызываемое fsck для файловых систем ext2, ext3 и ext4.
+fsck ФС - проверить ФС (размонтированную!)
+dumpe2fs - для поиска суперблоков (Если при создании файловой системы использовались пользовательские настройки, суперблоки резервных копий могут находиться не в стандартном расположении)
+
+ dumpe2fs /dev/sdb1 | grep superblock 
+ 
+ root@localhost:~# dumpe2fs /dev/sdb1 | grep superblock
+dumpe2fs 1.41.12 (17-May-2010)
+  Primary superblock at 1, Group descriptors at 2-2
+  Backup superblock at 8193, Group descriptors at 8194-8194
+  Backup superblock at 24577, Group descriptors at 24578-24578
+  Backup superblock at 40961, Group descriptors at 40962-40962
+
+Используйте параметр -b с командой e2fsck, чтобы указать резервную копию, когда основной суперблок был поврежден. Например:
+    root@localhost:~# e2fsck -b 8193 /dev/sdb1
+
+Команда fsck также может быть использована с той же опцией, так как она передаст эту опцию команде e2fsck:
+    root@localhost:~# fsck -b 8193 /dev/sdb1
+    > y
+
+Чтобы найти номер суперблока, если главный суперблок поврежден, го команда:
+mke2fs -n /dev/sdb5 - показывает где хранятся резервные суперблоки
+
+
+XFS
+xfs_repair - для восстановления xfs (только в размонтированной файловой системе)
+xfs_copy и xfsdump
+Команда xfs_copy может создать точную копию сомнительной файловой системы, чтобы поэкспериментировать с восстановлением.
+
+xfs_repair -L /dev/sda3 - обнулить журнал, только в крайнес случае, если лог журнала поврежден
+
+В ситуациях, когда требуется ручное восстановление файловой системы XFS, команда xfs_db может быть использована для инициирования такого восстановления файловой системы XFS. Команда xfs_db используется для отладки и возможного восстановления файловой системы XFS, но при неумелом использовании может легко сделать файловую систему непригодной для использования и восстановления.
+Чтобы использовать xfs_db в экспертном режиме, используйте команду:
+    xfs_db -x /dev/sda3
+
+xfs_fsr - дефрагментация
+
+Прежде чем вызывать команду xfs_fsr для использования системных ресурсов для реорганизации файловых систем, рекомендуется проверить, не требуется ли им такое обслуживание. Для оценки необходимости реорганизации можно использовать команду xfs_db:
+
+root@localhost:~# xfs_db -r /dev/sda3
+xfs_db>frag
+actual 345, ideal 289, fragmentation factor 16.23%
+Note, this number is largely meaningless.
+Files on this filesystem average 1.19 extents per file
+xfs_db>quit
+
+Использование внутренней команды frag сообщит о состоянии фрагментации файловой системы, и это будет работать как на смонтированных, так и на размонтированных файловых системах. Фрагментация файловой системы в примере довольно низкая, поэтому реорганизация, скорее всего, не даст практически никаких результатов производительности.
+Если коэффициент фрагментации превышает 25% или около того, то реорганизация даст измеримые результаты производительности.
+
+Еще одна очень полезная функция команды xfs_fsr заключается в том, что вы можете настроить ее на выполнение в течение определенного периода времени, поэтому она может быть запущена либо вручную, либо по расписанию, чтобы работать в течение нескольких часов каждую ночь, когда система менее загружена. Чтобы запустить xfs_fsr в течение 1 часа, а затем остановиться, выполните следующие действия:
+
+root@localhost:~# xfs_fsr -t 3600
+
+Если по какой-либо причине xfs_fsr прерывается или должна быть остановлена, он отслеживает, где он был в процессе реорганизации, и может возобновить работу с того места, где она остановилась, при повторном запуске.
+
+        РАЗДЕЛЯЕМЫЕ БИБЛИОТЕКИ (shared librares)
+        
+Когда программа выполняется, динамический компоновщик /lib/ld-linux.so найдет и загрузит разделяемые библиотеки, необходимые программе, подготовит программу к выполнению, а затем запустит ее. Старые двоичные файлы в формате a.out компонуются и загружаются программой /lib/ld.so Обе программы будут искать библиотеки в каталогах /lib, /usr/lib/, каталогах, перечисленных в переменной окружения LD_LIBRARY_PATH, а также в кэш-файле /etc/ld.so.cache
+
+Обычно находятся в папках /lib и /usr/lib , а также в файле /etc/ld.so.cache
+ldconfig - программа для обновления файла /etc/ld.so.cache, используемая после добавления или удаления файлов в каталоге /etc/ld.so.conf.d
+ldconfig -v/-p - чтобы посмотреть где находятся файлы библиотек
+Каталог /etc/ld.so.conf содержит строчку 
+    include ld.so.conf.d/*.conf
+Каталог //etc/ld.so.conf.d содержит файлы *.conf, в которых указаны каталоги библиотек
+В эту папку можно добавить текстовый файл с путем до своей бибилиотеки, файл должен иметь расширение .conf
+После добавления соей библиотеки надо обновить кэш командой ldconfig.
+$LD_LIBRARY_PATH - переменная куда рользователи могут добавить путь до соих библиотек
+export LD_LIBRARY_PATH=/home/jose/app/lib
+
+ldd /bin/bash - посмотреть какие библиотеки связаны с программой (в данном примере с bash)
+    
+ldd /usr/sbin/sshd | grep libwrap                             
+        libwrap.so.0 => /lib/x86_64-linux-gnu/libwrap.so.0 (0x00007f0cabc98000)
+
+
+КВОТИРОВАНИЕ
+
+quotaoff /mnt - отключить квоты если они были
+sudo quotacheck -cug /mnt - create квоты для user and group
+В директории появились двоичнве файлы настроек квоты
+sudo edquota -u yura - создать квоту на user'a yura - счетчик soft - на неделю, hard - не более чем
+sudo edquota -t - изменить время квот 
+quotaon /mnt - включаем КВОТИРОВАНИЕ
+repquota /mnt - сделать отчет по квотам
+warnquota - отсылает сообщение на почту пользователя который превысил квоту
+
+=======
+modprobe - загружает в ядро модуль с зависимостями
+
+
+                X server
+
+Hardware ---> Kernel ---> Display Server   ---> Desktop Manager ---
+                          (Display Manager)     (GNOME, KDE, Xfce)|_______ USER
+                               |                                  |
+                               |--------------> Window Manager  ---
+                           
+X Window System часто называют X11 или просто X (в разговорной речи — «иксы́»)
+
+The following are some of the more common components of the X Window system:
+    Hardware drivers
+    X server
+    X client
+    Window managers
+    Display manager
+    Widget/toolkit libraries
+
+ X -configure - создать файл конфигкрации x server
+ Вот такой xorg.conf.new
+ И его надо поместить в /etc/X11/xorg.conf
+
+Типичные дисплейные менеджеры (or Display server), используемые в настоящее время, включают X Display Manager (XDM), KDE Display Manager (KDM), GNOME Display Manager (GDM) и MDM Display Manager (MDM; рекурсивная аббревиатура).
+Как правило, эти диспетчеры отображения входят в desktop environment:
+
+    Среда рабочего стола GNOME предоставляет диспетчер отображения gdm.
+    Среда рабочего стола KDE предоставляет менеджер дисплея kdm.
+    Если среда рабочего стола не установлена, используется диспетчер дисплея xdm.
+    Некоторые дистрибутивы разработали свой собственный дисплейный менеджер. Например, диспетчер отображения для Ubuntu называется lightdm.
+
+When your system boots in the graphical mode, you will see a graphical login page. This is based on the X Display Manager Control Protocol (XDMCP) which is responsible for the underlying login system. On top it different programs like GDM (for GNOME), SSDM (KDE) and a more general option XDM handle the theming and other aspects of login.
+
+gnome-session - этот пакет сожержит все компонеты GNOME
+
+sudo apt-get install xserver-xorg gnome-session - установить 
+sudo apt-get install xserver-xorg kde-standard
+yum groupinstall general-desktop
+yum groupinstall kde-desktop
+
+
+Будет ли экранный менеджер включен или выключен в большинстве дистрибутивов Linux, зависит от уровня запуска по умолчанию и дистрибутива. Для дистрибутивов, производных от Debian, это означает, что если уровень запуска по умолчанию находится в диапазоне от 2 до 5, то менеджер отображения будет запущен автоматически, если он установлен. Для Debian файл /etc/inittab определяет уровень запуска по умолчанию во втором поле следующей строки:
+
+id:2:initdefault: (2-5 для Debian)
+
+В системах, производных от Red Hat, та же строка в файле /etc/inittab определяет уровень запуска по умолчанию, а на уровне запуска 3 менеджер дисплея и графическая среда не запускаются, но если уровень запуска по умолчанию равен 5, то менеджер дисплея будет запущен, если все пройдет успешно:
+
+id:5:initdefault: (только 5 для RH)
+
+Для дистрибутивов, производных от Debian, используйте команду dpkg-reconfigure для пакета, предоставляющего диспетчер отображения. Это позволяет выбрать, какой менеджер отображения использовать по умолчанию
+Если система является дистрибутивом Linux на основе Red Hat, то файл 
+    /etc/sysconfig/desktop  используется для установки диспетчера дисплея и окружения рабочего стола по умолчанию
+
+gconftool-2 - команда для изменения приветственного баннера на RedHat
+
+/etc/X11/xorg.conf - файл конфигурации X cервера
+Самые последние версии X-сервера могут работать без какого-либо файла xorg.conf, так как они автоматически настраиваются при запуске, но xorg.conf всё ещё может быть использован для создания пользовательских конфигураций xorg.conf Ниже приведен список разделов, определенных для этого файла:
+Секция 	Цель
+Files 	
+
+Пути к файлам для шрифтов и модулей
+ServerFlags 	
+
+Флаги сервера являются глобальными параметрами
+Module 	
+
+Динамическая загрузка модулей, расширяющих сервер
+Extensions 	
+
+Включение расширения для протокола X11
+InputDevice 	
+
+Описание устройства ввода для клавиатуры и указателей
+InputClass 	
+
+Описание входного класса
+Device 	
+
+Описание устройства видеокарты
+VideoAdaptor 	
+
+Описание видеоадаптера Xv
+Monitor 	
+
+Описание монитора
+Modes 	
+
+Описание видеорежимов
+Screen 	
+
+Конфигурация экрана
+ServerLayout 	
+
+Общая планировка, объединяющая другие секции
+DRI 	
+
+Инфраструктура прямого рендеринга
+Vendor 	
+
+Конфигурация в зависимости от поставщика
+
+В эти файлы сыплются ошибки
+~/.session-errors
+~/.xsession-errors
+
+
+
+            RUNLEVELS
+
+Runlevel 	Purpose 	                    systemd Target
+0 	Halt or shut off the system 	    poweroff.target
+1 	Single-user mode for administrative tasks   	rescue.target
+2 	Multi-user mode without configured network interfaces or network services   	multi-user.target   (дефолт для Debian, тоже что и 2345)
+3 	Normal startup of the system 	    multi-user.target  
+4 	User-definable  	multi-user.target
+5 	Start the system normally with a graphical display manager  	graphical.target
+6 	Restart the system 	    reboot.target            
+
+runlevel - посмотреть текущий ранлевел
+who -r - или так
+
+init 5
+или
+telinit 5 - перейти на уроверь 5
+
+Если система использует традиционный процесс init для управления системными службами, то сценарии в каталоге //etc/rc.d/init.d
+
+chkconfig --level 24 atd on
+chkconfig --level 35 atd off
+
+While the halt and poweroff commands will begin shutting down the system immediately, the shutdown command requires a time argument to indicate when the shutdown should begin. Formats of this time argument can be the word now, a countdown time in the HH:MM format, or the number of minutes to delay in the +M format. A message that will appear in the terminals of all users can also be specified with the shutdown command. 
+
+            ACCESSIBILITY
+
+Several keyboard settings can be enabled by going to the Keyboard Accessibility settings of the GNOME desktop:
+
+    Repeat Keys
+    Sticky Keys
+    Slow Keys
+    Bounce Keys
+    Toggle Keys
+    Mouse Keys
+
+Repeat Keys - позволяет предотвратить повторный ввод клавиши, если пользователь нажимает клавиши слишком медленно. Можно настраивать задержку.
+
+Sticky Keys - позволяет настроить залипание клавишь, чтобы например при вводе заглавной буквы не удерживать клавишу SHIFT, а просто нажать шифт, а затем нужную букву.
+
+Slow Keys - противоположна Repeat keys, и позволяет настроить ввод символа только если удерживаешь клавишу определенное время. Можно настроить задержку.
+Это для тех кто слишком долго печатает и имеет heavy hands, случайно задевая другие клавиши при печатании.
+
+Bounce Keys - предотвращает повторный ввод, если клавиша была нажата повторно слишком быстро (Паркинсон)
+
+Toggle Keys - позволяет настроить звук или моргание экрана, когда нажимается одна из modifier keys (SHIFT, ALT, CTRL)
+
+Mouse Keys - можно управлять курсором мыши используя клавиатуру.
+
+Orca
+Emacspeak
+Espeak
+Festival - читают текст вслух
+
+
+            КОНСОЛИ
+
+CTRL + ALT + F1/F2 и т.д. - переключаться на терминал
+F7 - обычно это графическая среда
+
+Команда tty - показывает в каком терминале мы находимся
+Если путь /dev/tty1 - это настоящий терминал
+А если /dev/pts/tty1 - это псевдотерминал
+
+echo $DISPLAY - какой дисплей активен
+    :0 - : значит что дисплей локальный , ноль что первый
+
+CTRL + ALT + t - вызвать терминал
+
+DISPLAY=192.168.0.248:0 - подключится к удаленному терминалу
+xhost +192.168.0.247 - разрешить подключаться к дисплеям данному ip адресу
+
+
+apt install gdm3 sddm - установить менеджер дисплея (входа в систему) GNOME и KDM
+dpkg-reconfigure gdm3/sddm - изменить менеджер по дефолту
+Какой из них запускать по дефолту отображено в файлку /etc/X11/defaul-display-manager
+
+
+
+            SELinux
+
+3 режима
+- disabled - 
+- permissive - ничего не блокируется, но логирует все нестандартное
+- enforcing - блокируется все что не разрешено
+
+getenforce - посмотреть текущий статуса
+sestatus - тоже, но вывод полный
+
+/etc/selinux/config - тут можно поменять режим
+setenforce 0 - переводит в режим permissive
+setenforce 1 - обратно в enforcing
+
+ls -Z - показывает контекст
+    unconfined_u:object_r:user_home_t:s0 file1
+u - user
+r - role
+t - type (если отосится к файлу, то это домен) определяет у каких процессов к каким файлам, процессам, портам, устройствам есть доступ и какой именно
+
+ semanage login -l - показать пользователей (селинукс не использует системных пользователей)
+
+Login Name           SELinux User         MLS/MCS Range        Service
+
+__default__          unconfined_u         s0-s0:c0.c1023       *
+root                 unconfined_u         s0-s0:c0.c1023       *
+
+К одному пользователю селинукса НЕОГРАНИЧЕННЫЙ привязаны обычные пользоваиели и рут 
+
+Обычно настраивают не пользователей, а роли. У одного пользователя может быть больше одной роли
+
+semanage user -l - посмотреть у какго пользователя какие роли
+
+                Labeling   MLS/       MLS/
+SELinux User    Prefix     MCS Level  MCS Range               SELinux Roles
+
+guest_u         user       s0         s0                             guest_r
+root            user       s0         s0-s0:c0.c1023                 staff_r sysadm_r system_r unconfined_r
+staff_u         user       s0         s0-s0:c0.c1023                 staff_r sysadm_r system_r unconfined_r
+sysadm_u        user       s0         s0-s0:c0.c1023                 sysadm_r
+system_u        user       s0         s0-s0:c0.c1023                 system_r unconfined_r
+unconfined_u    user       s0         s0-s0:c0.c1023                 system_r unconfined_r
+user_u          user       s0         s0                             user_r
+xguest_u        user       s0         s0                             xguest_r
+
+semanage port -l - посмотреть разрешения по портам
+
+
+                FIREWALL
+
+В ядре есть фреймворк netfilter (kernel space), а в пространстве пользователя фреймворки для управления (iptables, nftables), но они сами являются каркасом и есть программы (инструменты для управления) которые позволяют создавать политики.
+Для iptables - iptables и ufw, а для nftables - firewalld и nft.
+
+systemctl status firewalld - проаерить состояние
+
+firewall-cmd --list-all - показывает всю инфу, что разрешено/запрещено и к кому это относится
+sudo firewall-cmd --info-service=ssh - посмотреть инфу о сервисе
+/lib/firewalld/services/ - тут хранятся настройки файервола для всех сервисов
+firewall-cmd --add-port=2222/tcp - открыть портам
+firewall-cmd --add-port=2222/tcp --permanent - чтобы изменения остались и после перезагрузки
+firewall-cmd --list-services - посмотреть порты (стандартные) для каких сервисов открыты
+firewall-cmd --remove-service=dhcpv6-client - убрать порты сервиса из разрешенных
+
+firewall-cmd --permanent --service=ssh --remove-port=22/tcp - удалить порт из сервиса
+firewall-cmd --permanent --service=ssh --add-port=22/tcp - добавить порт в сервис
+
+cat /etc/protocols - посмотреть протоколы и их номера
+sudo firewall-cmd --add-protocol=ospf - добавить протокол
+firewall-cmd --add-icmp-block-inversion - запрет пинга
+firewall-cmd --remove-icmp-block-inversion - разрешить пинг
+
+firewall-cmd --set-target=DROP - чтобы пинги дропались
+
+sudo firewall-cmd --get-zones - посмотреть зоны
+sudo firewall-cmd --get-default-zone - показать зону по умолчанию
+sudo firewall-cmd --list-all --zone=НАЗВАНИЕ_ЗОНЫ - посмотреть инфу по конкретной зоне 
+sudo firewall-cmd --change-interface=НАЗВАНИЕ_ИНТКРФЕЙСА --zone=trusted - переместить интерфейс в зону 
+
+При командах нужно указывать зону, если это не дефолтная зона 
+sudo firewall-cmd --zone=block --add-source=IP_АДРЕСС - добавить ip адрес в зону блок
+
+nc -zv 54.91.54.205 22 - утилита для проверки порта
+
+можно тестить есть ли соединение прямо онлайн
+на сервере: sudo nc -u(t)l 5555
+на клиенте: nc -u(t) 54.91.54.205 5555 
+            вводим любой текс и он отражается на сервере
+
+sudo firewall-cmd --runtime-to-permanent - сохранить все изменения
+sudo firewall-cmd --list-all-zones - посмотреть все зоны
+
+sudo firewall-cmd --panic-o - режим паники обрывает все соединения
+
+man firewalld.richlanguage - инфа как составлять правила отдельные
+sudo firewall-cmd --add-rich-rule='правило' - добавить правило рич рул
+sudo firewall-cmd --remove-rich-rule='правило' - удалить
+
+
+                FAIL2BAN
+
+ https://vps.ua/wiki/configuring-fail2ban/
+
+
+sudo apt-get install fail2ban
+
+Для того, чтобы установленное программное обеспечение работало должным образом, вам необходимо внести поправки в конфигурационный файл. По умолчанию таковым является /etc/fail2ban/jail.conf.
+
+Однако разработчики крайне не рекомендуют редактировать его напрямую, чтобы избежать осложнений при работе с сервером. Поэтому создайте локальную копию данного файла командой:
+    sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+Далее вам нужно будет выполнять редактирование только /etc/fail2ban/jail.local. Он будет подключен системой автоматически и имеет высший приоритет при исполнении.
+
+Существующие фильтры (т.е. правила, по которым определяется неудачная попытка ввода пароля) лежат в директории /etc/fail2ban/filter.d/ (можно их править или на их основе делать свои фильтры), а существующие правила реагирования - в директории /etc/fail2ban/action.d/
+
+
+ignoreip — значения этого параметра говорят о том, какие IP-адреса блокироваться не будут вовсе. Если вы хотите, чтобы Fail2ban игнорировал при проверке несколько IP-адресов, их необходимо указать в значении ignoreip через пробел.
+
+bantime — данный параметр означает время в секундах, в течение которого подозрительный IP будет заблокирован и не сможет даже начать подключаться. Изначально его значение составляет 10 минут.
+
+findtime — определяет промежуток времени в секундах, в течение которого программой будет определяться наличие подозрительной активности.
+
+maxretry — допустимое число неуспешных попыток получения доступа к серверу. При превышении указанного значения IP попадает в бан.
+
+service fail2ban restart - надо рестартануть сервис после изменения конфига 
+
+Стоит обратить внимание на тот факт, что вовсе необязательно прописывать значения вышеуказанных параметров в каждой секции если настраиваешь конкретный сервис. Если их не упоминать, в действие вступят настройки, указанные в главном разделе [DEFAULT]. Главное, чтобы для переменной enabled было указано значение true.
+
+
+
+                    IPTABLES 
+
+https://losst.pro/nastrojka-iptables-dlya-chajnikov        
+
+https://blog.xenot.ru/nastrojka-iptables-dlya-zashhity-servera-na-ubuntu-20-04-lts-v-2022-godu.fuck
+
+https://selectel.ru/blog/setup-iptables-linux/
+                
+Примеры действий:
+
+    ACCEPT – пропустить пакет данных далее по цепочке;
+    DROP – полностью удалить пакет;
+    REJECT – отклонить запрос и направить пользователю ответ с информацией об этом;
+    LOG – инициируется запись в лог-файл об обработанном пакете;
+    QUEUE – отправка данных на компьютер пользователя.
+
+Фильтрация данных в Iptables осуществляется в таблице filter. К ней придется обращаться чаще всего.
+Варианты:
+
+    raw – предназначен для работы с «сырыми» данными, еще не прошедшими обработку;
+    mangle – используется для модификации пакетов;
+    nat – обеспечивает работу сервера в качестве маршрутизатора;
+    filter – основная таблица, используемая «по умолчанию».
+
+Общий синтаксис запуска программы выглядит следующим образом:
+    iptables -t таблица действие цепочка дополнительные_параметры
+                      
+Перечень основных действий, для выполнения которых используется Iptables:
+
+    -A – добавить правило в цепочку;
+    -C – проверить применяемые правила;
+    -D – удалить текущее правило;
+    -I – вставить правило с указанным номером;
+    -L – вывести правила текущей цепочки;
+    -S – вывести все активные правила;
+    -F – очистить все правила;
+    -N – создать цепочку;
+    -X – удалить цепочку;
+    -P – установить действие «по умолчанию».
+
+В качестве дополнительных параметров используются опции:
+
+    -p – вручную установить протокол (TCP, UDP, UDPLITE, ICMP, ICMPv6, ESP, AH, SCTP, MH);
+    -s – указать статичный IP-адрес оборудования, откуда отправляется пакет данных;
+    -d – установить IP получателя;
+    -i – настроить входной сетевой интерфейс;
+    -o – то же самое в отношении исходящего интерфейса;
+    -j – выбрать действие при подтверждении правила.
+
+iptables –L - посмотреть список правил  
+iptables -L INPUT - есть возможность указать конкретную цепочку
+iptables –F - обнулить все правила
+iptables -F Input - обнулить все правила в данной цепочке
+
+iptables -D OUTPUT -s 10.10.10.10 -j DROP - удалить данное правило
+
+Задаются правила «по умолчанию» вручную. Пример команд:
+    sudo iptables -p INPUT ACCEPT
+    sudo iptables -p OUTPUT ACCEPT
+    sudo iptables -p FORWARD DROP
+Здесь мы разрешаем все цепочки INPUT и OUTPUT, запрещаем FORWARD.
+
+Теперь остается опробовать режим сохранения правил. Важно учитывать, что он действует до перезагрузки компьютера. После этой процедуры необходимо задавать их заново. В Ubuntu процесс требует ввода команды:
+    sudo /sbin/iptables-save
+Для операционных систем на ядре Red Hat и CentOS она выглядит иначе:
+    sudo /sbin/service iptables save
+
+    Как удалить правило по номеру
+Чтобы удалить правило по номеру iptables будет использоваться такая команда:
+    iptables [-t таблица] -D  цепочка номер_правила
+Например:
+    iptables -t filter -D INPUT 2
+Данная команда удалит из таблицы filter цепочки INPUT правила с номерами 2. Нумерация правил начинается с 1.
+
+
+
+                        ЛОГИРОВАНИЕ (ЛОГ, LOG)
+
+syslogd и klogd- раньше были такой демоны для приложений и ядра
+syslog-ng - появился после syslogd, сейчас это отдельный демон, не установленный по умолчанию
+rsyslogd - используется сейчас как альтернатива syslog-ng
+/etc/rsyslog.conf - файл конфигурации rsyslogd
+/etc/rsysylod.d/50-default.conf - сак же стандартный файл конфигурации. В этой папке можно создавать файлы.
+Частичный вывод: 
+    auth,authpriv.*                 /var/log/auth.log
+    *.*;auth,authpriv.none          -/var/log/syslog
+    #cron.*                         /var/log/cron.log
+    #daemon.*                       -/var/log/daemon.log
+    kern.*                          -/var/log/kern.log
+    #lpr.*                          -/var/log/lpr.log
+    mail.*                          -/var/log/mail.log - директория для записи лога
+    #user.*                         -/var/log/user.log
+
+Соcтоит из селектора (mail.*) и action (-/var/log/mail.log) (директория для записи лога).
+Селектор состоит из facility and a priority, separated by a period . 
+
+    Priority    Description
+
+debug 	For debugging only
+info 	Informational messages
+notice 	Things that might merit investigation
+Warning (or warn) 	Warning messages
+err 	Other error conditions
+crit 	Critical conditions
+alert 	Urgent situations
+emerg (or panic) 	Panic situations
+
+Пример:
+
+    Selector 	Description
+
+*.* 	All facilities and priorities
+*.info 	All facilities at info priority or higher
+kern.* 	Select all kernel messages
+mail.warning 	Messages from the mail facility at a warning priority or higher
+cron,lpr.err 	Messages from the cron or lpr facility at an err priority or higher
+cron.err;cron.!alert 	Messages from the cron facility at an err priority or higher, but not at alert priority
+mail.=err 	Only err messages from the mail facility
+*.info;mail.none;lpr.none 	Select messages from all facilities except mail and lpr
+
+    Action 	Description
+
+/path/to/file 	Specify the full absolute path for the log file
+
+-/path/to/file 	The - before the path means to not sync after writing each log message (better for system performance for log files that are often written to, such as mail log files on a mail server)
+
+|/path/to/named/pipe 	Specify a pipe symbol and a path to a named pipe file created with mkfifo (make first-in, first-out)
+
+/dev/tty10 	Specify a terminal or console, such as /dev/console
+
+@10.0.0.1 	Specify an @ symbol with the IP address or resolvable hostname or a remote host
+
+student,maya,joe 	Specify a list of users whose terminals will have the message
+displayed if the users are currently logged into the system
+
+* 	Send to the terminal of everyone who is logged in
+
+
+logger - команда для тестирования логов
+
+Option 	Purpose
+
+-i 	Log the process id of the logger process
+-s 	Log the message to standard error and the system log
+-f file 	Use the message found in the specified file
+-p selector 	Send the message as the selector like mail.info
+-t tag 	Mark the message line in the log with a tag
+
+logger -t TEST -p mail.err 'Testing mail.err entry'
+
+logrotate - прога для ротации логов
+/etc/logrotate.conf - файл конфига
+/etc/logrotate.d/ - тут конфиги для ротации только определенных сервисов
+
+Directive 	                    Purpose
+
+weekly/daily/monthly/yearly 	Rotates the logs at the specified time interval
+rotate 4 	Determines how many rotated logs are kept before logrotate deletes older logs
+compress 	Specifies logrotate to compress rotated logs
+missingok 	Tells logrotate not to return an error if the log file is not found
+
+                        Systemd journal
+
+systemd-journald - юнит журнала лога системД
+journalctl -f - события в режиме онлайн
+journalctl _UID=0 - события пользователя
+
+/etc/systemd/journald.conf - файл конфига
+
+Directive 	Purpose
+Storage 	Determines how the journal will be stored. The volatile option keeps the journal only in memory. The persistent option stores the log data on the disk. The auto option stores to the disk also, but will not create a log file it doesn’t already exist. The none option does not store the journal data, but only displays it on the console.
+
+Compress 	Specifies if the journal logs should be compressed or not.
+
+SystemMaxUse 	Limits the amount of space a log can use on the disk. By default, the limit is set to 10% of the total disk space with a cap of 4GB.
+
+SystemMaxFileSize 	Specifies the maximum size that an individual journal file can be before the file is rotated
+
+                        journalctl Флаги
+
+ https://www.digitalocean.com/community/tutorials/how-to-use-journalctl-to-view-and-manipulate-systemd-logs-ru                       
+
+/var/log/journal - директория где хранится лог. Для просмотра можно тспользовать только прогу journalctl
+journalctl -D /mnt/hd/var/log/journal or journalctl --directory=/mnt/hd/var/log/journal - опции позволяющие прочитать лог ядра из нестандартной директории
+
+journalctl --utc - время в формате UTC
+-b - отобразить все логи с момента старта системы
+-u название_юнита - инфа только поьданному юниту
+-n цифра - отобразить n-ое количество строк (ро дефолту 10)
+-r - отобразить лог начиная с новых записей 
+
+journalctl --list-boots - инфа о сеансах загрузки
+journalctl --vacuum-time=7d - стереть все логи старше 7 дней
+
+Выбор 	Цель
+--rotate 	
+Немедленная ротация всех файлов журнала systemd-journald.
+
+--vacuum-time=<time> 	
+Удаляет все данные журнала systemd-journald старше указанного времени. Время может выражаться в минутах (m), часах (h), неделях (weeks) или месяцах (month).
+
+--vacuum-size=<size> 	
+Удаляет самые старые данные журнала systemd-journald до тех пор, пока данные журнала не станут меньше указанного размера.
+
+systemd-nspawn --directory /mnt/failedsys --boot -- --unit rescue.target - утилита позводяющая получить доступ к журналу событий дргой системы, которая не может загрузится. Предварительно разумется нужно примонтировать диск поврежденно системы загрузившить с live cd
+
+systemd-cat - программа для тестирования, как logger (см.выше)
+ps | tee /dev/tty1 | systemd-cat - может через | принимать на вход вывод другой команды
+
+                             Chkservice
+Утилита для управления сервисами, демонами и тд
+Информация о состоянии установки утилиты:
+
+SHIFT+/ - помощь
+
+
+
+
+
+                      TIME
+
+TIME (ВРЕМЯ)
+
+/etc/localtime - в RedHat это конфигурационный файл локального часового пояса, в котором хранится общесистемный часовой пояс локальной системы, используемый приложениями для представления пользователю. Этот файл содержит двоичные данные и не редактируется напрямую.
+
+cat /etc/timezone - показывает текущий часовой пояс в Debian
+/usr/share/zoneinfo - содержит все поддерживаемые часовые пояса
+
+tzselect - утилита для установки часового пояса
+Чтобы сделать смену часового пояса постоянной для пользователя, добавьте следующую строку в ~/.profile или ~/.bash_profile в домашнем каталоге пользователя.
+
+    TZ=’America/Los_Angeles’; export TZ
+
+date MMDDhhmmYYYY.ss - установить дату и время
+date -s “Mon Mar 23 17:00:00 UTC 2020” - или так
+
+Изменение системного часового пояса с помощью метода командной строки
+1. Сохраняем резерывную копию /etc/localtime
+2. Найдите нужный город в каталоге usr/share/zoneinfo
+3. ln -sf /usr/share/zoneinfo/Australia/Sydney /etc/localtime - создать символьную ссылку
+
+Но проще через команду tzselect
+sudo dpkg-reconfigure tzdate - или так 
+
+                
+hwclock -r посмотреть системное время 
+
+Functions:
+ -r, --show           display the RTC time
+     --get            display drift corrected RTC time
+     --set            set the RTC according to --date
+ -s, --hctosys        set the system time from the RTC (настроить системное время от аппаратного)
+ -w, --systohc        set the RTC from the system time (настроить аппаратные часы, взяв знасение системного)
+     --systz          send timescale configurations to the kernel
+ -a, --adjust         adjust the RTC to account for systematic drift
+     --predict        predict the drifted RTC time according to --date
+
+Options:
+ -u, --utc            the RTC timescale is UTC
+ -l, --localtime      the RTC timescale is Local
+ -f, --rtc <file>     use an alternate file to /dev/rtc0
+     --directisa      use the ISA bus instead of /dev/rtc0 access
+     --date <time>    date/time input for --set and --predict
+     --delay <sec>    delay used when set new RTC time
+     --update-drift   update the RTC drift factor
+     --noadjfile      do not use /etc/adjtime
+     --adjfile <file> use an alternate file to /etc/adjtime
+     --test           dry run; implies --verbose
+ -v, --verbose        display more details
+
+ -h, --help           display this help
+ -V, --version        display version
+
+hwclock --set --date "1/1/2025 18:30:50" - настроить HW clock
+
+root@localhost:~# date "+%m/%d/%y"                                              
+12/17/24
+
+Specifier 	Meaning
+%d 	Day of month (e.g., 30)
+%H 	Hour (0-23)
+%I 	Hour (1-12)
+%m 	Month (1-12)
+%M 	Minute (0-59)
+%S 	Seconds (0-60)
+%T 	Time (%H:%M:%S)
+%u 	Day of week (1-7, 1=Monday)
+%Y 	Year
+%F 	Full date; same as %Y-%m-%d
+
+Создание лога 
+mv app_log app_log_`date +%F`                             
+ls app*                                                   
+    app_log_2025-12-17
+
+ date -s "01/02/2025 3:00:00"  - сменить системное время
+
+                            NTP 
+
+ntpd 
+Option 	Meaning
+-g 	Allow ntpd to be started on a system whose clock has crossed the panic threshold (1000 secs by default)
+-n 	Do not run ntpd as a daemon (i.e., run it as a foreground process)
+-c file_name 	Use the specified file for configuration instead of the default file (the /etc/ntp.conf file)
+-N 	Run at the highest possible priority
+-q 	Quit after setting the time (i.e., one-time synchronization)
+
+ntpdate -q имя_сервера - проверить доступен ли ntp сервер 
+
+/etc/ntp.conf - файл конфигкрации ntp
+
+ntpg -pn - показывает ntp серверы от первых до самых корневых
+
+ntpdate 2.asia.pool.ntp.org - настроить время использу данный сервер 
+так же как 
+ntpd -q 
+
+timedatectl - для систем с systemd
+timedatectl set-timezone Africa/Kampala - установить часовой пояс (посмотреть его можно тут _______
+
+    cat /etc/timezone - показывает текущий часовой пояс
+    /usr/share/zoneinfo - содержит все поддерживаемые часовые пояса
+
+    tzselect - утилита для установки часового пояса
+    Чтобы сделать смену часового пояса постоянной для пользователя, добавьте следующую строку в ~/.profile или ~/.bash_profile в домашнем каталоге пользователя~/.profile
+
+        TZ=’America/Los_Angeles’; export TZ
+___________)
+timedatectl set-local-rtc 0 - установить HW часы на UTC
+
+chrony
+chronyc - команда для настройки времени
+
+Argument 	Description
+tracking 	Displays performance statistics about the system clock
+
+sources 	Displays the NTP sources being used for chronyd
+
+activity 	 Displays the status of NTP sources
+
+settime <TIME> 	 Allows you to manually set the time used for chronyd. The format for settime can be any of the below:
+
+hh:mm
+
+hh:mm:ss
+
+Month Day, YYYY hh:mm:ss
+
+/etc/chrony.conf- конфиг chronyd
+
+
+                        MAIL (SENDMAIL, POSTFIX)
+
+POSTFIX
+/etc/aliases  - файл для алиасов (у sendmail /etc/mail/aliases) 
+Псевдоним может быть создан для адреса электронной почты, имени пользователя, файла, команды или другого псевдонима.
+newaliases - команда, для обновления списака алиасов после изменения файла /etc/aliases, если используется sendmail MTA
+
+mail sysadmin < /etc/aliases - послать этот файл пользователю alterego
+/var/spool/mail/sysadmin - папка где хранятся письма
+~/.forward - файл, служащий для пересылки почты, когда пользователь не активен. Просто добавляншь строку с именем пользователя (кому пересылать почту) в этот файл.
+
+mail имя_пользователя - чтобы отправить почту
+В конце на новой строчке ставишь точку (.) и  нажимаешь ENTER и письмо отправляется ИЛИ нажимаешь CTRL+d
+
+mailq -q имя - переслать почту в очереди на другой адрес
+
+
+
+                        ПРИНТЕРЫ
+
+/etc/cups - тут хранятся файлы конфигкрации
+cupsd.conf - основной
+
+Allow 	
+
+Allow access from the specified hostnames/addresses
+Listen 	
+
+Listen to the specified hostname/address
+AccessLog 	
+
+Access log file name
+AuthType 	
+
+Authentication type; valid values are: None (default value), Basic or Digest
+DataDir 	
+
+Directory for the data files
+DefaultCharSet 	
+
+Default charset for text
+DefaultLanguage 	
+
+Default language to be used for web and text content (e.g., If the default language is English, then a web page with Japanese characters though displayed correctly in the web browser, may have junk characters in the printed version.)
+Deny 	
+
+Deny access to the specified hostnames/addresses
+MaxCopies 	
+
+Maximum number of copies that a user can print per job (default is 9999)
+Browsing 	
+
+Enables or disables browsing for locating remote printers (enabled by default)
+BrowseOrder 	
+
+Specify the order of access control (Deny,Allow or Allow,Deny)
+BrowseAllow 	
+
+Allow incoming printer information packets from the specified hostnames/addresses
+BrowsePort 	
+
+Port to listen to for printer information packets
+
+порт CUPS 631
+http://localhost:631 доступ к настройке принтеров в CUPS через браузер
+
+/etc/cups/printers.conf - файл конфига принтеров
+lpadmin - команда для конфигурации принтеров (вносит изменения в файл /etc/cups/printers.conf)
+
+The /etc/cups/classes.conf - для настройки классов (группы принтеров, при подаче печати на которую, будет печатать первый принтер который свободен)
+
+lpadmin -p testprinter -E -v parallel:/dev/lp - добавить прнтер и включить его (-E)
+lpadmin -d testprinter - сделать принтер дефолтным
+lpadmin -x testprinter - удалить принетр
+lpstat -a - посмотреть статус всех принтеров
+lpadmin -p news -h localhost -v /dev/npp0 - добавить очередь
+
+cupsreject Samsung - перестать принимать задания на печать для принтера Samsung
+cupsaccept Samsung - начать ...
+
+cupsdisable -r "Out of paper" Samsung - отключить печать (очередь работает) с выводом сообщения в графический интерфейс
+cupsenable Samsung - включть печать, сразу все задания начнут печататься
+
+
+                        LPC 
+
+Это команда для управления принтерами
+
+lpc status all - показать какие принтеры включены, а какие нет
+
+lpmove 28 Samsung - перенести задание 29 на принетр Самсунг (напрмер при проблеме на другом принтере)
+lpmove Samsung HP - перекинуть все задания откуда - куда
+
+
+/var/log/cups -тут хранятся логи
+access_log
+page_log - инфа о принетере, юзере, работе
+error_log
+
+lpq -a - посмотреть задания печати всех принтеров
+lpq - только у принтера по умолчанию
+
+lpq -P название_принтера - по конкретному принтеру
+lpr -P название_принтера pushkin.txt - послать задание на печать 
+lpr -# 3 info.txt - напечатать 3 копии
+
+/var/spool/cups - тут лежат задания на печать
+
+lprm 24 - удалить номер задания 24
+cancel 24 - или так
+lprm -PSamsung - - удалить все задания для принтера Samsung
+
+
+

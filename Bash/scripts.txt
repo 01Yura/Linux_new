@@ -1,0 +1,229 @@
+                TEST (команда)
+
+   Тип 	Символ 	Пример
+
+True, если длина строки равна нулю
+	-z 	–z string
+
+True, если длина строки не равна нулю
+	-n 	–n string
+
+True, если строки равны
+	= 	string1 = string2
+
+True, если строки не равны
+	!= 	string1 != string2
+
+True, если целые числа равны
+	-eq 	int1 -eq int2
+
+True, если целые числа не равны
+	-ne 	int1 -ne int2
+
+Истина, если первое целое число больше второго целого
+	-gt 	int1 -gt int2
+
+Истина, если первое целое число больше или равно второму целому числу
+	-ge 	int1 -ge int2
+
+Истина, если первое целое число меньше второго целого
+	-lt 	int1 -lt int2
+
+Истина, если первое целое число меньше или равно второму целому числу
+	-le 	int1 -le int2
+
+True, если file является каталогом
+	-d 	-d file
+
+True, если файл является обычным файлом
+	-f 	-f file
+
+True, если файл или директория существует
+	-e 	-e file
+
+True, если файл имеет разрешение на чтение для текущего пользователя
+	-r 	-r file
+
+True, если файл имеет разрешение на запись для текущего пользователя
+	-w 	-w file
+
+True, если файл имеет разрешение на выполнение для текущего пользователя
+	-x 	-x file
+
+-s FILENAME 	if file exists and its size is more than 0
+    
+    
+    if test $var –eq 7
+
+    ... Вы могли бы написать:
+
+    if [ $var –eq 7 ]
+
+Данный скрипт: если значение переменной var равно 7, то ....
+
+Заметка
+При использовании метода квадратных скобок убедитесь, что вы размещаете пробелы перед и после квадратных скобок. Если вы этого не сделаете, произойдет ошибка.
+
+Скрипт и ввод переменной в скрипт
+#!/bin/bash
+touch `date +'%d-%m-%Y'`-$1
+ls
+
+если выполнить ./script.sh yura, то yura добавится в качетсве первой переменной в скрипт (так можео добавлять много переменных)
+
+exec - команда подменяющая bash собой
+
+            IF and ELSE
+
+    if COND
+    then
+    TRUE_COMMAND(S)
+    else
+    FALSE_COMMAND(S)
+    fi
+
+
+    if COND1
+    then
+    TRUE1_COMMAND(S)
+    elif COND2
+    then
+    TRUE2_COMMAND(S)
+    else
+    FALSE_COMMAND(S)
+    fi
+
+Второй скрипт: Если первое условие COND1 истинно, то будет выполнено TRUE1_COMMAND(S) Если первое условие ложно, а второе условие COND2 истинно, то будет выполнено TRUE2_COMMAND(S) Если ни одно из условий не выполняется, то выполняется FALSE_COMMAND(S)
+
+
+$? - это переменная в которой хранится статус выполнения команды. 0 при успешном выполнении и не 0 - при неудаче
+
+echo 'Enter username : '
+read username
+Ввод будет осуществляться с новой строки
+
+echo -n 'Enter username : '
+read username
+Ввод будет продолжение строки 'Enter username : '
+
+read -p 'Enter username : ' username
+echo $username
+Можно сразу исрользовать read -p, чтобы не вводить комнаду echo
+
+    #!/bin/bash
+    
+    start=$(date)
+    echo "Document directory usage report" > /tmp/report
+    read -p "Enter a directory: " dir
+    
+    if [ -d $dir -a -r $dir -a -x $dir ]
+    then
+        du -sh $dir >> /tmp/report 2> /dev/null
+        echo "Start of report: $start" >> /tmp/report
+        echo "End of report: $(date)" >> /tmp/report
+    else
+        echo "Error, $dir could not be accessed"
+        echo "Error: no report generated.  $dir not accessible" >> /tmp/report
+    fi
+
+
+Обратите внимание, что –o может быть заменено на or, а восклицательный знак ! может быть заменен на not. Например, следующие средства return true if $USER equals joe or $USER equals ted:
+
+    [ $USER = "joe" –o $USER = "ted" ]
+
+    Другой пример: Следующий возвращает true, если $FILE не читается:
+
+    [ ! –r $FILE ]
+
+
+        Отправление письма юзеру root 
+
+    if [ -d /data/January ]
+    then
+        echo "January directory exists at `date`" | mail root
+    fi
+
+Данный скрипт требует наличия определенных программ
+Обратите внимание, что на вашем хосте обязательно должен быть установлен какой-нибудь почтовый сервер. Например, postfix или sendmail
+Для отправки почты из командной строки Linux вам нужно установить Mail User Agent, которые умеет подключаться к smtp серверам для отправки и получения почты.
+
+
+                WHILE LOOP
+
+
+    read -p "Enter a valid ZIP code: " zip
+    
+    while echo $zip | grep -E -v '^[0-9]{5}$' > /dev/null 2>/dev/null
+    do
+        echo "$zip is not a valid zip code"
+        echo "The zip code must consist of all numbers"
+        read -p "Enter a valid ZIP code: " zip
+    done
+    
+    echo "Thank you, $zip is a correct zip code"
+
+grep -E -v '^[0-9]{5}$': Эта часть использует утилиту grep для поиска строк, которые не соответствуют заданному регулярному выражению. Разберем регулярное выражение:
+
+    -E: Этот параметр указывает использовать расширенные регулярные выражения.
+    -v: Этот параметр инвертирует результат, т.е., выводятся строки, которые НЕ соответствуют шаблону.
+
+Регулярное выражение '^[0-9]{5}$' означает следующее:
+
+    ^: Соответствует началу строки.
+    [0-9]: Соответствует любой цифре от 0 до 9.
+    {5}: Соответствует ровно пяти повторениям предыдущего элемента, т.е., пяти цифрам.
+    $: Соответствует концу строки.
+
+
+                FOR LOOP
+
+
+Скрипт создания юзеров:
+#!/bin/bash                                                                  
+    echo -e "User\tPassword" > /root/password                                       
+    echo -e "----\t--------" >> /root/password                                      
+                                                                                    
+    read -p "Enter account names separated by spaces: " accounts
+    for name in $accounts                                               
+    do                                                                              
+        useradd $name                                                               
+        pw=$(tr -dc A-Za-z0-9_ < /dev/urandom | head -c 12 | xargs)                 
+        echo -e "$name:\t$pw" >> /root/password                                     
+        echo $pw | passwd --stdin $name                                             
+        chage -M 90 -m 5 -W 10 $name                                                
+    done
+
+    useradd $name: Создание новой учетной записи.
+    pw=$(tr -dc A-Za-z0-9_ < /dev/urandom | head -c 12 | xargs): Генерация случайного пароля длиной 12 символов.
+    echo -e "$name:\t$pw" >> /root/password: Запись имени пользователя и его пароля в файл /root/password.
+    echo $pw | passwd --stdin $name: Установка пароля для пользователя.
+    chage -M 90 -m 5 -W 10 $name: Установка параметров срока действия пароля для пользователя (максимальный срок действия: 90 дней, минимальный срок действия: 5 дней, предупреждение за 10 дней до истечения срока).    
+
+Or, these user names could be derived from a file:
+
+    #!/bin/bash                                                                     
+    echo -e "User\tPassword" > /root/password                                       
+    echo -e "----\t--------" >> /root/password                                      
+                                                                                    
+    for name in `cat /root/users`                                                
+    do                                                                              
+        useradd $name                                                               
+        pw=$(tr -dc A-Za-z0-9_ < /dev/urandom | head -c 12 | xargs)                 
+        echo -e "$name:\t$pw" >> /root/password                                     
+        echo $pw | passwd --stdin $name                                             
+        chage -M 90 -m 5 -W 10 $name                                                
+    done
+
+
+
+    #!/bin/bash
+    while true
+    do
+        read -p "Do you want to quit (y/n)? " answer
+        if [ "$answer" == "y" ]
+        then
+            break
+    fi
+    done
+
+    
