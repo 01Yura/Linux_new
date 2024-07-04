@@ -837,3 +837,126 @@ http://petstore.swagger.io/v2/pet/findByStatus?status=sold&price=1000
 https://learning.postman.com/docs/tests-and-scripts/write-scripts/variables-list/ - рандомные динамические переменные
 
 CTRL + ALT + C - открыть консоль в постман
+
+pm.collectionVariables.set("param", JSON.parse(responseBody).args.name)
+
+    Переменные в JavaScript
+
+let text; - обьявляем переменную без присваивания значения
+text = "hello"; - присваиваем значение
+console.log(text); - выводим переменную в консоль 
+
+Можно сократить запись 
+let text = "hello";
+console.log(text);
+
+Можно присвоить число
+let petId = 1;
+console.log(petId);
+
+Важно учитывать область видимости переменной. Если взять переменную в блок кода (он окружен кавычками), то после кавычек он не будет работать.
+В данном примере скрипт выведет - hello и затем ошибку что переменная text не определена
+{
+    let text = "hello";
+    console.log(text);
+}
+console.log(text);
+
+А вот тут сработает нормально. Сначала - hello , затем - bye
+let text = "bye";
+{
+    let text = "hello";
+    console.log(text);
+}
+console.log(text);
+
+Еще пример
+let side1 = 3;
+let side2 = 4;
+let side3 = 5;
+console.log(side1 + side2 + side3);
+
+    функции в JavaScript
+
+function triangleSum() {
+    let side1 = 3;
+    let side2 = 4;
+    let side3 = 5;
+    console.log(side1 + side2 + side3);
+}
+
+triangleSum() - НЕ ЗАБЫТЬ ВЫЗВАТЬ ФУНКЦИЮ, так как просто определение функции не вызывает ее
+
+Можно добавить параметры в тело функции, чтобы можно было изменять ее при вызове
+function triangleSum(side1, side2, side3) {
+    console.log(side1 + side2 + side3);
+}
+
+triangleSum(1, 5, 2)
+triangleSum(3, 1, 1)
+
+8
+5
+
+Еще
+function triangleSum(side1, side2, side3) {
+    return side1 + side2 + side3;
+}
+
+let sum = triangleSum(3, 4, 5);
+console.log(sum);
+
+sum = triangleSum(5, 6, 7);
+console.log(sum);
+
+    Сложение строк в JavaScript
+
+let petId = 350;
+let petName = "Bobik";
+let petStatus = "available";
+
+console.log("Pet info: id = " + petId + ", name = " + petName + ", status = " + petStatus);
+
+Pet info: id = 350, name = Bobik, status = available - вывод в консоли
+
+ Обьекты в JS
+
+let pet = {
+    id: 350,
+    name: "Bobik",
+    status: "available"
+};
+
+console.log("Pet info: id = " + pet.id + ", name = " + pet.name + ", status = " + pet.status);
+
+Pet info: id = 350, name = Bobik, status = available - вывод в консоли
+
+    Методы в JS (функции внутри обьекта называются методы обьекта)
+
+let pet = {
+    id: 350,
+    name: "Bobik",
+    status: "available",
+
+    info: function() {
+        console.log("Pet info: id = " + pet.id + ", name = " + pet.name + ", status = " + pet.status);
+    }
+}
+
+pet.info();
+
+Pet info: id = 350, name = Bobik, status = available - вывод в консоли
+
+То же самое, но чтоб не ошибится можно использоват - this, это слово позволяет сослаться на текущий обьект, внутри которого оно используется
+
+let pet = {
+    id: 350,
+    name: "Bobik",
+    status: "available",
+
+    info: function() {
+        console.log("Pet info: id = " + this.id + ", name = " + this.name + ", status = " + this.status);
+    }
+}
+
+pet.info();
