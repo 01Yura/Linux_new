@@ -3695,3 +3695,4 @@ lprm -PSamsung - - удалить все задания для принтера 
 
 
 
+systemctl list-units --type=service --state=running - посмотреть все запущенные сервисы
