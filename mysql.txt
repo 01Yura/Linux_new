@@ -1,0 +1,180 @@
+apt install mysql-server - усиановит сервер БД и клиент чтобы можно было подклбчится
+
+mysql -u root -p - если пароль не вводили при создании базы, то не надо -p
+вводим пароль
+
+Для установки пароля:
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'; - для рута 
+CREATE USER 'jeffrey'@'localhost' IDENTIFIED BY 'password'; - если юзера для БД нет
+ALTER USER 'jeffrey'@'localhost' IDENTIFIED BY 'password'; - если юзер для БД есть
+Именно юзер для БД, а не системный (кроме рута, он есть автоматически)
+
+КАВЫЧКИ В КОНЦЕ ЭТО ВАЖНО - ;
+
+CREATE DATABASE cars;
+USE cars
+CREATE TABLE new (brand VARCHAR (10), model VARCHAR (10), year YEAR, price INT);
+SHOW TABLES;
+
+                    +----------------+
+                    | Tables_in_cars |
+                    +----------------+
+                    | new            |
+                    | used           |
+                    +----------------+
+
+DESCRIBE new;
+
+        +-------+-------------+------+-----+---------+-------+
+        | Field | Type        | Null | Key | Default | Extra |
+        +-------+-------------+------+-----+---------+-------+
+        | brand | varchar(10) | YES  |     | NULL    |       |
+        | model | varchar(10) | YES  |     | NULL    |       |
+        | year  | year        | YES  |     | NULL    |       |
+        | price | int         | YES  |     | NULL    |       |
+        +-------+-------------+------+-----+---------+-------+
+
+exit
+
+Чтобы заполнить можно создать текстовые файлы с перечислением данных через TAB.
+
+mysql --local-infile=1 - заходим в mysql в режиме, чтобы можно было добавлять данные из текстового файла
+USE cars;
+SET GLOBAL local_infile=1;
+LOAD DATA LOCAL INFILE "/root/cars_new.txt" INTO TABLE new;
+LOAD DATA LOCAL INFILE "/root/cars_used.txt" INTO TABLE new;
+
+DELETE FROM `new` WHERE `brand` = "Lada"; - удалить строку, если по ошибке внесли запись в таблицу
+
+SELECT * FROM new;
+SELECT * FROM used; - показывает таблицу
+
+INSERT INTO new (brand, model, year) VALUES ("Daewoo", "Nexia", "2014"); - добавим строку вручную
+INSERT INTO new (brand, model, year) VALUES ("Daewoo", "Matiz", 2015) - год можно писать и без кавычек, так как значение INT у него походу
+
+DELETE FROM new WHERE model = "Matiz";
+
+exit - выйти из командной строки mysql
+
+mysql cars -u root - войти сразу в БД cars
+SHOW TABLES; - смотрим какие есть таблицы
+SELECT * FROM new; - смотрим содержимое таблиц
+
+            +--------+--------+------+--------+
+            | brand  | model  | year | price  |
+            +--------+--------+------+--------+
+            | Kia    | Cerato | 2014 | 780000 |
+            | Kia    | Rio    | 2015 | 620000 |
+            | Ford   | Focus  | 2016 | 820000 |
+            | Daewoo | Nexia  | 2014 |   NULL |
+            +--------+--------+------+--------+
+
+SELECT * FROM used;
+SELECT model FROM new;
+
+                    +--------+
+                    | model  |
+                    +--------+
+                    | Cerato |
+                    | Rio    |
+                    | Focus  |
+                    | Nexia  |
+                    +--------+
+
+SELECT * FROM new WHERE brand = "Kia";
+
+            +-------+--------+------+--------+
+            | brand | model  | year | price  |
+            +-------+--------+------+--------+
+            | Kia   | Cerato | 2014 | 780000 |
+            | Kia   | Rio    | 2015 | 620000 |
+            +-------+--------+------+--------+
+
+SELECT * FROM new WHERE brand = "Kia" AND year = 2015;
+
+SELECT model  FROM new WHERE brand = "Kia" AND year = 2015;
+                    
+                    +-------+
+                    | model |
+                    +-------+
+                    | Rio   |
+                    +-------+
+
+UPDATE new SET model="Kuga" WHERE model="Focus"; - редактируем выбранные значения
+
+SELECT * FROM new JOIN used ON new.brand = used.brand; - обьединить таблицы по условиям
+      
+        +-------+--------+------+--------+-------+--------+------+--------+
+        | brand | model  | year | price  | brand | model  | year | price  |
+        +-------+--------+------+--------+-------+--------+------+--------+
+        | Kia   | Cerato | 2014 | 780000 | Kia   | Cerato | 2012 | 480000 |
+        | Kia   | Rio    | 2015 | 620000 | Kia   | Cerato | 2012 | 480000 |
+        +-------+--------+------+--------+-------+--------+------+--------+
+
+SELECT * FROM new ORDER BY brand; - отсортировать по бренду
+
+sudo mysqldump -uroot -pпароль имя_базы > dump.sql - экспорт БД в файл 
+sudo mysql --user=root --password=ваш_пароль имя_базы_данных < бэкап.sql - импортировать готовую БД
+
+При установки Wordpress и создании БД
+CREATE DATABASE wordpress;
+CREATE USER 'wp_user'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'wp_user'@'%';
+FLUSH PRIVILEGES;
+
+Символ - % указывает что данный юзер может подключится с любого хоста, а не только с локалхоста
+http://it-website.ru/wp-admin/
+
+
+
+SELECT User, Host FROM mysql.user; - посмотерть всех юзеров
+SHOW DATABASES; - посмотерть все БД
+DROP USER 'user1'@'localhost'; - удалить юзера
+DROP DATABASE database_name; - удалть БД
+
+Сменить подключение для существующего пользователя root
+UPDATE mysql.user SET Host='%' WHERE User='root' AND Host='localhost';
+FLUSH PRIVILEGES;
+
+ALTER USER 'root'@'%' IDENTIFIED BY 'new_password'; - сменить пароль для root
+
+Часто можно подключится из сисемного пользователя root к mysql просто введя mysql, без пароля и тд. Это возможно если настроена аутентификация по сокетам, проверить можно командой:
+SELECT user, host, plugin FROM mysql.user;
+
++------------------+-----------+-----------------------+
+| user             | host      | plugin                |
++------------------+-----------+-----------------------+
+| root             | %         | auth_socket           |
+| debian-sys-maint | localhost | caching_sha2_password |
+| mysql.infoschema | localhost | caching_sha2_password |
+| mysql.session    | localhost | caching_sha2_password |
+| mysql.sys        | localhost | caching_sha2_password |
++------------------+-----------+-----------------------+
+
+Если для пользователя root настроена аутентификация по сокетам (plugin auth_socket), то для подключения под этим пользователем с использованием пароля аутентификация по паролю будет игнорироваться. Это означает, что вы не сможете подключиться к MySQL под пользователем root, используя логин и пароль, независимо от того, подключаетесь ли вы с удаленного хоста или с localhost.
+
+Чтобы изменить метод аутентификации:
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'Fdnj19vj,bkm';
+FLUSH PRIVILEGES;
+
+Настройка MySQL для приема удаленных подключений:
+
+Откройте файл конфигурации MySQL (my.cnf или mysqld.cnf). Обычно он находится в одном из следующих мест:
+    /etc/my.cnf
+    /etc/mysql/my.cnf
+    /etc/mysql/mysql.conf.d/mysqld.cnf
+Найдите строку bind-address и измените её значение на 0.0.0.0, чтобы MySQL принимал подключения со всех IP-адресов:
+
+bind-address = 0.0.0.0
+
+service mysql restart - обязательно перезапутить
+
+Надо изменить параметры пользователя, который будет подключаться (необязательно):
+ALTER USER 'your_user'@'%' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON *.* TO 'your_user'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+На удаленом компе надо установить клиент для подключения:
+apt install mysql-client
+mysql -h remote_host_ip -u your_user -p - это команда для подключения

@@ -1,0 +1,709 @@
+# Apache
+
+apt install apache2
+
+Дефолтный сайт лежит в /var/www/html/index.html, нам нужно создать папку в этом же месте (или другом)
+например cd /var/www/html/site1/index.html
+и внести изменения в index.html или заменить его на свой и загрузить необходимые файлы для работы сайта в эту папку site1
+
+Далее нужно создать новый файл конфигурации, он должен лежать там же где и дефолтный /etc/apache2/sites-available/000-default.conf
+Допутим такой /etc/apache2/sites-available/site1.conf
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost - без изменений
+    ServerName it-primyshev.site - днс имя
+    ServerAlias www.it-primyshev.site 
+    DocumentRoot /var/www/html/site1 -  - путь до сайта
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+
+a2ensite site1.conf - включаем виртуальный хост
+
+apache2ctl configtest - тестим конфиг
+
+systemctl reload apache2 - перегружаем Apache
+
+Так можно поместить много сайтов на один IP под разными DNS именами.
+Но эти имена (если их несколько) нужно прописать в записи CNAME DNS-сервера на котором покупался ip-адрес
+н-р: вам принадлежит домен test.ru, и вы хотит разместить на нем 2 сайта site1.test.ru и site2.test.ru. Нужно создать 2 записи CNAME site1 и site2 ссылающиеся в обоих случаях на test.ru 
+
+                            ЛОГ ФАЙЛ
+
+awk '{print $1}' /var/log/apache2/access.log - найти все ip адреса с лог файла
+awk '{print $1}' /var/log/apache2/access.log | sort -u - уникальные обращения или
+awk '{print $1}' /var/log/apache2/access.log | sort | uniq - тоже самое
+
+awk '{print $1}' /var/log/apache2/access.log | sort | uniq -c | sort -n - самый активный ip адрес
+
+whois 34.76.153.113 - инфа о ip адресе
+
+                                    ROUND ROBIN
+
+1.  Создать в Апаче 3 сайта (3 виртуальных хоста) на 3х разных портах и активируем их "a2ensite название" и пергружаем сервер Апачи
+    например такой
+    <VirtualHost \*:8080> - это порт меняем в каждом файле конфигурации виртуального хоста
+
+            ServerAdmin webmaster@localhost - адрес почты сисадмина
+            DocumentRoot /var/www/8080 - папка местоположения сайта
+
+
+            ErrorLog ${APACHE_LOG_DIR}/error.log
+            CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+
+2.  Прописать эти порты в /etc/apache2/ports.conf
+    Listen 8080
+    Listen 8081
+    Listen 8082
+
+    <IfModule ssl_module>
+            Listen 443
+    </IfModule>
+
+    <IfModule mod_gnutls.c>
+            Listen 443
+    </IfModule>
+
+3.  В Nginx создаем в папке /etc/nginx/sites-available файл с названием upstream с содеожимым как ниже:
+    upstream apache { - назавание сервера любое, но оно потом указывается и далее!
+    server 212.192.31.43:8080;
+    server 212.192.31.43:8081;
+    server 212.192.31.43:8082;
+    }
+
+4.  Редактируем дефолтный файл сайта Nginx /etc/nginx/sites-available/default добавив строчки
+    server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+        root /var/www/html;
+
+        server_name _;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+                proxy_pass http://apache; - вот этф строка, назавание сервера (apache) строго как впункте 4.
+        }
+
+5.  nginx -t - проверка не накосячили ли
+6.  systemctl reload nginx - перегружаем Nginx
+
+
+        Установка сертификата от LetsEncrypt
+
+Нам нужны два пакета: certbot и python3-certbot-apache. Последний — плагин, который интегрирует Certbot с Apache, позволяя автоматизировать получение сертификата и настройку HTTPS на веб-сервере с помощью одной команды.
+
+    sudo apt install certbot python3-certbot-apache
+
+sudo ufw status
+sudo ufw allow 'Apache Full' - открываем порт 443
+sudo ufw delete allow 'Apache' - закрываем порт 80
+
+sudo certbot --apache
+или 
+sudo certbot certonly --standalone --agree-tos --preferred-challenges http -d it-primyshev.site -d www.it-primyshev.site
+
+Удалить сертификат
+
+sudo certbot delete
+sudo certbot delete --cert-name example.com
+
+            Установка без апачи плагина
+Вот хорошая инструкция            
+    https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-apache-in-ubuntu-18-04-ru
+
+    certbot ceronly --webroot - утановить без апачи плагина и настраивать вручную
+
+Создайте новый сниппет в каталоге /etc/apache2/conf-available. Мы назовем файл ssl-params.conf, чтобы сделать его назначение очевидным:
+    sudo nano /etc/apache2/conf-available/ssl-params.conf
+
+SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+SSLProtocol All -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
+SSLHonorCipherOrder On
+# Disable preloading HSTS for now.  You can use the commented out header line that includes
+# the "preload" directive if you understand the implications.
+# Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+Header always set X-Frame-Options DENY
+Header always set X-Content-Type-Options nosniff
+# Requires Apache >= 2.4
+SSLCompression off
+SSLUseStapling on
+SSLStaplingCache "shmcb:logs/stapling-cache(150000)"
+# Requires Apache >= 2.4.11
+SSLSessionTickets Off
+
+
+В файл SSL виртуального хоста вносим изменения:
+
+<IfModule mod_ssl.c>
+        <VirtualHost _default_:443>
+                ServerName it-primyshev.site
+                ServerAlias www.it-primyshev.site
+                ServerAdmin webmaster@localhost
+                DocumentRoot /var/www/html/My_web_site-main
+
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+                SSLEngine on
+
+                SSLCertificateFile      /etc/letsencrypt/live/it-primyshev.site/fullchain.pem
+                SSLCertificateKeyFile   /etc/letsencrypt/live/it-primyshev.site/privkey.pem
+
+                <FilesMatch "\.(cgi|shtml|phtml|php)$">
+                                SSLOptions +StdEnvVars
+                </FilesMatch>
+                <Directory /usr/lib/cgi-bin>
+                                SSLOptions +StdEnvVars
+                </Directory>
+
+
+        </VirtualHost>
+</IfModule>
+
+Внутри файла в блоках конфигурации VirtualHost нам нужно добавить директиву Redirect, которая должна направлять весь трафик на версию сайта с шифрованием SSL:
+
+    Redirect "/" "https://it-primyshev.site/"
+
+Мы внесли изменения и настроили брандмауэр, и теперь можем включить в Apache модули SSL и заголовков, активировать наш виртуальный хост SSL и перезапустить Apache.
+
+Мы можем активровать mod_ssl, модуль Apache SSL, и модуль mod_headers, необходимый для некоторых настроек нашего сниппета SSL, с помощью команды a2enmod:
+
+    sudo a2enmod ssl
+    sudo a2enmod headers
+
+    a2ensite my_web_site-ssl.conf
+
+Также нам нужно будет активировать файл ssl-params.conf для считывания заданных значений:
+
+    sudo a2enconf ssl-params
+
+    sudo apache2ctl configtest
+sudo systemctl restart apache2
+
+
+
+                            APACHE (HTTPD) на REDHAT и CENTOS
+
+Создать файл в папке /var/www/html/My_web_site-main/index.html - ваш сайт
+
+В файл /etc/httpd/conf/httpd.conf в конце внести строчку:
+    ...
+    # Supplemental configuration
+    #
+    # Load config files in the "/etc/httpd/conf.d" directory, if any.
+    IncludeOptional conf.d/*.conf
+    IncludeOptional sites-enabled/*.conf
+
+Создать папки 
+mkdir /etc/httpd/sites-available /etc/httpd/sites-enabled
+И создать там конфиг своего сайта 
+nano /etc/httpd/sites-available/my_web_site.conf содержащий:
+
+<VirtualHost *:80>
+    ServerName it-primyshev.site
+    ServerAlias www.it-primyshev.site
+    DocumentRoot /var/www/html/My_web_site-main
+
+    ErrorLog /var/log/error.log
+    CustomLog /var/log/access.log combined
+</VirtualHost>
+
+Включить сайт
+ln -s /etc/httpd/sites-available/my_web_site.conf /etc/httpd/sites-enabled/my_web_site.conf
+
+Перегрузить httpd
+systemctl restart httpd
+
+Разрешите HTTP и HTTPS-трафик на брандмауэре:
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --reload
+
+sudo systemctl enable httpd - автозагрузка 
+                
+                
+                                                PHP для Apache
+
+sudo apt-get update
+sudo apt -y install software-properties-common
+sudo add-apt-repository ppa:ondrej/php
+sudo apt-get update
+sudo apt -y install php7.4
+
+sudo apt-get install -y php7.4-cli php7.4-json php7.4-common php7.4-mysql php7.4-zip php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php7.4-bcmath libapache2-mod-php7.4
+
+
+                                                 FTP
+
+sudo apt install vsftpd
+systemctl status vsftpd
+sudo nano /etc/vsftpd.conf
+
+    listen=YES # разрешить работу по IPv4
+    listen_ipv6=NO # запретить работу по IPv6
+    anonymous_enable=NO # запретить подключаться анонимным пользователям (можно тольео тем, кто есть в системе)
+    local_enable=YES # разрешить доступ локальным пользователям
+    write_enable=YES # Разрешите пользователям работать с файлами
+    local_umask=022 # Назначьте права новым файлам
+    dirmessage_enable=YES # Включите сообщение для пользователя при входе
+    use_localtime=YES # Разрешите использовать локальное время на сервере
+    xferlog_enable=YES # Настройте логирование операций
+    connect_from_port_20=YES # Настройте передачу данных по 20 порту
+    xferlog_std_format=YES # Задайте формат логов
+    xferlog_file=/var/log/vsftpd.log # Укажите директорию для хранения логов
+    chroot_local_user=YES #  Дайте доступ пользователям только к своим домашним каталогам
+    allow_writeable_chroot=YES # см выше
+    secure_chroot_dir=/var/run/vsftpd/empty # 
+    pam_service_name=vsftpd # Включите поддержку авторизации PAM
+    allow_writeable_chroot=YES # см  man 5 vsftpd.conf
+    userlist_enable=YES # Разрешите вход только пользователям из файла userlist
+    userlist_file=/etc/vsftpd.userlist # см выше
+    userlist_deny=NO # см выше
+
+Защита передачи данных при помощи SSL/TLS
+Для защиты передачи ваших данных между FTP-клиентом и FTP-сервером в данной инструкции мы будем использовать генерацию самозаверяющего SSL-сертификата. Закрытый ключ и сертификат будут сохранены в одном файле, для чего следует применить команду:
+    sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
+
+После установки SSL-сертификата необходимо внести изменения в конфигурационный файл:
+    sudo nano /etc/vsftpd.conf
+
+А именно, внесите изменения в следующие строки данного файла:
+    rsa_cert_file=/etc/ssl/private/vsftpd.pem
+    rsa_private_key_file=/etc/ssl/private/vsftpd.pem
+    ssl_enable=YES
+
+Подключени:
+ftp 
+open имя_хоста
+Запросит юзера и пароль
+
+или 
+
+    ftp://логин:пароль@ip_адрес сервера
+
+Вот примеры доступных опций:
+
+    Is – отображение списка файлов и папок.
+    get – скачивание файла.
+    mget – скачивание документов определенного формата. Например, mget * – все данные вкаталоге, mget *, php – файлы формата php.
+    put – загрузка файла на ресурс.
+    mput – загрузка нескольких документов единого формата.
+    mkdir – создание нового каталога.
+    rmdir – удаление каталога.
+    delete – удаление файла.
+    bye – завершение работы.
+    close – выход из текущего сеанса и возврат в контекст командной строки FTP.
+    status – отображение статуса FTP клиента.
+
+ftp> !ping 127.0.0.1 - чтобы выполнить команду на локальной машине во время сеанса, нужно перед командой поставить восклицательный знак
+
+
+
+                        NGINX на ubuntu
+
+sudo apt install nginx
+Автоматом запускается и добавляется в автозагрузку
+
+sudo apt install ufw - установить фаерволл
+sudo nano /etc/ufw/applications.d/nginx.ini - создаем файл
+   
+    [Nginx HTTP]
+    title=Web Server
+    description=Enable NGINX HTTP traffic
+    ports=80/tcp
+
+    [Nginx HTTPS] \
+    title=Web Server (HTTPS) \
+    description=Enable NGINX HTTPS traffic
+    ports=443/tcp
+
+    [Nginx Full]
+    title=Web Server (HTTP,HTTPS)
+    description=Enable NGINX HTTP and HTTPS traffic
+    ports=80,443/tcp
+
+sudo ufw app list - проверяем список доступных приложений
+sudo ufw enable - включаем 
+sudo ufw allow 'Nginx Full' - разрешаем
+sudo ufw allow 'OpenSSH'
+
+sudo nano /etc/nginx/nginx.conf - основной файл конфигурации
+
+sudo nano /etc/nginx/sites-available/testsite.conf - создаем конфиг
+
+    server {
+        listen 80;
+        listen [::]:80;
+
+        server_name testsite.dev www.testsite.dev;
+        root /var/www/html/testsite; #папка в которой лежат фаылй сайта
+        index index.html index.xml;
+    }
+
+ sudo ln -s /etc/nginx/sites-available/testsiteconf /etc/nginx/sites-enabled/ - делаем симлинк в папку sites-enabled
+
+ sudo nginx -t - проверяем конфиг
+ sudo systemctl restart nginx
+
+    
+
+                          NGINX на REDHAT
+
+nano /etc/yum.repos.d/nginx.repo - создаем файл под новый репозиторий
+Вносим данные в него с сайта http://nginx.org/en/linux_packages.html
+
+Или добавляем репу от fedora:
+    sudo yum install epel-release
+
+yum update
+yum install nginx
+По умолчанию выключен и не в автозагрузке
+
+sudo firewall-cmd --permanent --add-service=http 
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --reload
+
+sudo systemctl enable nginx
+sudo systemctl start nginx
+
+
+    /etc/nginx — в данной директории хранятся все конфигурационные файлы, в том числе и главный конфигурационный файл nginx.conf.
+    /etc/nginx/conf.d/ — отвечает за хранение файлов конфигурации сайтов, размещенных на веб-сервере (после установки папка пустая)
+    /var/log/nginx — эта директория служит журналом веб-сервера, в котором хранятся файлы с логами. Например, access.log и error.log. Первый отвечает за хранение всех запросов к веб-серверу, а второй регистрирует все ошибки на нем.
+
+sudo mkdir -p /var/www/centossite.dev/html - создаем директорию для сайта
+nano /etc/nginx/conf.d/centossite.conf - сщздаем файл конфига сайта с содержимым:
+
+server {
+
+    listen 80;
+    listen [::]:80;
+
+    server_name centossite.dev www.centossite.dev; # если нет домена, то ip
+    root /var/www/centossite.dev/html; # путь к директории сайта
+    index index.html index.xml;
+    location / {
+            try_files $uri $uri/ =404;
+    }
+}    
+
+sudo nginx -t
+systemctl restart nginx
+
+Можно сайт положить в стандартную папку /usr/share/nginx/html/своя_папка в которой лежит файл по умолчанию, но тогда надо указать ее в файле конфига своего сайта
+
+                                PHP для Nginx
+
+https://itshaman.ru/articles/783/nastroika-php-fpm-v-nginx-na-ubuntu-2204
+
+Установка расширения php-fpm вместе с другими расширениями php.
+sudo apt install software-properties-common ca-certificates lsb-release apt-transport-https -y
+LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
+sudo apt update
+
+После установки зависимостей мы готовы к установке PHP-FPM.
+sudo apt install php8.1 php8.1-fpm php8.1-mysql php8.1-mbstring php8.1-xml php8.1-curl
+
+После установки запустите и включите php8.1-fpm.service
+sudo systemctl start php8.1-fpm.service && sudo systemctl enable php8.1-fpm.service
+
+Чтобы проверить, все ли в порядке, выполните следующую команду
+sudo systemctl status php8.1-fpm.service
+
+
+Шаг 4. Настройка PHP-FPM с Nginx
+
+Мы должны создать файл конфигурации виртуального хоста нашего доменного имени. Зайдите в каталог конфигурации Nginx и создайте файл.
+cd /etc/nginx/conf.d/ 
+nano yourdomain.com.conf
+
+Вставьте следующие строчки кода.
+server {
+         listen       80;
+         server_name  yourdomain.com;
+         root         /var/www/html/;
+
+         access_log /var/log/nginx/yourdomain.com-access.log;
+         error_log  /var/log/nginx/yourdomain.com-error.log error;
+         index index.html index.htm index.php;
+
+         location / {
+                      try_files $uri $uri/ /index.php$is_args$args;
+         }
+
+         location ~ .php$ {
+            fastcgi_split_path_info ^(..php)(/.)$;
+            fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+            fastcgi_index index.php;
+            include fastcgi.conf;
+        }
+}
+
+Проверьте синтаксис конфигурации Nginx, чтобы убедиться, что он в порядке.
+nginx -t
+
+Перезапустите службу Nginx.
+sudo systemctl restart nginx
+
+                                    Установка Nginx, php, mysql и wordpress
+
+apt update
+apt upgrade
+
+apt install nginx
+Подключится к nginx по ip адресу, чтобы проверить работает ли
+
+apt install mysql-server
+mysql_secure_installation - настраиваем безопасность если надо 
+
+Создаем БД и пользователя в mysql для wordpress
+CREATE DATABASE wordpress;
+CREATE USER 'wp_user'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'wp_user'@'%';
+FLUSH PRIVILEGES;
+Символ - % указывает что данный юзер может подключится с любого хоста, а не только с локалхоста
+
+    Доп команды на всякий случай:
+
+    SELECT User, Host FROM mysql.user; - посмотерть всех юзеров
+    SHOW DATABASES; - посмотерть все БД
+    DROP USER 'user1'@'localhost'; - удалить юзера
+    DROP DATABASE database_name; - удалть БД
+
+    Сменить подключение для существующего пользователя root
+    UPDATE mysql.user SET Host='%' WHERE User='root' AND Host='localhost';
+    FLUSH PRIVILEGES;
+
+    ALTER USER 'root'@'%' IDENTIFIED BY 'new_password'; - сменить пароль для root
+
+    Часто можно подключится из сисемного пользователя root к mysql просто введя mysql, без пароля и тд. Это возможно если настроена аутентификация по сокетам, проверить можно командой:
+    SELECT user, host, plugin FROM mysql.user;
+
+    +------------------+-----------+-----------------------+
+    | user             | host      | plugin                |
+    +------------------+-----------+-----------------------+
+    | root             | %         | auth_socket           |
+    | debian-sys-maint | localhost | caching_sha2_password |
+    | mysql.infoschema | localhost | caching_sha2_password |
+    | mysql.session    | localhost | caching_sha2_password |
+    | mysql.sys        | localhost | caching_sha2_password |
+    +------------------+-----------+-----------------------+
+
+    Если для пользователя root настроена аутентификация по сокетам (plugin auth_socket), то для подключения под этим пользователем с использованием пароля аутентификация по паролю будет игнорироваться. Это означает, что вы не сможете подключиться к MySQL под пользователем root, используя логин и пароль, независимо от того, подключаетесь ли вы с удаленного хоста или с localhost.
+
+    Чтобы изменить метод аутентификации:
+    ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'Fdnj19vj,bkm';
+    FLUSH PRIVILEGES;
+
+Установите PHP и необходимые модули:
+apt install php-fpm php-mysql
+
+Устанавливаем wordpress:
+wget https://wordpress.org/latest.tar.gz
+tar -xvzf latest.tar.gz
+
+Копируем файлы в диреторию своего сайта:
+mkdir /var/www/it-website.ru/
+sudo cp -r wordpress/* /var/www/it-website.ru/
+
+Создаем конфиг сайта:
+apt install nano -y
+nano /etc/nginx/sites-available/it-website.ru
+
+server {
+    listen 80;
+    server_name it-website.ru;
+
+    root /var/www/it-website.ru;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; ВЕРСИЯ ДОЛЖНА СОВПАДАТЬ с /etc/php
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+
+sudo ln -s /etc/nginx/sites-available/it-website.ru /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+
+Далее подключаемся по доменному имени и настраиваем wordpress
+Предложит создать файл в диретории где все файлы wordpress с таким содержимым:
+
+nano /var/www/it-website.ru/wp-config.php
+
+<?php
+/**
+ * The base configuration for WordPress
+ *
+ * The wp-config.php creation script uses this file during the installation.
+ * You don't have to use the website, you can copy this file to "wp-config.php"
+ * and fill in the values.
+ *
+ * This file contains the following configurations:
+ *
+ * * Database settings
+ * * Secret keys
+ * * Database table prefix
+ * * ABSPATH
+ *
+ * @link https://wordpress.org/documentation/article/editing-wp-config-php/
+ *
+ * @package WordPress
+ */
+
+// ** Database settings - You can get this info from your web host ** //
+/** The name of the database for WordPress */
+define( 'DB_NAME', 'wordpress' );
+
+/** Database username */
+define( 'DB_USER', 'wp_user' );
+
+/** Database password */
+define( 'DB_PASSWORD', 'Fdnj19vj,bkm' );
+
+/** Database hostname */
+define( 'DB_HOST', 'localhost' );
+
+/** Database charset to use in creating database tables. */
+define( 'DB_CHARSET', 'utf8mb4' );
+
+/** The database collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '' );
+
+/**#@+
+ * Authentication unique keys and salts.
+ *
+ * Change these to different unique phrases! You can generate these using
+ * the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}.
+ *
+ * You can change these at any point in time to invalidate all existing cookies.
+ * This will force all users to have to log in again.
+ *
+ * @since 2.6.0
+ */
+define( 'AUTH_KEY',         '|?aDT|(ZO:o)hV|#kPBU?YeWGB6v .gtkA+Il?wZOr,BLjDXeC5pu6sioa%H_{d-' );
+define( 'SECURE_AUTH_KEY',  '>VM)L++kdwGx&@kk w0^]$nW`&71J1WciQ)jQP~&nO:8*-nmDH0kfWgcJGkB{fl ' );
+define( 'LOGGED_IN_KEY',    'XXox|PVI3 6tr~H7@w36z@!p!b),6[&+Ceq(jH.7Nw~W-lJIpxyR6 A-D2ASy--7' );
+define( 'NONCE_KEY',        '<[6gY[{;8]OK&HMK2)eTnSCO6;/b/g%Y}9BE_}jb#@V3_-z)C1W6(F4sRLEX+Ckt' );
+define( 'AUTH_SALT',        'x{=yumyiWCQW@O8d<nhd+E0GA?075[q2DgDh;Pu+$D=t L$gP^hc#8C0^a^Z+F}N' );
+define( 'SECURE_AUTH_SALT', 'ZS,y<P;ciSap%NAE0S5Hrl33y*8m<kh!tk8[#(aM.X&dz^TA@O/r7NMA#b*twp+t' );
+define( 'LOGGED_IN_SALT',   ',`.rr?$wugO@6i,@Dh8CBSU8d|*!e&eK4S3HpV[KWhtIs/Zq`@}!I,k}x{-(%4Iy' );
+define( 'NONCE_SALT',       '{aZk6:W|>zKVtsN.~v4,l @G0zC(]QiGyRf4{>!sjk:O`!q|} ,+)wLFR]i twQ|' );
+
+/**#@-*/
+
+/**
+ * WordPress database table prefix.
+ *
+ * You can have multiple installations in one database if you give each
+ * a unique prefix. Only numbers, letters, and underscores please!
+ */
+$table_prefix = 'wp_';
+
+/**
+ * For developers: WordPress debugging mode.
+ *
+ * Change this to true to enable the display of notices during development.
+ * It is strongly recommended that plugin and theme developers use WP_DEBUG
+ * in their development environments.
+ *
+ * For information on other constants that can be used for debugging,
+ * visit the documentation.
+ *
+ * @link https://wordpress.org/documentation/article/debugging-in-wordpress/
+ */
+define( 'WP_DEBUG', false );
+
+/* Add any custom values between this line and the "stop editing" line. */
+
+
+
+/* That's all, stop editing! Happy publishing. */
+
+/** Absolute path to the WordPress directory. */
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
+
+/** Sets up WordPress vars and included files. */
+require_once ABSPATH . 'wp-settings.php';
+
+Далее все установится и можно будет подключится к Wordpress 
+http://it-website.ru/wp-admin/
+
+Теперь надо установить FTP сервер: (не обязательно)
+
+
+    sudo apt install vsftpd
+    systemctl status vsftpd
+    sudo nano /etc/vsftpd.conf
+
+
+        local_enable=YES # разрешить доступ локальным пользователям
+        write_enable=YES # Разрешите пользователям работать с файлами
+        local_umask=022 # Назначьте права новым файлам
+        connect_from_port_20=YES # Настройте передачу данных по 20 порту
+        userlist_enable=YES # Разрешите вход только пользователям из файла userlist
+        userlist_file=/etc/vsftpd.userlist # см выше
+        userlist_deny=NO # см выше
+
+    Защита передачи данных при помощи SSL/TLS
+    Для защиты передачи ваших данных между FTP-клиентом и FTP-сервером в данной инструкции мы будем использовать генерацию самозаверяющего SSL-сертификата. Закрытый ключ и сертификат будут сохранены в одном файле, для чего следует применить команду:
+        sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
+
+    После установки SSL-сертификата необходимо внести изменения в конфигурационный файл:
+        sudo nano /etc/vsftpd.conf
+
+    А именно, внесите изменения в следующие строки данного файла:
+        rsa_cert_file=/etc/ssl/private/vsftpd.pem
+        rsa_private_key_file=/etc/ssl/private/vsftpd.pem
+        ssl_enable=YES
+
+    Подключени:
+    ftp 
+    open имя_хоста
+    Запросит юзера и пароль
+
+    ВНИМАНИЕ! Нужно создать юзера и внести его в userlist, так кк по умолчанию root не может подключится к ftp
+
+
+
+Если при загрузке zip файла через графический интерфейс Wordpress вылезет ошибка Request entity too large:
+
+
+systemctl list-units --type=service --state=running - посмотреть все запущенные сервисы
+
+Найдите или добавьте директиву client_max_body_size в секцию http, server, или location в файл конфига сайта
+    client_max_body_size 100M;
+
+Откройте файл конфигурации PHP. Обычно он находится в /etc/php/7.4/fpm/php.ini (для PHP-FPM) или /etc/php/7.4/apache2/php.ini (для модульного PHP).
+Измените значения директив upload_max_filesize и post_max_size.
+
+    upload_max_filesize = 100M
+    post_max_size = 100M
+
+Далее надо изменить права:
+sudo chmod -R 755 /var/www/it-website.ru
+sudo chown -R www-data:www-data /var/www/it-website.ru
+
+После этого все будет загружаться
+
+apt install certbot python3-certbot-nginx
+certbot --nginx -d it-website.ru
+
+После может не получится подключится к админке, надо сбросить кеш
