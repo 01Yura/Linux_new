@@ -529,7 +529,8 @@ server {
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; ВЕРСИЯ ДОЛЖНА СОВПАДАТЬ с /etc/php
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; #ВЕРСИЯ ДОЛЖНА СОВПАДАТЬ с /etc/php
+         client_max_body_size 100M;
     }
 
     location ~ /\.ht {
@@ -689,7 +690,7 @@ http://it-website.ru/wp-admin/
 systemctl list-units --type=service --state=running - посмотреть все запущенные сервисы
 
 Найдите или добавьте директиву client_max_body_size в секцию http, server, или location в файл конфига сайта
-    client_max_body_size 100M;
+    client_max_body_size 100M; - мы внесли данное изменение при создании конфига вирт сайта
 
 Откройте файл конфигурации PHP. Обычно он находится в /etc/php/7.4/fpm/php.ini (для PHP-FPM) или /etc/php/7.4/apache2/php.ini (для модульного PHP).
 Измените значения директив upload_max_filesize и post_max_size.
