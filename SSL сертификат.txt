@@ -148,42 +148,6 @@ T4wIb9Gih0D9ZJfAwIBBQAo1V+JpCtMcd7hVDZG9l7PoF4ptHzFp1l0mfcnWQwNn
 x+YQb5DwNQXBrgFD1rxW9X2MTydGxf3DYPqz4G/J9LDXJ9OtdV7PWhjZQnAcZ6Lb
 -----END CERTIFICATE REQUEST-----
 
-Разбор содержимого CSR
-Заголовки
-    -----BEGIN CERTIFICATE REQUEST-----
-    ...
-    -----END CERTIFICATE REQUEST-----
-Эти строки обозначают начало и конец CSR файла.
-
-Информация о субъекте (Subject Information)
-    MIICzjCCAbYCAQAwgYgxCzAJBgNVBAYTAlVTMRYwFAYDVQQIDA1DYWxpZm9ybmlh
-    MRMwEQYDVQQHDApTYW4gRnJhbmNpc2NvMRYwFAYDVQQKDA1FeGFtcGxlIEluYy4x
-    EzARBgNVBAsMCklUIERlcGFydG1lbnQxGDAWBgNVBAMMD3d3dy5leGFtcGxlLmNv
-    bQ==
-Этот блок закодирован в Base64 и включает информацию о субъекте:
-    C: Country (Страна) — US (Соединенные Штаты)
-    ST: State (Штат) — California
-    L: Locality (Город) — San Francisco
-    O: Organization (Организация) — Example Inc.
-    OU: Organizational Unit (Подразделение) — IT Department
-    CN: Common Name (Доменное имя) — www.example.com
-
-Открытый ключ (Public Key)
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0HVQxKL7R6oO6Jq/N+DE
-    ...
-    xUwaQKBgQDPmPoIcRzmI0i/g==
-Этот блок также закодирован в Base64 и представляет открытый ключ.
-
-Алгоритм подписи (Signature Algorithm)
-    DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBA
-Этот блок указывает алгоритм, используемый для создания цифровой подписи. В данном случае используется sha256WithRSAEncryption.
-
-Цифровая подпись (Digital Signature)
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0HVQxKL7R6oO6Jq/N+DE
-    ...
-    5QnAcZ6Lb
-Это закодированный в Base64 блок, представляющий цифровую подпись, созданную с использованием закрытого ключа.
-
 Как это интерпретировать
 
     Информация о субъекте (Base64 закодированный):
