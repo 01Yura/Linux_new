@@ -210,25 +210,28 @@ x+YQb5DwNQXBrgFD1rxW9X2MTydGxf3DYPqz4G/J9LDXJ9OtdV7PWhjZQnAcZ6Lb
 
 Шаг 1: Генерация приватного ключа
 Сначала нужно создать приватный ключ. В этом примере создадим ключ длиной 2048 бит.
-    openssl genpkey -algorithm RSA -out example.com.key -pkeyopt rsa_keygen_bits:2048
+    openssl genpkey -algorithm RSA -out website.com.key -pkeyopt rsa_keygen_bits:2048
 
 Шаг 2: Создание CSR (запроса на сертификат)
 Создаем CSR с информацией о субъекте, такой как страна, штат, город, организация и т.д.
-    openssl req -new -key example.com.key -out example.com.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Inc./OU=IT Department/CN=www.example.com"
+    openssl req -new -key website.com.key -out website.com.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Inc./OU=IT Department/CN=www.example.com"
 
 Шаг 3: Генерация самоподписанного сертификата
 Теперь создадим самоподписанный сертификат с использованием приватного ключа и CSR. Укажем срок действия сертификата (например, 365 дней).
-    openssl x509 -req -days 365 -in example.com.csr -signkey example.com.key -out example.com.crt
+    openssl x509 -req -days 365 -in website.com.csr -signkey website.com.key -out website.com.crt
 
 Для того чтобы сайт мог работать с этими сертификатами, их нужно добавить в конфиг виртуального хоста
 Для апачи нужно добавить строчки:
     SSLEngine on
-    SSLCertificateFile /path/to/example.com.crt
-    SSLCertificateKeyFile /path/to/example.com.key
+    SSLCertificateFile /etc/certificates/website.com.crt
+    SSLCertificateKeyFile /etc/certificates/website.com.key
 
 Для Nginx:
-    ssl_certificate /etc/nginx/ssl/example.com.crt;
-    ssl_certificate_key /etc/nginx/ssl/example.com.key;
+    ssl_certificate /etc/nginx/ssl/website.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/website.com.key;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
+
+Не забыть изменить сверху в файле конфига вирт хоста порт на 443
+a2enmod ssl - для апачи
