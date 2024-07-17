@@ -1,0 +1,192 @@
+1. Установите Docker
+
+Если Docker еще не установлен на вашем сервере, установите его:
+
+sudo apt update
+sudo apt install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+
+2. Создайте рабочую директорию для Synapse
+
+mkdir -p ~/synapse/data
+cd ~/synapse
+
+3. Создайте конфигурационный файл Synapse
+
+docker run -it --rm \
+    -v "$PWD/data:/data" \
+    -e SYNAPSE_SERVER_NAME=89.107.10.136 \
+    -e SYNAPSE_REPORT_STATS=yes \
+    matrixdotorg/synapse:latest generate
+
+Эта команда создаст файлы homeserver.yaml и log.config в директории ~/synapse/data.
+
+4. Настройте конфигурационный файл
+
+nano ~/synapse/data/homeserver.yaml
+
+Внесите следующие изменения:
+
+    Убедитесь, что параметр server_name установлен в 89.107.10.136.
+    Убедитесь, что параметр no_tls: True добавлен в конфигурацию:
+
+server_name: "89.107.10.136"
+no_tls: True
+
+5. Запустите Synapse сервер
+
+docker run -d --name synapse \
+    -v "$PWD/data:/data" \
+    -e SYNAPSE_SERVER_NAME=89.107.10.136 \
+    -e SYNAPSE_REPORT_STATS=yes \
+    -p 8008:8008 \
+    matrixdotorg/synapse:latest
+
+Эта команда запустит Synapse сервер и откроет его на порту 8008.
+
+6. Проверьте работу сервера
+
+http://89.107.10.136:8008
+
+Доп параметры для homeserver.yaml:
+
+enable_registration: true
+registration_requires_token: false
+enable_registration_without_verification: true
+suppress_key_server_warning: true
+
+bind_addresses: ['0.0.0.0']
+
+
+
+Для настройки вашего Matrix Synapse сервера с использованием reverse-proxy Nginx и TLS/SSL с именем домена server.it-website.ru, выполните следующие шаги:
+
+1. Установите Docker и Docker Compose
+
+sudo apt update
+sudo apt install docker.io docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
+
+2. Создайте рабочую директорию для Synapse
+
+mkdir -p ~/synapse/data
+cd ~/synapse
+
+3. Создайте конфигурационный файл Synapse
+
+docker run -it --rm \
+    -v "$PWD/data:/data" \
+    -e SYNAPSE_SERVER_NAME=server.it-website.ru \
+    -e SYNAPSE_REPORT_STATS=yes \
+    matrixdotorg/synapse:latest generate
+
+Эта команда создаст файлы homeserver.yaml и log.config в директории ~/synapse/data.
+
+4. Настройте конфигурационный файл
+
+nano ~/synapse/data/homeserver.yaml
+
+Внесите следующие изменения:
+
+    Убедитесь, что параметр server_name установлен в server.it-website.ru.
+    Убедитесь, что параметр no_tls установлен в False (или уберите его, если он есть):
+
+server_name: "server.it-website.ru"
+no_tls: False
+
+5. Настройте Docker Compose для Synapse и Nginx
+
+Создайте файл docker-compose.yml в директории ~/synapse:
+
+version: '3'
+
+services:
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    volumes:
+      - ./data:/data
+    environment:
+      - SYNAPSE_SERVER_NAME=server.it-website.ru
+      - SYNAPSE_REPORT_STATS=yes
+    expose:
+      - "8008"
+
+  nginx:
+    image: nginx:latest
+    container_name: synapse-nginx
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - synapse
+
+networks:
+  default:
+    external:
+      name: nginx-net
+
+6. Настройте Nginx конфигурацию
+
+mkdir -p ~/synapse/nginx
+nano ~/synapse/nginx/synapse.conf
+
+Добавьте следующую конфигурацию в synapse.conf:
+
+server {
+    listen 80;
+    server_name server.it-website.ru;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name server.it-website.ru;
+
+    ssl_certificate /etc/letsencrypt/live/server.it-website.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/server.it-website.ru/privkey.pem;
+
+    location / {
+        proxy_pass http://synapse:8008;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+7. Получите SSL сертификаты
+
+sudo apt install certbot
+sudo certbot certonly --standalone -d server.it-website.ru
+
+8. Запустите Docker Compose
+
+cd ~/synapse
+docker-compose up -d
+
+Для того чтобы можно было регистрироваться, надо в homeserver.yaml добавить строчки:
+
+enable_registration: true
+enable_registration_without_verification: true
+
+Добавление пользователя с правами админа:
+    docker exec -it synapse register_new_matrix_user -u admin -p Fdnj19vj,bkm -a -k "03XKx,*wB,33okq&Mgu386XViLBN:tl=KgT#1Dd.@tN1smScq7" http://localhost:8008
+
+    В конфиг надо добавить:
+    admin_users:
+        - "@admin:http://localhost:8008"
+
+    docker-compose restart synapse
+    
+
+
+
