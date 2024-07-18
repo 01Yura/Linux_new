@@ -323,6 +323,7 @@ server {
 
 sudo apt install certbot
 sudo certbot certonly --standalone -d server.it-website.ru
+email указать p020885@yandex.ru
 
 Шаг 8: Запустите Docker Compose
 
