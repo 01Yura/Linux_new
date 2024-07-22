@@ -708,3 +708,73 @@ apt install certbot python3-certbot-nginx
 certbot --nginx -d it-website.ru
 
 После может не получится подключится к админке, надо сбросить кеш
+
+
+            Получение wildcard сертификата через certbot
+
+Для Reg.ru есть плагин для Certbot, который позволяет проходить валидацию DNS-01 и получать wildcard сертификаты.
+Вот пошаговое руководство по установке и использованию этого плагина:
+
+Установите плагин certbot-dns-regru:
+    sudo pip install certbot-dns-regru
+
+Создайте файл с учетными данными Reg.ru:
+Создайте файл /etc/letsencrypt/regru.ini и добавьте в него следующие строки с вашими учетными данными:
+    dns_regru_username = your_username
+    dns_regru_password = your_password
+
+Убедитесь, что файл защищен от чтения другими пользователями:
+    sudo chmod 0600 /etc/letsencrypt/regru.ini
+
+Получите сертификат:
+Используйте следующую команду для получения сертификата:
+    sudo certbot certonly \
+      --authenticator certbot-dns-regru:dns-regru \
+      --certbot-dns-regru:dns-credentials /etc/letsencrypt/regru.ini \
+      -d '*.it-website.ru' -d it-website.ru
+
+Эта команда запросит сертификат для вашего основного домена и всех его поддоменов.
+
+Настройка автоматического обновления сертификатов:
+Certbot автоматически настроит обновление сертификатов с использованием тех же учетных данных и метода аутентификации.
+
+
+
+
+Можно получить сертификат для нескольких доменов (multiple domain certificate) с помощью Certbot. Вот как это сделать:
+
+Установите Certbot:
+    sudo apt-get update
+    sudo apt-get install certbot
+
+Запросите сертификат для нескольких доменов:
+Используйте следующую команду для получения сертификата, который будет действителен для нескольких доменов:
+    sudo certbot certonly --manual -d example.com -d www.example.com -d anotherdomain.com
+В этом примере example.com, www.example.com и anotherdomain.com будут включены в один сертификат.
+
+Использование автоматических методов аутентификации:
+Если вы используете веб-сервер, такой как Nginx или Apache, можно использовать автоматический режим:
+    sudo certbot --nginx -d example.com -d www.example.com -d anotherdomain.com
+или
+    sudo certbot --apache -d example.com -d www.example.com -d anotherdomain.com
+
+Обновите конфигурацию вашего веб-сервера:
+Certbot автоматически обновит конфигурацию вашего веб-сервера для использования нового сертификата, если вы используете опции --nginx или --apache. Если вы используете опцию --manual, вам нужно будет вручную указать пути к сертификату и ключу в конфигурации вашего веб-сервера.
+
+Настройка автоматического обновления сертификата:
+Certbot автоматически настроит cron job для обновления сертификатов. Вы можете проверить его наличие следующей командой:
+    sudo systemctl list-timers
+
+Также можно вручную настроить cron job для обновления сертификатов:
+    0 0,12 * * * root certbot renew --quiet
+
+Пример конфигурации Nginx:
+server {
+    listen 443 ssl;
+    server_name example.com www.example.com anotherdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+
+    ...
+}
