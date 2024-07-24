@@ -350,6 +350,8 @@ CREATE TABLE superheroes (
         universe VARCHAR(10) 
 );
 
+- ALTER значит изменить таблицу
+
 ALTER TABLE superheroes ADD COLUMN alive BOOLEAN; -- добавить колонку
 ALTER TABLE superheroes DROP COLUMN alive; -- удалить колонку
 ALTER TABLE superheroes RENAME COLUMN name TO hero_name;
