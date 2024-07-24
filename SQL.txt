@@ -295,6 +295,8 @@ COUNT(column) возвращает число строк в столбце colum
 COUNT(DISTINCT column) (англ. distinct, «отдельный, особый») возвращает количество уникальных строк в столбце column.
         SELECT COUNT(column_1) FROM table_1
 
+AVG, COUNT, MAX, MIN, SUM - разные агрегатные функции
+
 Кстати, данный оператор можно использовать и в обычной выборке после слова SELECT, что позволит получить нам только уникальные записи.
 Функция SUM(column) возвращает сумму по столбцу column. Когда функция выполняется, пропуски игнорируются.
 *!Обратите внимание:* функция SUM() работает только с числовым форматом данных.
@@ -304,8 +306,13 @@ AVG (column) возвращает среднее значение по стол�
 
 - Группировка и сортировка
 Команду GROUP BY (англ. «группировать по») применяют, когда данные нужно разделить на группы по значениям полей.
-        SELECT column_1, COUNT(column_2) FROM table_1
-        GROUP BY column_1
+        SELECT column_1, COUNT(column_2) FROM table_1 GROUP BY column_1
+        select align, count(*) from superheroes group by align 
+        select align, count(*), sum(appearances) from superheroes group by align 
+        select year, min(appearances), max(appearances) from superheroes group by year order by year
+        select year, min(appearances), max(appearances) as max_ap from superheroes group by year order by max_ap desc
+        select hair, count(*) from superheroes where gender='Female Characters' group by hair 
+        
 
 Чтобы сортировать данные по указанным полям, применяют команду ORDER BY (англ. order by, «упорядочить по»). В отличие от GROUP BY, в блоке с командой ORDER BY нужно перечислить только поля, по которым вы хотите сортировать информацию.
 У команды ORDER BY есть аргумент, регулирующий порядок сортировки в столбцах. Он может принимать такие значения:
@@ -317,6 +324,7 @@ DESC (от англ. descending, «нисходящий») сортирует д
         ORDER BY sum desc (asc);
         select * from superheroes order by year;
         select * from superheroes order by appearances desc; - сортировака по убыванию desc
+        
 
 - JOIN
 Не всегда удобно идти в одну таблицу, смотреть первичные ключи, и искать их же во второй таблице. Удобнее получить понятный результат с помощью одного запроса. Чтобы это сделать, применяют соединение таблиц — используют оператор JOIN (англ. «соединять»).
@@ -330,11 +338,23 @@ SELECT
 FROM
   table_1
 JOIN 
-  table_2 ON
+  table_2 
+ON
   table_1.column_1 = table_2.column_2
+
+select products.name, product_types.type_name from products join product_types on products.type_id = product_types.id
+select p.name, t.type_name from products as p join product_types as t on p.type_id = t.id  -- используются псевдонимы
+
+select p.name as product_name, t.type_name as type_name, p.price as product_price from products as p join product_types as t on p.type_id = t.id where t.type_name = 'Онлайн-курс'
+
+select p.name as product_name, t.type_name as type_name, p.price as product_price from products as p join product_types as t on p.type_id = t.id where t.type_name = 'Вебинар' and p.price = 0
+
+select p.name as product_name, t.type_name as type_name, p.price as product_price from products as p join product_types as t on p.type_id = t.id where t.type_name = 'Онлайн-курс' order by p.price desc 
 
 Различают три вида OUTER JOIN: LEFT, RIGHT и FULL
 LEFT OUTER JOIN: возвращаются все строки левой таблицы. Если у строк левой таблицы выполняются условия соединения, они дополнятся данными правой таблицы. Если есть недостающие данные, вместо строк правой таблицы подставляются NULL-значения.
+
+
 
 -- создаем таблицу супергероев
 DROP TABLE IF EXISTS superheroes;
@@ -357,3 +377,7 @@ ALTER TABLE superheroes DROP COLUMN alive; -- удалить колонку
 ALTER TABLE superheroes RENAME COLUMN name TO hero_name;
 ALTER TABLE superheroes RENAME TO comic_characters;
 
+- HAVING
+Используется для фильтрации результатов группировки
+select hair, count(*) from superheroes where gender='Female Characters' group by hair having count(*) > 43
+select hair, count(*) from superheroes where gender='Female Characters' group by hair having count(*) between 10 and 100
