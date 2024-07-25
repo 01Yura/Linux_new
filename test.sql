@@ -1,0 +1,1 @@
+SELECT column1 FROM table WHERE COUNT(column2) >= 3
