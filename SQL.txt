@@ -378,6 +378,8 @@ select p.name as product_name, t.type_name as type_name, p.price as product_pric
 
 select DISTINCT Company.name from Company join Trip on Company.id = trip.company WHERE Trip.plane=('Boeing') - после FROM не важен порядок таблиц и после ON тоже не важен, главное указвать НАЗВАНИЕ_ТАБЛИЦЫ.НАЗВАНИЕ_СТОЛБЦА
 
+select Trip.town_to from Trip join Pass_in_trip on Trip.id = Pass_in_trip.trip join Passenger on Pass_in_trip.passenger = Passenger.id where Passenger.name = 'Bruce Willis' -- обьединяем три таблицы
+
 Если мы хотим чтобы в запрос попадали строки, для которых нет соответствия в другой таблице, то используется OUTER JOIN
 Различают три вида OUTER JOIN: LEFT, RIGHT и FULL
 LEFT OUTER JOIN: возвращаются все строки левой таблицы, даже если нет соответствия в парвой таблице. Если у строк левой таблицы выполняются условия соединения, они дополнятся данными правой таблицы. Если есть недостающие данные, вместо строк правой таблицы подставляются NULL-значения.
@@ -416,6 +418,12 @@ select hair, count(*) from superheroes where gender='Female Characters' group by
 Запускается перед основным запросом
 
 SELECT id, name, price FROM products WHERE price = (SELECT MAX(price) from products) - вывести продукт с максимальной ценой. Вообще можно выполнить 2 запроса, сначала узнав макс цену и потом подставив ее в WHERE = 60000.
+
+Можно используя подзапрос решить задачу https://sql-academy.org/ru/trainer/tasks/19
+select DISTINCT FamilyMembers.status from FamilyMembers join Payments on FamilyMembers.member_id = Payments.family_member where Payments.good = (select DISTINCT good_id from Goods where good_name = 'potato')
+ А можно обьединить 3 таблицы
+select DISTINCT FamilyMembers.status
+from FamilyMembersjoin Payments on FamilyMembers.member_id = Payments.family_member join Goods on Payments.good = Goods.good_id where Goods.good_name = 'potato'
 
         Транзакции в БД
 
