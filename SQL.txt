@@ -440,3 +440,37 @@ ROLLBACK; -- чтобы отменить транзакцию и вернуть 
         Индексы в БД
 
 Это такая структура, позволяющая быстро определить положение данных в таблице. Создается для столбца или совокупности столбцов
+
+
+        CASE
+
+В SQL для отображения значений TRUE или FALSE в колонке как yes или no можно использовать конструкцию CASE. Вот как это можно сделать:
+Пример запроса
+
+Предположим, у вас есть таблица employees:
+        id	name	is_active
+        1	John Doe	TRUE
+        2	Jane Smith	FALSE
+
+Запрос с использованием CASE:
+
+SELECT id, name, CASE 
+        WHEN is_active = TRUE THEN 'yes'
+        ELSE 'no'
+        END AS is_active_status
+FROM employees;
+
+Объяснение:
+
+    CASE WHEN is_active = TRUE THEN 'yes' ELSE 'no' END AS is_active_status:
+        CASE проверяет значение в колонке is_active.
+        Если значение TRUE, оно будет заменено на 'yes'.
+        В противном случае (то есть если значение FALSE), оно будет заменено на 'no'.
+        Результат будет отображен в новой колонке is_active_status.
+
+Результат:
+id	name	is_active_status
+1	John Doe	yes
+2	Jane Smith	no
+
+SELECT id, CASE WHEN has_internet = TRUE THEN 'YES' ELSE 'NO' END AS has_internet from Rooms
