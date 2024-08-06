@@ -5,7 +5,7 @@ https://www.jenkins.io/doc/book/installing/linux/ - документация
 Jenkins автоматически запускается на порту :8080
 
 Далее после подключения к порту 8080 нужно ввести парль админа из файла 
-cat /var/lib/jenkins/secrets/initialAdminPassword
+    cat /var/lib/jenkins/secrets/initialAdminPassword
 
 - установить плагины
 
@@ -33,8 +33,50 @@ http://192.168.0.248:8080/restart - чтобы перезапустить сер
 Manage Jenkins - System - Publish over SSH
 Вставляем приватный ключ, добавляем сервера, тестируем 
 (разумеется надо заранее на сервере с jenkins сгенерировать ssh ключи командой:
-ssh-keygen 
+    ssh-keygen 
 и затем скопировать на удаленный сервер публичный ключ командой:
-ssh-copy-id root@192.168.0.253
+    ssh-copy-id root@192.168.0.253
 и разок подключиться для теста)
 Заходим в Job и выбираем в Post-build Actions свой сервер, что копировать (*) и куда (можно оставить пустой если до этого указали сединственную доступную директорию на сервере)
+
+Для управления Слейвами нужно установить 2 плагина:
+- ssh agent
+- ssh slaves
+
+На самих слейвах надо установить Java:
+    sudo apt install openjdk-11-jre-headless
+
+Чтобы добавить slave:
+Manage jenkins - Nodes - New node
+Важно указать label, можно указать как общий так и уникальный для ноды 
+Нужно создать директорию где будет выполняться все эти jobs
+
+    Jenkins CLI
+
+Нужно скачать клиент (.jar файл)
+    wget http://192.168.0.248:8080/jnlpJars/jenkins-cli.jar - это скачать прямо на локальный сервер, но можно скачать и на windows
+    java -jar jenkins-cli.jar -auth root:toor -s http://localhost:8080 version - подключится по паролю и выполнить команду version  
+Лучше сделать отдельного юзера для CLI
+И сделать ему токен
+    java -jar jenkins-cli.jar -auth user_cli:11615d0b07b4d83e5823580be2b9466cb0 -s http://localhost:8080 version - это по токену
+Можно не вводить имя и токен, есл присвоить их значения переменным среды:
+    export JENKINS_USER_ID=user_cli
+    export JENKINS_API_TOKEN=11615d0b07b4d83e5823580be2b9466cb0
+Теперь можно просто писать:
+    java -jar jenkins-cli.jar -s http://localhost:8080 version
+
+В Windows можно сделать так:
+    $env:JENKINS_USER_ID="user_cli"
+    $env:JENKINS_API_TOKEN="11615d0b07b4d83e5823580be2b9466cb0"
+Но надо установить java на windows
+Добавить переменную JAVA_HOME со значением C:\Program Files\Java\jdk-21
+Добавить Java в PATH, нажав изменить и добавив путь к файлу bin C:\Program Files\Java\jdk-21\bin
+Теперь можно проверить командой java --version
+Get-ChildItem Env: - так можно посмотреть переемнные среды в PowerShell
+java -jar .\jenkins-cli.jar -s http://192.168.0.248:8080 version - теперь можно выполнить команду
+
+Сохранить джоб:
+java -jar jenkins-cli.jar -s http://192.168.0.248:8080 get-job MyFirstJob > myjob.xml
+Импортировать джоб:
+java -jar jenkins-cli.jar -s http://192.168.0.248:8080 create-job MyJobFromCLI < myjob.xml - так сработает ТОЛЬКО В LINUX
+get-content myjob.xml | java -jar jenkins-cli.jar -s http://192.168.0.248:8080 create-job MyJobFromCLI - вот так в windows используя пайп 
