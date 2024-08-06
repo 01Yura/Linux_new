@@ -132,3 +132,9 @@ git branch -m master main
 git fetch origin
 git branch -u origin/main main
 git remote set-head origin -a
+
+При пуше (git push) запросит логин от GitHub и пароль. Вместо пароля надо ввести токен (сделать заранее в setting - developer settings - classic token), так как автоизация по паролю была отключена - это если remote repo скачан через https
+git remote -v - вот так можно проверить какой стоит протокол в репе
+
+Если надо пушить через ssh, то создаем ssh ключи, добавляем в свой github (settings - ssh and gpg keys) и меняем репу на работу через протокл ssh:
+
