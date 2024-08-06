@@ -80,3 +80,7 @@ java -jar jenkins-cli.jar -s http://192.168.0.248:8080 get-job MyFirstJob > myjo
 Импортировать джоб:
 java -jar jenkins-cli.jar -s http://192.168.0.248:8080 create-job MyJobFromCLI < myjob.xml - так сработает ТОЛЬКО В LINUX
 get-content myjob.xml | java -jar jenkins-cli.jar -s http://192.168.0.248:8080 create-job MyJobFromCLI - вот так в windows используя пайп 
+
+Для подключения гитхаба надо плагины и не забыть добавить публичный ssh key в гитхаб и приватный в свои Credential на Jenkins
+Чтобы подключаться по SSH ключу к репозиторию на github необходимо в настройках Security изменить параметр SSH Server Host Key Verification Strategy на Non verifying Verification Strategy или другую , в противном случае будет сыпаться ошибка при попытке добавить ключ: Manage Jenkins ---> Security ---> Git Host Key Verification Configuration ---> No verification
+

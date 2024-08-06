@@ -137,4 +137,4 @@ git remote set-head origin -a
 git remote -v - вот так можно проверить какой стоит протокол в репе
 
 Если надо пушить через ssh, то создаем ssh ключи, добавляем в свой github (settings - ssh and gpg keys) и меняем репу на работу через протокл ssh:
-
+git remote set-url origin git@github.com:01Yura/Jenkins.git
