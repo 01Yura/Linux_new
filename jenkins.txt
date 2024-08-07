@@ -84,3 +84,20 @@ get-content myjob.xml | java -jar jenkins-cli.jar -s http://192.168.0.248:8080 c
 Для подключения гитхаба надо плагины и не забыть добавить публичный ssh key в гитхаб и приватный в свои Credential на Jenkins
 Чтобы подключаться по SSH ключу к репозиторию на github необходимо в настройках Security изменить параметр SSH Server Host Key Verification Strategy на Non verifying Verification Strategy или другую , в противном случае будет сыпаться ошибка при попытке добавить ключ: Manage Jenkins ---> Security ---> Git Host Key Verification Configuration ---> No verification
 
+Build triggers:
+1. Trigger builds remotely (e.g., from scripts)
+Вписываем рандомный токен и при заходе на этот ip будет запускаться билд
+    http://192.168.0.248:8080//job/Build_trigger1_to_PROD/build?token=tettetetee45e4trdryeerergrdger65465465gy
+или
+curl http://root:11cf68a96acb21a74098cd2d4fea482fd1@192.168.0.248:8080//job/Build_trigger1_to_PROD/build?token=tettetetee45e4trdryeerergrdger65465465gy - важно прописать имя пользователя и токен (созданный заранее во вкладке user_name - settings - api tokens)
+
+2. Build after other projects are built
+Билд запускается автоматически после того как выполнится какой то другой выбранный билд (надо вписать какой именно)
+
+3. Build periodically
+Вставляем расписание как в cron
+
+4. Poll SCM 
+Надо ввести расписание, например * * * * * (каждую минуту). Таким образо Jenkins каждую минуту будет ходить в Git и если есть новый коммит, то будет делать билд.
+
+5. 
