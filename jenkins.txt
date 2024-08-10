@@ -109,4 +109,3 @@ curl http://root:11cf68a96acb21a74098cd2d4fea482fd1@192.168.0.248:8080//job/Buil
     payload URL: http://192.168.0.248:8080/github-webhook/ - адрес дженкинс сервера и /github-webhook/ в конце
     content type: application/json
 
-
