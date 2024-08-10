@@ -109,3 +109,99 @@ curl http://root:11cf68a96acb21a74098cd2d4fea482fd1@192.168.0.248:8080//job/Buil
     payload URL: http://192.168.0.248:8080/github-webhook/ - адрес дженкинс сервера и /github-webhook/ в конце
     content type: application/json
 
+            Pipeline
+
+Чтобы писать пайплайны надо сначала установить плагин Pipeline
+Он установит кучу всего
+Удобнее писать пайплайн на Declarative Pipeline DSL (Domain-Specific Language):
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Starting Build stage'
+                echo 'Building...'
+                sh "ls -la" // выполняем одну команду
+                echo 'Build stage completed'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Starting Test stage'
+                echo 'Testing...'
+                // выполняем несколько команд
+                sh '''
+                ls -la
+                pwd
+                whoami
+                '''
+                echo 'Test stage completed'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Starting Deploy stage'
+                echo 'Deploying...'
+                echo 'Deploy stage completed'
+            }
+        }
+    }
+}
+
+
+Собственно дайный пайплайн и называется Jenkinsfile
+
+Для красивого отображения стейджей нужно установить плагин Pipeline Stage View
+Bash команды запускаются так: sh "cat file.txt"
+
+Для запуска скрипта в докере, а не на хосте надо установить докер на хост и установть плагин Docker pipeline
+sudo usermod -aG docker jenkins - и добавить пользователя jenkins в группу docker
+
+pipeline {
+    agent {
+        docker {
+            image 'python:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Starting Build stage'
+                echo 'Building...'
+                sh "ls -la" // выполняем одну команду
+                echo 'Build stage completed'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Starting Test stage'
+                echo 'Testing...'
+                // выполняем несколько команд
+                sh '''
+                ls -la
+                pwd
+                '''
+                echo 'Test stage completed'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Starting Deploy stage'
+                echo 'Deploying...'
+                echo 'Deploy stage completed'
+                sh "python --version"
+            }
+        }
+    }
+}
+
+Можно брать Jenlinsfile с гитхаба, но важно чтобы он был назван с большой буквы
+
+Обычно Jenkinsfile лежит прямо в репе с кодом и скачивается всегда весь репозиторий. А уже Jenkinsfile описывает что надо делать с кодом
