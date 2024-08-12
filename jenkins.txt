@@ -160,6 +160,8 @@ Bash команды запускаются так: sh "cat file.txt"
 Для запуска скрипта в докере, а не на хосте надо установить докер на хост и установть плагин Docker pipeline
 sudo usermod -aG docker jenkins - и добавить пользователя jenkins в группу docker
 
+https://youtu.be/68pKqpDO2Zw?si=-hy7M6WV0o4jkE5x
+
 pipeline {
     agent {
         docker {
@@ -201,6 +203,8 @@ pipeline {
         }
     }
 }
+
+В данном Jenkinsfile команды  выполняются внутри Docker контейнера, так как вся конфигурация задания (pipeline) указана с использованием Docker агента. Контейнер используется для выполнения всех шагов (steps) внутри этапов (stages).
 
 Можно брать Jenlinsfile с гитхаба, но важно чтобы он был назван с большой буквы
 
