@@ -238,3 +238,8 @@ pipeline {
 Сделать токен для доступа и создать новые credentials в jenkins
 Надо установить плагин Docker Pipeline
 
+        Установка Git Parametres
+
+Надо установть одноименный плагин
+
+
