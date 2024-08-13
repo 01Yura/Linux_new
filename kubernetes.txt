@@ -38,7 +38,7 @@ POD - самый маленький элемент, внутри которог�
 - etcd (сохранение логов и инфы о кластере в матер ноде)
 Внутри мастер ноды есть DNS сервис и поэтому внутри кластера можно ваимодействовать с помощтю имен
 
-    Упаравление кластером с помощью kebectl
+    Упаравление кластером с помощью kubectl
 
 Чтобы управлять всем класетром нужна утилита - kubectl (в CLI). Есть графическая надтройка - K8s dashboard
 Это клиент для управления локальным или удаленным кластером K8s
@@ -66,6 +66,127 @@ minikube start - для запуска кластера. Он автоматич
 minikube start --driver=название
 
 minikube status
+    minikube
+    type: Control Plane
+    host: Running
+    kubelet: Running
+    apiserver: Running
+    kubeconfig: Configured
+
+
+alias k=kubectl - делаем алиас для удобства (можно поместить его в .bashrc в домашнюю директорию для сохранения навсегда)
+alias mk="minikube kubectl --"
+
+k cluster-info
+    Kubernetes control plane is running at https://127.0.0.1:55210
+    CoreDNS is running at https://127.0.0.1:55210/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+    To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+k get nodes
+    NAME       STATUS   ROLES           AGE   VERSION
+    minikube   Ready    control-plane   40m   v1.30.0
+
+k get pods
+    No resources found in default namespace. - подов нет ИМЕННО в дефолтном неймспейсе, однако есть и другие неймспейсы
+
+k get namespaces
+    NAME              STATUS   AGE
+    default           Active   41m
+    kube-node-lease   Active   41m
+    kube-public       Active   41m
+    kube-system       Active   41m
+
+
+k get pods --namespace=kube-system
+    NAME                               READY   STATUS    RESTARTS      AGE
+    coredns-7db6d8ff4d-c84l8           1/1     Running   0             42m
+    etcd-minikube                      1/1     Running   0             43m
+    kube-apiserver-minikube            1/1     Running   0             43m
+    kube-controller-manager-minikube   1/1     Running   0             43m
+    kube-proxy-t8h49                   1/1     Running   0             42m
+    kube-scheduler-minikube            1/1     Running   0             43m
+    storage-provisioner                1/1     Running   1 (42m ago)   43m
+
+minikube ip - посмотреть ip ноды (у нас есть тока одна нода - minikube)
+    192.168.49.2
+
+minikube ssh - для ssh подключеyия к ноде, чтобы не заморачиваься с портами так как нода в docker
+Уже подключившись по ssh можно посмотреть какие контейнеры подняты в данной ноде:
+docker ps
+    CONTAINER ID   IMAGE                       COMMAND                  CREATED             STATUS             PORTS     NAMES
+    cd4a12a3572c   6e38f40d628d                "/storage-provisioner"   About an hour ago   Up About an hour             k8s_storage-provisioner_storage-provisioner_kube-system_86c9629f-0787-4893-af93-88298ef2747c_1
+    64b3999a238a   cbb01a7bd410                "/coredns -conf /etc…"   About an hour ago   Up About an hour             k8s_coredns_coredns-7db6d8ff4d-c84l8_kube-system_48bf52cb-c540-420d-9348-5ddbb4cb5004_0
+    fa2bc70eb04c   a0bf559e280c                "/usr/local/bin/kube…"   About an hour ago   Up About an hour             k8s_kube-proxy_kube-proxy-t8h49_kube-system_53ec8c30-c56c-4960-833b-d53550429cb8_0
+    cc1e97abb432   registry.k8s.io/pause:3.9   "/pause"                 About an hour ago   Up About an hour             k8s_POD_coredns-7db6d8ff4d-c84l8_kube-system_48bf52cb-c540-420d-9348-5ddbb4cb5004_0
+    bd06669bdb5e   registry.k8s.io/pause:3.9   "/pause"                 About an hour ago   Up About an hour             k8s_POD_kube-proxy-t8h49_kube-system_53ec8c30-c56c-4960-833b-d53550429cb8_0
+    7696575c92b2   registry.k8s.io/pause:3.9   "/pause"                 About an hour ago   Up About an hour             k8s_POD_storage-provisioner_kube-system_86c9629f-0787-4893-af93-88298ef2747c_0
+    d2b78ce39009   c7aad43836fa                "kube-controller-man…"   About an hour ago   Up About an hour             k8s_kube-controller-manager_kube-controller-manager-minikube_kube-system_7fd44e8d11c3e0ffe6b1825e2a1f2270_0
+    a0f49eff5b3a   3861cfcd7c04                "etcd --advertise-cl…"   About an hour ago   Up About an hour             k8s_etcd_etcd-minikube_kube-system_063d6b9688927e601f52fd818d1305c5_0
+    f1cd096662cb   c42f13656d0b                "kube-apiserver --ad…"   About an hour ago   Up About an hour             k8s_kube-apiserver_kube-apiserver-minikube_kube-system_3c555f828409b009ebee39fdbedfcac0_0
+    f378acbc66fa   259c8277fcbb                "kube-scheduler --au…"   About an hour ago   Up About an hour             k8s_kube-scheduler_kube-scheduler-minikube_kube-system_f9c8e1d0d74b1727abdb4b4a31d3a7c1_0
+    939cf8dacbaa   registry.k8s.io/pause:3.9   "/pause"                 About an hour ago   Up About an hour             k8s_POD_etcd-minikube_kube-system_063d6b9688927e601f52fd818d1305c5_0
+    f836626abf4d   registry.k8s.io/pause:3.9   "/pause"                 About an hour ago   Up About an hour             k8s_POD_kube-controller-manager-minikube_kube-system_7fd44e8d11c3e0ffe6b1825e2a1f2270_0
+    d6073edbe64a   registry.k8s.io/pause:3.9   "/pause"                 About an hour ago   Up About an hour             k8s_POD_kube-apiserver-minikube_kube-system_3c555f828409b009ebee39fdbedfcac0_0
+    2df06e9e1448   registry.k8s.io/pause:3.9   "/pause"                 About an hour ago   Up About an hour             k8s_POD_kube-scheduler-minikube_kube-system_f9c8e1d0d74b1727abdb4b4a31d3a7c1_0
+
+    Создание пода в кластере
+
+k get pods - убеждаемся что нет подов в пространстве имен по умолчанию
+    No resources found in default namespace.
+
+k run my-nginx-pod --image=nginx - пишем название пода и образ, из которого создавать контейнер, который будет запущен внутри пода
+    pod/my-nginx-pod created
+
+k get pods
+    NAME           READY   STATUS    RESTARTS   AGE
+    my-nginx-pod   1/1     Running   0          61s
+
+Данный под пингуется только с ноды, где он поднят, поэтому ужно зайт на под
+
+k describe pod my-nginx-pod - полная инфа по поду
+
+docker@minikube:~$ docker ps | grep nginx
+    994719e380b3   nginx                       "/docker-entrypoint.…"   18 minutes ago   Up 18 minutes             k8s_my-nginx-pod_my-nginx-pod_default_c999d054-23c0-46d0-a00f-72a9f8baf995_0
+    29bd280e434c   registry.k8s.io/pause:3.9   "/pause"                 18 minutes ago   Up 18 minutes             k8s_POD_my-nginx-pod_default_c999d054-23c0-46d0-a00f-72a9f8baf995_0
+При создании конейнера создается второй контейнер - pause, который нужен чтобы зарезервировать ресурсы для определенного пода, а именно для my-nginx-pod, так как контейнер nginx может быть установлен или удален, но есурсы должны сохраниться
+
+docker exec -it 994719e380b3 bash - находясь на поде minikube подключаемся внутрь контейнера
+
+docker@minikube:~$ hostname -i
+hostname -i
+192.168.49.2 - таким образом все контейнеры внутри пода разделяют между собой ip адрес пода
+
+root@my-nginx-pod:/# ls /usr/share/nginx/html
+    ls /usr/share/nginx/html
+    50x.html  index.html
+
+k get pods -o wide
+    NAME           READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+    my-nginx-pod   1/1     Running   0          39m   10.244.0.3   minikube   <none>           <none>
+
+
+k delete pod my-nginx-pod
+    pod "my-nginx-pod" deleted
+
+k get pods - то есть был удален под, а вместе с ним и контейнер
+    No resources found in default namespace.
+
+    Создание деплоймента
+
+k create deployment my-nginx-deploy --image=nginx
+    deployment.apps/my-nginx-deploy created
+
+k get pods
+    NAME                               READY   STATUS    RESTARTS   AGE
+    my-nginx-deploy-7b69c488c9-8m25q   1/1     Running   0          3m6s - название пода основано на названии деплоймента
+
+k describe deploy my-nginx-deploy
+
+
+
+
+
 
 
 
