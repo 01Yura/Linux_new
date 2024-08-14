@@ -64,8 +64,11 @@ minikube version
 minikube start - для запуска кластера. Он автоматически найдет докер, если он есть и начнет скачивать образ и запускать контейнер minikube (этот контейнер и будет являться кластером в нашей среде обучения и уже в нем мы будем поднимать поды, как бы контейнер в контейнере)
 можно выбрать где поднимать minikube:
 minikube start --driver=название
+minikube start --cpus=4 --memory=8gb --disk-size=4gb
+minikube start --cpus=4 --memory=4gb --driver=vmware
 
-minikube status
+
+minikube status - посмотреть статус кластера
     minikube
     type: Control Plane
     host: Running
@@ -108,7 +111,7 @@ k get pods --namespace=kube-system
     kube-scheduler-minikube            1/1     Running   0             43m
     storage-provisioner                1/1     Running   1 (42m ago)   43m
 
-minikube ip - посмотреть ip ноды (у нас есть тока одна нода - minikube)
+minikube ip - посмотреть ip кластера (у нас есть тока одна нода - minikube)
     192.168.49.2
 
 minikube ssh - для ssh подключеyия к ноде, чтобы не заморачиваься с портами так как нода в docker
@@ -166,7 +169,7 @@ k get pods -o wide - вывод с ip
     my-nginx-pod   1/1     Running   0          39m   10.244.0.3   minikube   <none>           <none>
 
 
-k delete pod my-nginx-pod
+k delete pod my-nginx-pod - удалить поду
     pod "my-nginx-pod" deleted
 
 k get pods - то есть был удален под, а вместе с ним и контейнер
@@ -186,7 +189,7 @@ k describe deploy my-nginx-deploy - инфа о деплойменте
 
     Увеличение количества подов в деплойменте
 
-k scale deploy my-nginx-deploy --replicas=3
+k scale deploy my-nginx-deploy --replicas=5
     deployment.apps/my-nginx-deploy scaled
 
 k get deploy
@@ -198,6 +201,82 @@ NAME                               READY   STATUS    RESTARTS   AGE
 my-nginx-deploy-7b69c488c9-64vxd   1/1     Running   0          90s
 my-nginx-deploy-7b69c488c9-8m25q   1/1     Running   0          33m
 my-nginx-deploy-7b69c488c9-cr6vl   1/1     Running   0          90s
+
+    Сервисы, создание сервисов
+
+k get services - посмотерть существующие сервисы
+
+1) Создание сервиса ClusterIP
+
+$ k expose deploy my-nginx-deploy --port=8080 --target-port=80 - создаем сервис ClusterIP для нашего деплоймента, можно подключатьсячерез внешний порт 8080, который будет перенаправлять трафик на поды на порт 80. IP адрес создается автоматически
+    service/my-nginx-deploy exposed
+
+$ k get services
+NAME              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+kubernetes        ClusterIP   10.96.0.1       <none>        443/TCP    17m - системный сервис
+my-nginx-deploy   ClusterIP   10.102.133.98   <none>        8080/TCP   2m16s - сервис нашего деплоймента, этой ip доступен только внутри кластера!!!
+
+$ k describe services my-nginx-deploy - просмотреть инфу о сервисе
+Name:              my-nginx-deploy
+Namespace:         default
+Labels:            app=my-nginx-deploy
+Annotations:       <none>
+Selector:          app=my-nginx-deploy
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.102.133.98 
+IPs:               10.102.133.98
+Port:              <unset>  8080/TCP
+TargetPort:        80/TCP
+Endpoints:         10.244.0.4:80,10.244.0.5:80,10.244.0.6:80 + 2 more...
+Session Affinity:  None
+Events:            <none>
+Таким образом при обращении на ip 10.102.133.98:8080 идет обращение к одному из подов (Endpoints), то есть выполняется балансировка нагрузки между ними
+
+Пробуем подключится:
+minikube ssh - заходим на кластер
+curl 10.102.133.98:8080 - открывается страница приветствия сайта nginx (мы получили ответ от одного из подов в нашем деплойменте)
+ВНИМАНИЕ! Этот ip доступен только внутри кластера кубернетис!!!
+
+Но этот тип сервиса (Cluster ip) нужен если мы хотим чтобы с данным деплойментом взаимодействовали другие деплойменты и который не должен быть доступен снаружи, но если должен смотерть наружу, то нужно использовать NodePort или LoadBalancer
+
+2) Создание сервиса NodePort
+
+$ k delete svc my-nginx-deploy - удалим сервис ClusterIP
+service "my-nginx-deploy" deleted
+
+$ k expose deploy my-nginx-deploy --type=NodePort --port=8888 --target-port=80
+service/my-nginx-deploy exposed
+
+$ k get svc
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP          40m
+my-nginx-deploy   NodePort    10.110.148.117   <none>        8888:32329/TCP   42s
+
+
+$ minikube ip - смотрим ip кластера
+192.168.207.129
+
+проверяем подключение:
+curl 192.168.207.129:32329 или через браузер
+
+$ k delete svc my-nginx-deploy
+service "my-nginx-deploy" deleted
+
+3) Создание сервиса LoadBalancer
+
+$ k expose deploy my-nginx-deploy --type=LoadBalancer --port=9999 --target-port=80
+service/my-nginx-deploy exposed
+
+$ k get svc
+NAME              TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+kubernetes        ClusterIP      10.96.0.1       <none>        443/TCP          61m
+my-nginx-deploy   LoadBalancer   10.109.12.140   <pending>     9999:31284/TCP   83s
+
+Теперь через внешний ip кластера мы можем подключится к сервису my-nginx-deploy
+
+
 
 
 
