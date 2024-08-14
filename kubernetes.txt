@@ -278,6 +278,14 @@ my-nginx-deploy   LoadBalancer   10.109.12.140   <pending>     9999:31284/TCP   
 
 
 
+docker build . -t 01yura/k8s-web-hello-ru:latest -t 01yura/k8s-web-hello-ru:1.0.0 - создать образ из Dockerfile
+docker push 01yura/k8s-web-hello-ru --all-tags - загрузить на докерхаб оба образа
+
+k create deploy k8s-web-hello --image=01yura/k8s-web-hello-ru:latest - создаем деплоймент из этого контейнера
+
+k expose deploy k8s-web-hello --type=LoadBalancer --port=3333 --target-port=3000
+
+
 
 
 
