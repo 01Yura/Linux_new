@@ -65,7 +65,8 @@ minikube start - для запуска кластера. Он автоматич
 можно выбрать где поднимать minikube:
 minikube start --driver=название
 minikube start --cpus=4 --memory=8gb --disk-size=4gb
-minikube start --cpus=4 --memory=4gb --driver=vmware
+minikube start --cpus=4 --memory=4gb --driver=vmware - при создании вирт машины она не появляется в графическрм интерфесе, однако для того чтобы появилась надо найти ее в соответствующей папке, путь можно увидеть пвыполнив команду при включенной вирт машине: 
+    vmrun list
 
 
 minikube status - посмотреть статус кластера
@@ -285,8 +286,29 @@ k create deploy k8s-web-hello --image=01yura/k8s-web-hello-ru:latest - созд�
 
 k expose deploy k8s-web-hello --type=LoadBalancer --port=3333 --target-port=3000
 
+    Обновление приложения (Rolling update)
 
+обновляем код
+docker build . -t 01yura/k8s-web-hello-ru:latest -t 01yura/k8s-web-hello-ru:2.0.0 - делаем образы
+docker push 01yura/k8s-web-hello-ru --all-tags - пушим образы на dockerhub
 
+k set image deploy k8s-web-hello k8s-web-hello-ru=01yura/k8s-web-hello-ru:2.0.0 - указываем какой deployment обновляем, затем какой образ обновляем , затем указываем на какой образ мы хотим обновить
+
+k rollout status deploy k8s-web-hello - проверяем статус выкатки
+
+    YAML файлы для деплойментов и сервисов
+
+- установить расширение для VScode - Kubernetes
+- создать в VSCode YAML файл deployment.yaml (можно просто .yml) и service.yaml
+
+k apply -f deployment.yaml - создаем деплоймент
+k apply -f service.yaml - создаем сервис
+
+$ k delete -f deployment.yaml -f sevice.yaml - чтобы удалить деплоймент и сервис, но не файлы!
+deployment.apps "k8s-web-hello" deleted
+service "k8s-web-hello" deleted
+
+minikube dashboard - подключится к дэшборд
 
 
 
