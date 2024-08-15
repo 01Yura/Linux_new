@@ -310,6 +310,13 @@ service "k8s-web-hello" deleted
 
 minikube dashboard - подключится к дэшборд
 
+Если запустили minikube с containerd вот так:
+minikube start --driver=vmware --container-runtime=containerd
+
+то запущенные контейнеры внутри кластера можно посмотреть не командой docker ps, а командой
+sudo ctr -n k8s.io containers list
+Он кстати не создает контейнеры на паузе
+
 
 
 
