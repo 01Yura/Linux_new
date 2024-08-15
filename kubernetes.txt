@@ -317,6 +317,32 @@ minikube start --driver=vmware --container-runtime=containerd
 sudo ctr -n k8s.io containers list
 Он кстати не создает контейнеры на паузе
 
+k delete all --all - удалить все деплойменты и сервисы
+
+                    Создания кластера k8s в AWS
+
+Надо установить 3 утилиты:
+- awscli - yнужен для аутентификации и запуска команд aws
+https://awscli.amazonaws.com/AWSCLIV2.msi - скачиваем установщик
+aws --version
+
+- eksctl - для создания кластера
+https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_windows_amd64.zip - скачиваем и файл добавляем в $PATH
+- kubectl - для управления кластером
+
+Далее вводим 
+aws configure и вводим все данные
+AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name [None]: region-code
+Default output format [None]: text
+
+Эти ключи можно создать в настрйоках юзера
+Проверить настроилось ли подключение можно командой:
+aws sts get-caller-identity 
+
+
+
 
 
 
