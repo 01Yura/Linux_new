@@ -348,9 +348,53 @@ eksctl update addon --name vpc-cni --cluster number5 --region us-east-1 --force
 
 eksctl delete cluster --name=number5 --region=us-east-1 - удалить кластер
 
+                    Установака и создание кластера на голых серверах
 
+Установка докер:
 
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+sudo apt-get install -y docker-ce
 
+Установка kubeadm, kubelet и kubectl:
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+mkdir /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+
+Инициализация мастер-ноды:
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+
+После инициализации появится сообщение:         (надо выполнить одну из представленных команд)
+
+    Your Kubernetes control-plane has initialized successfully!
+
+    To start using your cluster, you need to run the following as a regular user:
+
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+    Alternatively, if you are the root user, you can run:
+
+    export KUBECONFIG=/etc/kubernetes/admin.conf
+
+    You should now deploy a pod network to the cluster.
+    Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+    https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+    Then you can join any number of worker nodes by running the following on each as root:
+
+    kubeadm join 192.168.0.57:6443 --token ty3azg.uvmq083nbunnma84 \
+            --discovery-token-ca-cert-hash sha256:3a803f8758a06cc658c5f0b267decd22fd00d1159dbf784e3946564354854759
+
+Установка сетевого плагина (например, Calico):
+https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
 
 
 

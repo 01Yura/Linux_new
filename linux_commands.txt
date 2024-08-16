@@ -901,6 +901,10 @@ echo 'НФ1 НФ2' | xargs touch
     /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     Порядок директорий в $PATH задан в файле home/пользователь/.profile
 
+    export PATH=$PATH:директория - добавление директории в PATH 
+    Чтобы сохранилась навсегда надо эту команду добавить в конец .bashrc
+    
+
     alias ll="ls -lai --color=auto"
     alias grep="grep --color=always"
 
