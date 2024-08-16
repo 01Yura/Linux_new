@@ -341,7 +341,12 @@ Default output format [None]: text
 Проверить настроилось ли подключение можно командой:
 aws sts get-caller-identity 
 
+Включите OIDC для кластера:
+eksctl utils associate-iam-oidc-provider --region us-east-1 --cluster number5 --approve
+Обновите аддон вручную:
+eksctl update addon --name vpc-cni --cluster number5 --region us-east-1 --force
 
+eksctl delete cluster --name=number5 --region=us-east-1 - удалить кластер
 
 
 
