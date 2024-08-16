@@ -348,29 +348,62 @@ eksctl update addon --name vpc-cni --cluster number5 --region us-east-1 --force
 
 eksctl delete cluster --name=number5 --region=us-east-1 - удалить кластер
 
-                    Установака и создание кластера на голых серверах
+                    Установка и создание кластера на голых серверах
+1) На масте ноде
 
-Установка докер:
+Проверяем включен ли swap, и если да, то отключаем: (и на мастер и на воркер нодах)
+swapon --show
+sudo swapoff -a
+sudo nano /etc/fstab - комментируем соответствующую строку в fstab
+swapon -a - эта команда перечитывает файл fstab и проверяет нет ли ошибок (иначе система не загрузится)
 
+Проверяем есть ли файерволл и не блокирует ли он порты:
+sudo systemctl status firewalld
+sudo iptables -L
+sudo ufw status
+
+
+Установка containerd:
 sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common gpg
+
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
-sudo apt-get install -y docker-ce
+sudo apt-get install -y containerd.io
+
+sudo mkdir -p /etc/containerd
+sudo containerd config default | sudo tee /etc/containerd/config.toml
+sudo systemctl restart containerd
+
 
 Установка kubeadm, kubelet и kubectl:
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-mkdir /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+
+# If the directory `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
+sudo mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
+sudo systemctl enable --now kubelet
+
+Выполните следующую команду для временного включения ip_forward:
+sudo sysctl -w net.ipv4.ip_forward=1
+
+Чтобы это изменение сохранилось после перезагрузки, добавьте строку в файл /etc/sysctl.conf:
+echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
 Инициализация мастер-ноды:
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
-После инициализации появится сообщение:         (надо выполнить одну из представленных команд)
+После инициализации появится сообщение:         (надо выполнить одну из представленных команд для рута или пользователя(лучше ту которая для юзера))
 
     Your Kubernetes control-plane has initialized successfully!
 
@@ -396,6 +429,17 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 Установка сетевого плагина (например, Calico):
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
 
+k apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.1/manifests/calico.yaml
+
+2) На каждой воркер ноде
+
+Делаем все то же самое, но 
+Kubectl уствнвливать не обязательно, так как он используется для управления кластерм через мастер ноду
+Не надо устанавливать сетевой плагин
+
+Ввод ноды в кластер:
+kubeadm join 192.168.0.57:6443 --token ty3azg.uvmq083nbunnma84 \
+            --discovery-token-ca-cert-hash sha256:3a803f8758a06cc658c5f0b267decd22fd00d1159dbf784e3946564354854759
 
 
 
