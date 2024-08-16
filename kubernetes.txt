@@ -391,7 +391,7 @@ sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
-sudo systemctl enable --now kubelet
+
 
 Выполните следующую команду для временного включения ip_forward:
 sudo sysctl -w net.ipv4.ip_forward=1
@@ -423,8 +423,8 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
     Then you can join any number of worker nodes by running the following on each as root:
 
-    kubeadm join 192.168.0.57:6443 --token ty3azg.uvmq083nbunnma84 \
-            --discovery-token-ca-cert-hash sha256:3a803f8758a06cc658c5f0b267decd22fd00d1159dbf784e3946564354854759
+    kubeadm join 192.168.0.57:6443 --token t7mqhd.pjk37z46rh1duck2 \
+        --discovery-token-ca-cert-hash sha256:c2cd097be9d53e185734e86243c47f4e402aeb7226b1c94ad3ae9ab78794b13c
 
 Установка сетевого плагина (например, Calico):
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
@@ -438,8 +438,8 @@ Kubectl уствнвливать не обязательно, так как он
 Не надо устанавливать сетевой плагин
 
 Ввод ноды в кластер:
-kubeadm join 192.168.0.57:6443 --token ty3azg.uvmq083nbunnma84 \
-            --discovery-token-ca-cert-hash sha256:3a803f8758a06cc658c5f0b267decd22fd00d1159dbf784e3946564354854759
+kubeadm join 192.168.0.57:6443 --token t7mqhd.pjk37z46rh1duck2 \
+        --discovery-token-ca-cert-hash sha256:c2cd097be9d53e185734e86243c47f4e402aeb7226b1c94ad3ae9ab78794b13c
 
 
 
