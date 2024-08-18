@@ -41,7 +41,7 @@ GNU Lesser General Public License (LGPL)
 
 
 
-                                ПЕРЕМЕННЫЕ (VARIABLES)
+                                 ПЕРЕМЕННЫЕ (VARIABLES)
 
 env - посмотреть только (environment) глобальные переменные 
 env, declare -x, typeset -x или export -p - показывает глобальные переменные 

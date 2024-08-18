@@ -441,6 +441,23 @@ Kubectl уствнвливать не обязательно, так как он
 kubeadm join 192.168.0.57:6443 --token t7mqhd.pjk37z46rh1duck2 \
         --discovery-token-ca-cert-hash sha256:c2cd097be9d53e185734e86243c47f4e402aeb7226b1c94ad3ae9ab78794b13c
 
+                    Управление несколькими кластерами через один kubectl
+
+Есть 2 варианта:
+
+1. Использование переменной окружения:
+export KUBECONFIG=/path/to/your/config1
+kubectl get nodes
+
+Потом можно переключиться на другой файл:
+export KUBECONFIG=/path/to/your/config2
+kubectl get nodes
+
+2. Использование флага --kubeconfig:
+
+kubectl --kubeconfig=/path/to/your/config1 get nodes
+kubectl --kubeconfig=/path/to/your/config2 get nodes
+
 
                     HELM
 
