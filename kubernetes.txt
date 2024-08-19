@@ -473,5 +473,52 @@ helm create НАЗВАНИЕ - создаст папку и все файлы к
 - values.yaml
 - Chart.yaml
 
+В папке values прописать значения и названия переменных
+Напимер:
+image: 01yura/my-website:3.0.0
+replicaCount: 6
+
+В манифсете.yaml заменить занчения на названия переменных
+Например:
+replicas: {{ .Values.replicaCount }}
+image: {{ .Values.image }}
+
+Теперь можно запускать c разными значениями переменной командой:
+helm install любое_название helm_chart_web_site/ - запускается деплой с значениями по умолчанию (который в values)
+
+helm list - показать какие деплойменты через Helm были сделаны
+
+helm delete my-website - удалить helm (надо написать имя под которым ты деплоил)
+helm upgrade my-website helm_chart_web_site/ --set image=01yura/my-website:3.0.0 --set replicaCount=10 - проапгрейдить конкретный helm (тут количество реплик)
+helm upgrade my-website helm_chart_web_site/ --set image=01yura/my-website:2.0.0 --set replicaCount=10 - проапгрейдить конкретный helm (тут образ)
+helm install любое_название helm_chart_web_site/ -f prod_values.yaml - взять занчения переменных из файла
+
+
+$ helm package helm_chart_web_site/ - можно всю директорию запаковать и потом устанавливать прямо из нее
+Successfully packaged chart and saved it to: G:\Yura\GitHub\k8s\my-website-0.1.0.tgz
+helm install имя my-website-0.1.0.tgz - можно установить прямо из архива
+
+
+helm search repo - искать локально
+helm search hub - искать в интернете в общем хабе
+
+    Установка из интернета
+
+Сайт https://bitnami.com/stacks
+
+helm repo add bitnami https://charts.bitnami.com/bitnami - добавить весь репозиторий от bitnami
+После этого можно проверить
+helm search repo  - вылезет список helm charts из добавленных нами
+
+или сразу задеплоить
+helm install my-release oci://registry-1.docker.io/bitnamicharts/tomcat - установить прямо с интернета
+
+Деплоим:
+helm install my-web-server bitnami/apache
+helm install my-web-server bitnami/apache -f my_values.yaml - задеплоить с нашими переменными
+helm upgrade my-web-server bitnami/apache --set service.type=NodePort --set service.nodePorts.http=32333 - меняем параметры на свои
+
+
+
 
 
