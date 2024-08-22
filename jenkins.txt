@@ -109,6 +109,37 @@ curl http://root:11cf68a96acb21a74098cd2d4fea482fd1@192.168.0.248:8080//job/Buil
     payload URL: http://192.168.0.248:8080/github-webhook/ - адрес дженкинс сервера и /github-webhook/ в конце
     content type: application/json
 
+Если не белого ip, то устанавливаем на сервак wireguard 
+    sudo apt update
+    sudo apt install wireguard -y
+Создаем конфиг
+    sudo nano /etc/wireguard/wg0.conf
+
+Public key: ankvb7CSPFmHFN2zPs88yAQU/JGzbciclu4B51O/0z8= (ставить на сервере в своем пире)
+
+[Interface]
+PrivateKey = ????????? это приват для паблика который выше, взять из настроек с винды
+Address = 192.168.3.9/32
+DNS = 8.8.8.8
+
+[Peer]
+PublicKey = qpgCDbQiAO8lDlRqz3CrtwwiLdt1hRHz9/Z0gVYFriQ= (публичный ключ взятый с сервера)
+AllowedIPs = 0.0.0.0/1, 128.0.0.0/1
+Endpoint = ????????????:13231
+PersistentKeepalive = 25
+
+sudo wg-quick up wg0 - включить
+sudo wg-quick down wg0
+sudo systemctl enable wg-quick@wg0 - вкл в автозангрузку
+sudo wg show - чекнуть соединение
+
+
+
+
+
+
+
+
             Pipeline
 
 Чтобы писать пайплайны надо сначала установить плагин Pipeline
