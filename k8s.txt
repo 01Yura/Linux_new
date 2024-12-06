@@ -426,7 +426,7 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
     kubeadm join 192.168.0.57:6443 --token t7mqhd.pjk37z46rh1duck2 \
         --discovery-token-ca-cert-hash sha256:c2cd097be9d53e185734e86243c47f4e402aeb7226b1c94ad3ae9ab78794b13c
 
-Установка сетевого плагина (например, Calico):
+Установка сетевого плагина (например, Calico) (только на матер ноде!):
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
 
 k apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.1/manifests/calico.yaml
@@ -518,7 +518,14 @@ helm install my-web-server bitnami/apache
 helm install my-web-server bitnami/apache -f my_values.yaml - задеплоить с нашими переменными
 helm upgrade my-web-server bitnami/apache --set service.type=NodePort --set service.nodePorts.http=32333 - меняем параметры на свои
 
+                    Удаление воркер-ноды из кластера при смене мастре-ноды
 
+На воркер ноде выполнить:
+
+sudo systemctl stop kubelet
+sudo kubeadm reset
+
+После можно заново добавить ее в кластер через kubeadm join ......
 
 
 
