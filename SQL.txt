@@ -481,6 +481,15 @@ SELECT UPPER("Hello world") AS upper_string; - выводит в верхнем 
 HELLO WORLD
 NOW() - функция не требует аргументов и выводит текущую дату и время
 
+Еще пример из codecademy:
+
+SELECT name,
+ CASE
+  WHEN genre = 'romance' then "Chill"
+  WHEN genre = 'comedy' then "Chill"
+  ELSE 'Intense'
+ END AS 'Mood'
+FROM movies;
 
                                 REGEXP
 
