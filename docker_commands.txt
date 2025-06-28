@@ -29,6 +29,9 @@ docker stop ID_контенера - остановить контейнер
 docker kill ID_контенера - если не реагирует на команду stop
 docker stop $(docker ps -q) - остановить все контейнеры
 docker rm $(docker ps -a -q) - удалить все контейнеры
+docker rm -f $(docker ps -aq) - остановить и удалить все контейнеры
+docker rmi -f $(docker images -aq) - удаляет вообще все образы
+
 
 docker exec -it 6532ce0cea64 bash - зайти в уже запущенный контейнер и запустить там bash (запускает команду в контейнере)
 docker run -p 80:80 -d -v /var/www/8080:/usr/share/nginx/html имя_образа - запустить контейнер из образа фоном, пробросить порт и примонтировать (-v создать волюм) свой каталог /var/www/8080 к контейнерному /usr/share/nginx/html

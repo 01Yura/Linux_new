@@ -349,13 +349,42 @@ eksctl update addon --name vpc-cni --cluster number5 --region us-east-1 --force
 eksctl delete cluster --name=number5 --region=us-east-1 - удалить кластер
 
                     Установка и создание кластера на голых серверах
+
+Починить обновления:
+sudo nano /etc/apt/sources.list
+и закомментить строку с cdrom, чтобы обновлялось корректно
+
+Статический IP:
+cd /etc/netplan
+nano 00-installer-config.yaml
+
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens33:
+      dhcp4: false
+      addresses:
+        - 192.168.0.116/24
+      gateway4: 192.168.0.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 8.8.4.4
+
+sudo netplan apply
+
+
+
+
 1) На масте ноде
 
 Проверяем включен ли swap, и если да, то отключаем: (и на мастер и на воркер нодах)
 swapon --show
 sudo swapoff -a
-sudo nano /etc/fstab - комментируем соответствующую строку в fstab
-swapon -a - эта команда перечитывает файл fstab и проверяет нет ли ошибок (иначе система не загрузится)
+sudo nano /etc/fstab    - комментируем соответствующую строку в fstab
+swapon -a               - эта команда перечитывает файл fstab и проверяет нет ли ошибок (иначе система не загрузится)
 
 Проверяем есть ли файерволл и не блокирует ли он порты:
 sudo systemctl status firewalld
@@ -382,10 +411,10 @@ https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-ku
 
 # If the directory `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
 sudo mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 # This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
@@ -424,12 +453,47 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
     Then you can join any number of worker nodes by running the following on each as root:
 
     kubeadm join 192.168.0.57:6443 --token t7mqhd.pjk37z46rh1duck2 \
-        --discovery-token-ca-cert-hash sha256:c2cd097be9d53e185734e86243c47f4e402aeb7226b1c94ad3ae9ab78794b13c
+        --discovery-token-ca-cert-hash sha256:c2cd097be9d53e185734e86243c47f4e402aeb7226b1c94ad3ae9ab78794b13c   - эту хрень сохраняем, чтобы потом вводить ноды в кластер
 
-Установка сетевого плагина (например, Calico) (только на матер ноде!):
+    Если не сохранил вывод, то можно перегенерить токен:
+kubeadm token create --print-join-command
+Эта команда не инвалидирует старые токены. Все ноды, подключенные ранее будут работать норм.
+
+
+Далее идет установка сетевого плагина (например, Calico) (только на мастер ноде!):
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
 
-k apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.1/manifests/calico.yaml
+ВНИМАНИЕ!!!
+
+Calico по умолчанию использует сеть 192.168.0.0/16, вот кусок его манифеста:
+
+- name: CALICO_IPV4POOL_CIDR
+  value: "192.168.0.0/16"
+
+Если это не изменить — поды не смогут правильно маршрутизироваться, и сеть работать не будет (например, ping между подами не пройдет).
+
+curl -O https://raw.githubusercontent.com/projectcalico/calico/v3.28.1/manifests/calico.yaml - снвчала просто скачиваем манифест
+nano calico.yaml
+
+Ищем блок:
+- name: CALICO_IPV4POOL_CIDR
+  value: "192.168.0.0/16"
+
+Меняем на:
+ name: CALICO_IPV4POOL_CIDR
+  value: "10.244.0.0/16"
+
+kubectl apply -f calico.yaml - применяем
+
+Если надо разрешить размещение подов на мастер-ноду, то:
+kubectl taint nodes --all node-role.kubernetes.io/control-plane- 
+По умолчанию после kubeadm init, master-нода помечена таинтом:
+
+node-role.kubernetes.io/control-plane:NoSchedule
+
+Это не даёт запускать обычные поды на ней.
+Команда выше удаляет этот таинт и позволяет запускать поды (например, твою сеть, nginx, приложения и т.д.).
+
 
 2) На каждой воркер ноде
 
