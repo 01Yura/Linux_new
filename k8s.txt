@@ -457,7 +457,9 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
     Если не сохранил вывод, то можно перегенерить токен:
 kubeadm token create --print-join-command
-Эта команда не инвалидирует старые токены. Все ноды, подключенные ранее будут работать норм.
+Эта команда не инвалидирует старые токены.
+Все уже подключенные ноды остаются в кластере и продолжают работать.
+Если какие-то из них были подключены с другим токеном — это не проблема. Токены используются только при подключении, не для постоянной работы.
 
 
 Далее идет установка сетевого плагина (например, Calico) (только на мастер ноде!):
@@ -530,6 +532,16 @@ Helm Charts — это пакеты приложений для Kubernetes. Он
 С помощью Helm Charts можно легко управлять версиями приложений, устанавливать приложения с различными параметрами и повторно использовать существующие конфигурации.
 
 https://helm.sh/ru/docs/intro/install/ - установка. Просто скачать бинарник и путь к нему добавить в PATH
+
+Или так:
+
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+
+
 
 helm create НАЗВАНИЕ - создаст папку и все файлы которые нужны, но их много. Можно создать вручную
 Нужны:
